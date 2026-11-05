@@ -8,6 +8,7 @@ and generates cryptographically signed SLSA v1.0 provenance attestations.
 import hashlib
 import json
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -69,7 +70,9 @@ async def handle_remediator_task(msg: SwitchMessage | CommandPayload) -> Outboun
     )
 
     # 2. Select Reasoning & Patch Clients (Ollama or Offline deterministic rules)
-    client, provider, model = select_clients("auto")
+    mode = os.getenv("VAYU_REASONING_MODE", "auto")
+    client, provider, model = select_clients(mode)
+    logger.info(f"VAYU-Remediator reasoning client: {provider} (model: {model})")
     pipeline = CRSPipeline(
         reasoning_client=client,
         patch_client=client,
@@ -134,7 +137,8 @@ async def handle_remediator_task(msg: SwitchMessage | CommandPayload) -> Outboun
 
     report = (
         f"### 🛠️ **VAYU-Remediator Patch & Verification Report**\n"
-        f"**Issue ID:** `{issue_id}` | **Target:** `{patch.target_file}`\n\n"
+        f"**Issue ID:** `{issue_id}` | **Target:** `{patch.target_file}`\n"
+        f"**AI Reasoning Engine:** `{provider}/{model}`\n\n"
         f"**Proposed Minimal Patch:**\n"
         f"```diff\n"
         f"{diff_text.strip()}\n"
