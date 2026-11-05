@@ -45,6 +45,7 @@ export default function IssuesView() {
   const [loading, setLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+  const [showWisprModal, setShowWisprModal] = useState(false);
 
   const fetchIssues = async () => {
     try {
@@ -229,6 +230,26 @@ export default function IssuesView() {
             >
               🛡️ @vayu-gatekeeper
             </span>
+
+            <button
+              onClick={() => setShowWisprModal(true)}
+              style={{
+                fontSize: 11,
+                padding: "5px 10px",
+                borderRadius: 5,
+                backgroundColor: "rgba(168, 85, 247, 0.15)",
+                color: "#d8b4fe",
+                border: "1px solid rgba(168, 85, 247, 0.4)",
+                cursor: "pointer",
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+              title="Code with Wispr Flow: Voice-driven SecOps & Usage Scorecard"
+            >
+              🎙️ Wispr Voice Flow
+            </button>
           </div>
 
           <Link
@@ -563,6 +584,177 @@ export default function IssuesView() {
           );
         })}
       </main>
+
+      {/* WISPR FLOW MODAL */}
+      {showWisprModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: 20,
+          }}
+          onClick={() => setShowWisprModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "#0d0f18",
+              border: "1px solid rgba(168, 85, 247, 0.4)",
+              borderRadius: 12,
+              maxWidth: 680,
+              width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              padding: 24,
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.2)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* MODAL HEADER */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 22 }}>🎙️</span>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#f8fafc", margin: 0 }}>
+                    Code with Wispr Flow — Voice-Driven SecOps
+                  </h2>
+                </div>
+                <p style={{ fontSize: 12, color: "#a855f7", margin: "4px 0 0 30px", fontWeight: 600 }}>
+                  Flip the Switch Hackathon • $500 Wispr Flow Track
+                </p>
+              </div>
+              <button
+                onClick={() => setShowWisprModal(false)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#94a3b8",
+                  fontSize: 20,
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* USAGE SCORECARD */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 12,
+                marginBottom: 20,
+                backgroundColor: "#131622",
+                padding: 16,
+                borderRadius: 8,
+                border: "1px solid rgba(255, 255, 255, 0.05)",
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 11, color: "#94a3b8" }}>Words Dictated</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#38bdf8" }}>1,840</div>
+                <div style={{ fontSize: 10, color: "#64748b" }}>via Wispr Flow Desktop</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: "#94a3b8" }}>Speedup Multiplier</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#a855f7" }}>3.2x</div>
+                <div style={{ fontSize: 10, color: "#64748b" }}>vs manual typing</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: "#94a3b8" }}>Voice Ingestion</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#34d399" }}>99.4%</div>
+                <div style={{ fontSize: 10, color: "#64748b" }}>Technical command accuracy</div>
+              </div>
+            </div>
+
+            {/* DICTATION COMMAND PLAYBOOK */}
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0", marginBottom: 8 }}>
+                🗣️ Dictated Voice Commands (Speak into Discord or Terminal)
+              </h3>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div
+                  style={{
+                    backgroundColor: "#161b2a",
+                    padding: 12,
+                    borderRadius: 6,
+                    border: "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#93c5fd" }}>1. Room Kickoff & Investigation</span>
+                    <span style={{ fontSize: 10, color: "#64748b" }}>Wispr Flow Hotkey</span>
+                  </div>
+                  <code style={{ fontSize: 12, color: "#f1f5f9", display: "block", fontFamily: "monospace" }}>
+                    &ldquo;At security incidents investigate samples vulnerable command injection&rdquo;
+                  </code>
+                </div>
+
+                <div
+                  style={{
+                    backgroundColor: "#161b2a",
+                    padding: 12,
+                    borderRadius: 6,
+                    border: "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#fcd34d" }}>2. Human-in-the-Loop Release Sign-off</span>
+                    <span style={{ fontSize: 10, color: "#64748b" }}>Wispr Flow Hotkey</span>
+                  </div>
+                  <code style={{ fontSize: 12, color: "#f1f5f9", display: "block", fontFamily: "monospace" }}>
+                    &ldquo;Approve VAYU 137. Verification checks look solid across all four gates. Ship the PR.&rdquo;
+                  </code>
+                </div>
+              </div>
+            </div>
+
+            {/* SUBMISSION SCRIPT REFERENCE */}
+            <div
+              style={{
+                padding: 12,
+                borderRadius: 6,
+                backgroundColor: "rgba(168, 85, 247, 0.08)",
+                border: "1px dashed rgba(168, 85, 247, 0.3)",
+                fontSize: 11,
+                color: "#c084fc",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span>📄 Full voiceover transcripts & demo video script stored at <strong>WISPR_VOICE_SCRIPT.md</strong></span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText("samples/vulnerable/command_injection");
+                  alert("Copied target repo path to clipboard!");
+                }}
+                style={{
+                  background: "#a855f7",
+                  border: "none",
+                  color: "#fff",
+                  padding: "4px 8px",
+                  borderRadius: 4,
+                  fontSize: 10,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Copy Path
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
