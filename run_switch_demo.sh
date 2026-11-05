@@ -99,6 +99,11 @@ asyncio.run(run_demo())
     exit 0
 fi
 
+if [ "$1" = "--discord" ]; then
+    echo "Starting VAYU Discord Bot Gateway..."
+    exec "$PYTHON_BIN" -m switch.bridge.discord_bot
+fi
+
 echo "Starting Switch multi-agent listener daemon..."
 exec "$PYTHON_BIN" -m switch.runner
 
