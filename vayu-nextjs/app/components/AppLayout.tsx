@@ -19,11 +19,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     >
       <Sidebar />
       <div
+        id="app-main-content"
         style={{
           flex: 1,
           minWidth: 0,
           height: "100vh",
           overflowY: "auto",
+          overflowX: "hidden",
           position: "relative",
           backgroundColor: "#010102",
         }}

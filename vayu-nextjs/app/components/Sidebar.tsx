@@ -396,42 +396,6 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
           </div>
         )}
 
-        {/* SECTION: PAGES */}
-        {!collapsed && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-            <div
-              style={{
-                fontSize: 10.5,
-                fontWeight: 600,
-                color: "#62666d",
-                textTransform: "uppercase",
-                letterSpacing: "0.6px",
-                marginBottom: 4,
-                paddingLeft: 4,
-              }}
-            >
-              Navigation
-            </div>
-
-            <Link
-              href="/"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 12,
-                color: isActive("/") ? "#f7f8f8" : "#8a8f98",
-                textDecoration: "none",
-                padding: "4px 8px",
-                borderRadius: 5,
-              }}
-              title="VAYU OS Landing Page"
-            >
-              <span style={{ color: "#62666d", fontSize: 10 }}>•</span>
-              <span>Landing Page</span>
-            </Link>
-          </div>
-        )}
       </div>
 
       {/* 2. PINNED BOTTOM FOOTER (ZERO COLLISION, EXACT LINEAR TOKENS) */}

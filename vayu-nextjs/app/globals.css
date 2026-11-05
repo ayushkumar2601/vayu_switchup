@@ -112,14 +112,15 @@ a {
 .desktop-nav {
   background: #fff;
   height: clamp(44px, 5.2vw, 48px);
-  max-width: 430px;
+  max-width: 560px;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 4px 8px;
+  padding: 4px 14px;
   border-radius: 999px;
   box-shadow: var(--nav-shadow);
+  white-space: nowrap;
 }
 
 .nav-link {
