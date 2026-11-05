@@ -100,8 +100,31 @@ async def handle_gatekeeper_approval(payload: CommandPayload | SwitchMessage) ->
     # Execute GitHub PR creation & Branch Commit
     branch_name = f"vayu-fix/{issue_id.lower()}-cwe78"
     mock_pr_number = 42
-    github_repo = os.getenv("GITHUB_REPOSITORY", "ayushkumar2601/vayucs")
+    github_repo = os.getenv("GITHUB_REPOSITORY", "ayushkumar2601/vayu_switchup")
     github_pr_url = f"https://github.com/{github_repo}/pull/{mock_pr_number}"
+    github_token = os.getenv("GITHUB_TOKEN")
+
+    if github_token:
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=5.0) as http_client:
+                headers = {
+                    "Authorization": f"Bearer {github_token}",
+                    "Accept": "application/vnd.github.v3+json",
+                }
+                prs_res = await http_client.get(
+                    f"https://api.github.com/repos/{github_repo}/pulls?state=all&per_page=10",
+                    headers=headers,
+                )
+                if prs_res.status_code == 200:
+                    prs = prs_res.json()
+                    for pr in prs:
+                        if branch_name in pr.get("head", {}).get("ref", "") or issue_id in pr.get("title", ""):
+                            github_pr_url = pr.get("html_url", github_pr_url)
+                            mock_pr_number = pr.get("number", mock_pr_number)
+                            break
+        except Exception as err:
+            logger.warning(f"GitHub API check encountered transient exception: {err}")
 
     # Update Issue Status to DONE
     global_state.update_issue_status(
