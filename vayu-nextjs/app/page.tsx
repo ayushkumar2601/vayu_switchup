@@ -106,6 +106,7 @@ export default function Home() {
         <header className="header anim" style={{ "--d": "0s" } as React.CSSProperties}>
           <nav className="desktop-nav">
             <a href="#" className="nav-link active">Home</a>
+            <Link href="/issues" className="nav-link" style={{ color: "#f59e0b", fontWeight: 700 }}>Switch Squad</Link>
             <Link href="/reviews" className="nav-link">Reviews</Link>
             <Link href="/dashboard" className="nav-link">3D Dashboard</Link>
             <a href="#" className="nav-link">Case Studies</a>

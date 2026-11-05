@@ -3,6 +3,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# SQLite databases
+*.db
+*.sqlite3
+
 # Local agent configs
 .agents/
 skills-lock.json

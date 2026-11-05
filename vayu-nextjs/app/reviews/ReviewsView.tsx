@@ -713,6 +713,26 @@ export default function ReviewsView() {
 
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <Link
+                href="/issues"
+                className="icon-btn"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "0 8px",
+                  width: "auto",
+                  fontSize: 11,
+                  color: "#f59e0b",
+                  textDecoration: "none",
+                  backgroundColor: "rgba(245, 158, 11, 0.1)",
+                  borderRadius: 4,
+                  border: "1px solid rgba(245, 158, 11, 0.25)",
+                }}
+                title="Open VAYU OS Linear-Style Operations Board"
+              >
+                <span>⚡ Switch Board</span>
+              </Link>
+              <Link
                 href="/dashboard"
                 className="icon-btn"
                 style={{
