@@ -92,28 +92,61 @@ class VayuDiscordBot:
                 return
 
             channel_name = getattr(message.channel, "name", "")
-            bot_mentioned = self.client.user in message.mentions if self.client.user else False
-            content = message.content.strip()
+            raw_content = message.content.strip()
 
-            # Clean bot mention from content if present
-            if bot_mentioned and self.client.user:
-                content = content.replace(f"<@{self.client.user.id}>", "@vayu").replace(f"<@!{self.client.user.id}>", "@vayu").strip()
+            # Check if bot was mentioned by User, Role, or Text
+            bot_member = message.guild.get_member(self.client.user.id) if (message.guild and self.client.user) else None
+            bot_role_ids = {str(r.id) for r in bot_member.roles} if bot_member else set()
+            user_mentioned = (self.client.user in message.mentions) if self.client.user else False
+            role_mentioned = any(str(r.id) in bot_role_ids for r in message.role_mentions) or any(f"<@&{r.id}>" in raw_content for r in (bot_member.roles if bot_member else []))
+            text_mentioned = bool(re.search(r"@?(security-incidents|vayu|vayu-analyst|vayu-remediator|vayu-gatekeeper)\b", raw_content, re.IGNORECASE))
 
+            bot_mentioned = user_mentioned or role_mentioned or text_mentioned or bool(re.search(r"<@&\d+>", raw_content))
+
+            # Normalize mentions in content
+            content = raw_content
+            if self.client.user:
+                content = re.sub(rf"<@!?{self.client.user.id}>", "@vayu", content)
+            for r_id in bot_role_ids:
+                content = re.sub(rf"<@&{r_id}>", "@vayu", content)
+            if bot_mentioned:
+                content = re.sub(r"<@&\d+>", "@vayu", content)
+            content = re.sub(r"@security-incidents\b", "@vayu", content, flags=re.IGNORECASE)
+            content = content.strip()
+
+            # Normalize common action verbs into standard slash commands
+            clean_words = content.lower().replace("@vayu", "").strip().split()
+            first_word = clean_words[0] if clean_words else ""
+            remaining = " ".join(clean_words[1:]) if len(clean_words) > 1 else ""
+
+            if first_word in ("investigate", "scan", "audit"):
+                content = f"/vayu scan {remaining}".strip()
+            elif first_word in ("fix", "patch", "remediate"):
+                content = f"/vayu fix {remaining}".strip()
+            elif first_word in ("approve", "/approve"):
+                content = f"/approve {remaining}".strip()
+            elif first_word in ("reject", "/reject"):
+                content = f"/reject {remaining}".strip()
+            elif first_word in ("help", "status", "info"):
+                content = "/help"
+
+            # Check channel permissions: allow designated incident channel, general, commands, or direct mentions
             is_command = content.startswith("/")
             allowed_channels = {self.channel_filter, "security-incidents", "general"}
             if not bot_mentioned and not is_command and channel_name not in allowed_channels:
                 return
 
-            # If user just sent a bare mention to the bot
             if bot_mentioned and (not content or content in ("@vayu", "@security-incidents")):
                 await message.channel.send(
-                    "👋 **VAYU OS Autonomous SecOps Team is Online!**\n"
-                    "Try: `@security-incidents investigate samples/vulnerable/command_injection`\n"
-                    "Or: `/vayu scan samples/vulnerable/command_injection` | `/help`"
+                    "👋 **VAYU OS Autonomous SecOps Team is Online!**\n\n"
+                    "**Quick Commands:**\n"
+                    "• `@security-incidents investigate samples/vulnerable/command_injection`\n"
+                    "• `/vayu scan samples/vulnerable/command_injection`\n"
+                    "• `/approve <issue_id>` | `/reject <issue_id>`"
                 )
                 return
 
-            logger.info(f"Received message from {message.author.name} in #{channel_name}: {content}")
+            logger.info(f"Processed message from {message.author.name} in #{channel_name}: '{raw_content}' -> '{content}'")
 
             try:
                 # Build SwitchEvent representation with required event_id and room_id
@@ -160,7 +193,9 @@ class VayuDiscordBot:
                                 sender=SwitchSender(name="vayu-analyst", id="vayu-analyst", type="agent", role="analyst"),
                                 content=f"Fix vulnerability for {response.metadata.get('issue_id')}",
                             )
-                            remediator_response = await handle_remediator_task(handoff_msg)
+                            # Keep typing indicator alive during remediation & 4-gate verification
+                            async with message.channel.typing():
+                                remediator_response = await handle_remediator_task(handoff_msg)
                             if remediator_response:
                                 await self._send_response(message.channel, remediator_response)
             except Exception as err:
