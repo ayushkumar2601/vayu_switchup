@@ -115,73 +115,78 @@ class VayuDiscordBot:
 
             logger.info(f"Received message from {message.author.name} in #{channel_name}: {content}")
 
-            # Build SwitchEvent representation
-            sender = SwitchSender(
-                id=str(message.author.id),
-                name=message.author.display_name or message.author.name,
-                type="human",
-                role="security_engineer",
-            )
-            event = SwitchEvent(
-                event_type="message.created",
-                data={
-                    "id": str(message.id),
-                    "room_id": channel_name or str(message.channel.id),
-                    "content": content,
-                    "sender": sender.model_dump(),
-                    "mentions": [str(u.name) for u in message.mentions] if message.mentions else [],
-                },
-            )
+            try:
+                # Build SwitchEvent representation with required event_id and room_id
+                room_identifier = channel_name or str(message.channel.id)
+                sender = SwitchSender(
+                    id=str(message.author.id),
+                    name=message.author.display_name or message.author.name,
+                    type="human",
+                    role="security_engineer",
+                )
+                event = SwitchEvent(
+                    event_id=f"evt_{message.id}",
+                    event_type="message.created",
+                    room_id=room_identifier,
+                    data={
+                        "id": str(message.id),
+                        "room_id": room_identifier,
+                        "content": content,
+                        "sender": sender.model_dump(),
+                        "mentions": [str(u.name) for u in message.mentions] if message.mentions else [],
+                    },
+                )
 
-            # Show typing indicator while agents reason & verify
-            async with message.channel.typing():
-                response = await self.dispatcher.handle_event(event)
-                if response:
-                    await self._send_response(message.channel, response)
+                # Show typing indicator while agents reason & verify
+                async with message.channel.typing():
+                    response = await self.dispatcher.handle_event(event)
+                    if response:
+                        await self._send_response(message.channel, response)
 
-                    # Autonomous Handoff: Analyst -> Remediator
-                    if (
-                        response.sender_agent_id == "vayu-analyst"
-                        and response.metadata.get("status") == "handoff_to_remediator"
-                    ):
-                        handoff_notice = (
-                            f"⚡ **[VAYU-Orchestrator]** Autonomous handoff initiated: "
-                            f"Task assigned to **@vayu-remediator** for `{response.metadata.get('issue_id')}`..."
-                        )
-                        await message.channel.send(handoff_notice)
+                        # Autonomous Handoff: Analyst -> Remediator
+                        if (
+                            response.sender_agent_id == "vayu-analyst"
+                            and response.metadata.get("status") == "handoff_to_remediator"
+                        ):
+                            handoff_notice = (
+                                f"⚡ **[VAYU-Orchestrator]** Autonomous handoff initiated: "
+                                f"Task assigned to **@vayu-remediator** for `{response.metadata.get('issue_id')}`..."
+                            )
+                            await message.channel.send(handoff_notice)
 
-                        remediator_response = await handle_remediator_task(
-                            type("HandoffMsg", (), {
-                                "content": f"Fix vulnerability for {response.metadata.get('issue_id')}",
-                                "raw_content": f"Fix vulnerability for {response.metadata.get('issue_id')}",
-                                "room_id": channel_name or str(message.channel.id),
-                                "sender": type("Sender", (), {"name": "vayu-analyst", "type": "agent", "role": "analyst"})(),
-                            })()
-                        )
-                        if remediator_response:
-                            await self._send_response(message.channel, remediator_response)
+                            handoff_msg = SwitchMessage(
+                                id=f"handoff_{response.metadata.get('issue_id')}",
+                                room_id=room_identifier,
+                                sender=SwitchSender(name="vayu-analyst", id="vayu-analyst", type="agent", role="analyst"),
+                                content=f"Fix vulnerability for {response.metadata.get('issue_id')}",
+                            )
+                            remediator_response = await handle_remediator_task(handoff_msg)
+                            if remediator_response:
+                                await self._send_response(message.channel, remediator_response)
+            except Exception as err:
+                logger.exception(f"Error handling message: {err}")
+                await message.channel.send(f"⚠️ **[VAYU-Orchestrator Error]:** {err}")
 
     async def _send_response(self, channel: Any, response: OutboundMessage) -> None:
         """Send message safely within Discord's 2000-character limit."""
         prefix = f"🛡️ **[{response.sender_agent_id.upper()}]**\n"
         full_text = prefix + response.content
 
-        if len(full_text) <= 2000:
-            await channel.send(full_text)
-        else:
-            # Chunk into safe segments preserving lines
-            chunks = []
-            curr = prefix
-            for line in response.content.splitlines(keepends=True):
-                if len(curr) + len(line) > 1950:
-                    chunks.append(curr)
-                    curr = line
-                else:
-                    curr += line
-            if curr:
-                chunks.append(curr)
-            for chunk in chunks:
-                await channel.send(chunk)
+        # Clamp into safe chunks <= 1900 chars preserving line breaks
+        limit = 1900
+        text = full_text
+        chunks = []
+        while len(text) > limit:
+            split_idx = text.rfind("\n", 0, limit)
+            if split_idx == -1:
+                split_idx = limit
+            chunks.append(text[:split_idx])
+            text = text[split_idx:].lstrip("\n")
+        if text:
+            chunks.append(text)
+
+        for chunk in chunks:
+            await channel.send(chunk)
 
     def run(self) -> None:
         if not self.token:
