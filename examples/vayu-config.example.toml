@@ -1,0 +1,43 @@
+# VAYU MCP Server Configuration Example
+# Copy to vayu-config.toml in your repository root or specify path via VAYU_CONFIG
+
+[server]
+# Authorized directory roots. The MCP server will strictly reject scan or verification
+# requests outside these canonical paths to prevent arbitrary filesystem traversal.
+# Default: [current working directory]
+allowed_roots = [
+    "/Users/ayush/Desktop/hackto/vayu",
+    "/Users/ayush/Desktop/hackto/vayu/samples"
+]
+
+# Default execution timeout for scans and gate verification (in seconds).
+# Range: 5.0 to 300.0. Default: 60.0.
+default_timeout = 60.0
+
+# Directory where exported SARIF security reports and run artifacts are saved.
+# Default: ./artifacts
+artifacts_dir = "./artifacts"
+
+# Logging verbosity level: DEBUG, INFO, WARNING, ERROR. Default: INFO.
+# Note: Application logs are always written to stderr to preserve stdout for JSON-RPC.
+log_level = "INFO"
+
+[reasoning]
+# Reasoning provider mode:
+# - 'auto': Attempt local Ollama endpoint; fallback to offline deterministic rules if unreachable.
+# - 'ollama': Require local Ollama HTTP API (fail if unreachable).
+# - 'offline': Model-free deterministic rule engine (100% air-gapped, zero network sockets).
+mode = "auto"
+
+# Local Ollama daemon endpoint URL
+ollama_url = "http://127.0.0.1:11434"
+
+# Local LLM model tag for structured root-cause analysis and patch intent generation
+# Recommended: gemma4:31b-cloud, qwen2.5-coder:7b-instruct, llama3
+model = "gemma4:31b-cloud"
+
+[verification]
+# Verification sandbox strategy:
+# - 'ephemeral': In-process disposable directory sandbox in system /tmp (Default)
+# - 'fail_closed': Enforce all 4 verification gates (Build, Tests, AST, Rescan)
+policy = "fail_closed"
