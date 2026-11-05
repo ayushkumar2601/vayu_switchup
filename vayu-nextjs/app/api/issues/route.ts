@@ -55,6 +55,44 @@ print(json.dumps([i.to_dict() for i in issues]))
   }
 }
 
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { action, issue_id, approver } = body;
+    if (action === "approve" && issue_id) {
+      const pyScript = `
+import os
+import sys
+sys.path.insert(0, os.getcwd())
+from vayu_platform.state import global_state
+github_repo = os.getenv("GITHUB_REPOSITORY", "ayushkumar2601/vayu_switchup")
+pr_url = f"https://github.com/{github_repo}/pull/42"
+issue = global_state.get_issue("${issue_id}")
+if issue:
+    global_state.update_issue_status(
+        issue_id="${issue_id}",
+        status="DONE",
+        github_pr_url=pr_url,
+        actor_name="${approver || 'SecOps Commander'}",
+        actor_type="HUMAN"
+    )
+    print("APPROVED")
+else:
+    print("NOT_FOUND")
+`;
+      const { stdout } = await execFileAsync(pythonExecutable(), ["-c", pyScript], {
+        cwd: REPO_ROOT,
+        env: { ...process.env, PYTHONPATH: REPO_ROOT },
+        timeout: 5000,
+      });
+      return NextResponse.json({ success: true, result: stdout.trim() });
+    }
+    return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 });
+  }
+}
+
 export async function DELETE() {
   try {
     const pyScript = `

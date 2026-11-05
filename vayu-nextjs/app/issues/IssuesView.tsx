@@ -26,24 +26,26 @@ interface SecurityIssue {
   updated_at: number;
 }
 
-const COLUMNS: {
-  key: SecurityIssue["status"];
+interface ColumnDef {
+  key: "inbox" | "up_next" | "in_progress" | "review" | "done";
   label: string;
-  color: string;
-  icon: string;
-}[] = [
-  { key: "BACKLOG", label: "Backlog", color: "#6b7280", icon: "fa-inbox" },
-  { key: "INVESTIGATING", label: "Investigating", color: "#3b82f6", icon: "fa-magnifying-glass" },
-  { key: "PATCHING", label: "Patching", color: "#f59e0b", icon: "fa-wrench" },
-  { key: "VERIFYING", label: "Verifying (4 Gates)", color: "#8b5cf6", icon: "fa-shield-halved" },
-  { key: "HUMAN_REVIEW", label: "Human Review", color: "#f97316", icon: "fa-user-check" },
-  { key: "DONE", label: "Done / Shipped", color: "#10b981", icon: "fa-circle-check" },
+  countKey: string;
+  statuses: SecurityIssue["status"][];
+}
+
+const COLUMNS: ColumnDef[] = [
+  { key: "inbox", label: "Inbox", countKey: "inbox", statuses: ["BACKLOG"] },
+  { key: "up_next", label: "Up Next", countKey: "up_next", statuses: ["INVESTIGATING"] },
+  { key: "in_progress", label: "In Progress", countKey: "in_progress", statuses: ["PATCHING", "VERIFYING"] },
+  { key: "review", label: "Review", countKey: "review", statuses: ["HUMAN_REVIEW"] },
+  { key: "done", label: "Done", countKey: "done", statuses: ["DONE"] },
 ];
 
 export default function IssuesView() {
   const [issues, setIssues] = useState<SecurityIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [showWisprModal, setShowWisprModal] = useState(false);
 
@@ -64,7 +66,7 @@ export default function IssuesView() {
 
   useEffect(() => {
     fetchIssues();
-    const interval = setInterval(fetchIssues, 3000);
+    const interval = setInterval(fetchIssues, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -80,7 +82,6 @@ export default function IssuesView() {
   const handleSimulateScan = async () => {
     setIsScanning(true);
     try {
-      // Trigger a run or stream on command injection
       await fetch("/api/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -94,490 +95,523 @@ export default function IssuesView() {
     }
   };
 
+  const handleApproveIssue = async (issueId: string) => {
+    setApprovingId(issueId);
+    try {
+      const res = await fetch("/api/issues", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve", issue_id: issueId, approver: "Ayush Kumar (Lead)" }),
+      });
+      if (res.ok) {
+        await fetchIssues();
+      }
+    } catch (err) {
+      console.error("Failed to approve issue:", err);
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  // Filter issues per column
+  const getIssuesForColumn = (col: ColumnDef): SecurityIssue[] => {
+    return issues.filter((i) => col.statuses.includes(i.status));
+  };
+
+  const formatRelativeTime = (timestamp: number): string => {
+    if (!timestamp) return "Added recently";
+    const diffSeconds = Math.max(1, Math.floor(Date.now() / 1000 - timestamp));
+    if (diffSeconds < 60) return `Added ${diffSeconds}s ago`;
+    const diffMins = Math.floor(diffSeconds / 60);
+    if (diffMins < 60) return `Added ${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `Added ${diffHours}h ago`;
+    return `Added ${Math.floor(diffHours / 24)}d ago`;
+  };
+
   return (
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#090a0f",
-        color: "#e2e8f0",
+        backgroundColor: "#0d0e15",
+        color: "#f8fafc",
+        padding: "24px 32px",
         fontFamily:
           "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
       }}
     >
-      {/* HEADER BAR */}
+      {/* TOP HEADER MATCHING THE SCREENSHOT EXACTLY */}
       <header
         style={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          padding: "14px 24px",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-          backgroundColor: "#0d0f17",
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
+          justifyContent: "space-between",
+          marginBottom: 28,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: "linear-gradient(135deg, #f59e0b, #ef4444)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 800,
-              fontSize: 16,
-              color: "#fff",
-              boxShadow: "0 0 16px rgba(245, 158, 11, 0.4)",
-            }}
-          >
-            V
-          </div>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em" }}>
-                VAYU OS
-              </span>
-              <span
-                style={{
-                  fontSize: 10,
-                  textTransform: "uppercase",
-                  padding: "2px 6px",
-                  borderRadius: 4,
-                  backgroundColor: "rgba(245, 158, 11, 0.15)",
-                  color: "#f59e0b",
-                  border: "1px solid rgba(245, 158, 11, 0.3)",
-                  fontWeight: 600,
-                }}
-              >
-                Switch Multi-Agent Room
-              </span>
-            </div>
-            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
-              Autonomous Security Engineering Squad • Linear-Style Operations Board
-            </p>
-          </div>
+        {/* LEFT: TITLE */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#ffffff", margin: 0, letterSpacing: "-0.01em" }}>
+            Everything
+          </h1>
+          <span style={{ fontSize: 12, color: "#64748b" }}>
+            Security Incidents & Autonomous Operations
+          </span>
         </div>
 
-        {/* SWITCH ROOM STATUS & AGENTS */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
+        {/* RIGHT: ACTIONS & OVERLAPPING AVATARS */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          {/* ALL FILTER PILL */}
+          <button
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 12px",
+              backgroundColor: "#181922",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              color: "#e2e8f0",
+              padding: "4px 12px",
               borderRadius: 20,
-              backgroundColor: "rgba(16, 185, 129, 0.1)",
-              border: "1px solid rgba(16, 185, 129, 0.25)",
               fontSize: 12,
-              color: "#34d399",
+              fontWeight: 500,
+              cursor: "pointer",
             }}
           >
-            <span
+            All
+          </button>
+
+          {/* OVERLAPPING AVATARS (Ayush + Agents + Switch) */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              title="Ayush Kumar (Incident Commander)"
               style={{
-                width: 8,
-                height: 8,
+                width: 26,
+                height: 26,
                 borderRadius: "50%",
-                backgroundColor: "#10b981",
-                boxShadow: "0 0 8px #10b981",
-                display: "inline-block",
-              }}
-            />
-            <span>Switch Room: <strong>#security-incidents</strong></span>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              style={{
-                fontSize: 11,
-                padding: "4px 8px",
-                borderRadius: 4,
-                backgroundColor: "#1e293b",
-                color: "#93c5fd",
-                border: "1px solid #334155",
-              }}
-              title="VAYU-Analyst: AST Taint Flow Tracer"
-            >
-              🔍 @vayu-analyst
-            </span>
-            <span
-              style={{
-                fontSize: 11,
-                padding: "4px 8px",
-                borderRadius: 4,
-                backgroundColor: "#1e293b",
-                color: "#fcd34d",
-                border: "1px solid #334155",
-              }}
-              title="VAYU-Remediator: 4-Gate Sandbox Verifier"
-            >
-              🛠️ @vayu-remediator
-            </span>
-            <span
-              style={{
-                fontSize: 11,
-                padding: "4px 8px",
-                borderRadius: 4,
-                backgroundColor: "#1e293b",
-                color: "#fda4af",
-                border: "1px solid #334155",
-              }}
-              title="VAYU-Gatekeeper: Policy & Human Approval"
-            >
-              🛡️ @vayu-gatekeeper
-            </span>
-
-            <button
-              onClick={() => setShowWisprModal(true)}
-              style={{
-                fontSize: 11,
-                padding: "5px 10px",
-                borderRadius: 5,
-                backgroundColor: "rgba(168, 85, 247, 0.15)",
-                color: "#d8b4fe",
-                border: "1px solid rgba(168, 85, 247, 0.4)",
-                cursor: "pointer",
-                fontWeight: 600,
+                backgroundColor: "#2563eb",
+                border: "2px solid #0d0e15",
                 display: "flex",
                 alignItems: "center",
-                gap: 5,
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#fff",
+                zIndex: 5,
               }}
-              title="Code with Wispr Flow: Voice-driven SecOps & Usage Scorecard"
             >
-              🎙️ Wispr Voice Flow
-            </button>
+              A
+            </div>
+            <div
+              title="VAYU-Analyst (AST Taint Tracer)"
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                backgroundColor: "#3b82f6",
+                border: "2px solid #0d0e15",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#fff",
+                marginLeft: -8,
+                zIndex: 4,
+              }}
+            >
+              🔍
+            </div>
+            <div
+              title="VAYU-Remediator (4-Gate Sandbox Verifier)"
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                backgroundColor: "#f59e0b",
+                border: "2px solid #0d0e15",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#fff",
+                marginLeft: -8,
+                zIndex: 3,
+              }}
+            >
+              🛠️
+            </div>
+            <div
+              title="VAYU-Gatekeeper (Policy & Human Approval)"
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                backgroundColor: "#ec4899",
+                border: "2px solid #0d0e15",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#fff",
+                marginLeft: -8,
+                zIndex: 2,
+              }}
+            >
+              🛡️
+            </div>
+            <div
+              title="Switch Agent Protocol Daemon"
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                backgroundColor: "#10b981",
+                border: "2px solid #0d0e15",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#fff",
+                marginLeft: -8,
+                zIndex: 1,
+              }}
+            >
+              ⚡
+            </div>
           </div>
 
-          <Link
-            href="/reviews"
+          {/* SIMULATE SCAN */}
+          <button
+            onClick={handleSimulateScan}
+            disabled={isScanning}
             style={{
-              fontSize: 12,
-              padding: "6px 12px",
+              backgroundColor: "#181a24",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              color: "#93c5fd",
+              padding: "5px 12px",
               borderRadius: 6,
-              backgroundColor: "#1e293b",
-              color: "#cbd5e1",
-              textDecoration: "none",
-              border: "1px solid #334155",
+              fontSize: 11,
+              fontWeight: 500,
+              cursor: "pointer",
             }}
           >
-            Review Console →
-          </Link>
-        </div>
-      </header>
+            {isScanning ? "Scanning..." : "+ New Incident"}
+          </button>
 
-      {/* SUB-HEADER / ACTIONS */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "12px 24px",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-          backgroundColor: "#0b0d14",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1" }}>
-            Workspace: <strong>Enterprise Cloud Ops</strong>
-          </span>
-          <span style={{ color: "#475569" }}>•</span>
-          <span style={{ fontSize: 12, color: "#64748b" }}>
-            Target: <code>samples/vulnerable/command_injection</code>
-          </span>
-          <span style={{ color: "#475569" }}>•</span>
-          <span style={{ fontSize: 11, color: "#64748b" }}>
-            Last sync: {lastRefreshed.toLocaleTimeString()}
-          </span>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* CLEAR BOARD */}
           <button
             onClick={handleClearBoard}
-            title="Clear all mock/stale issues from board"
+            title="Clear all stale tickets from board"
             style={{
-              background: "#1e1e2d",
-              border: "1px solid #3f3f5a",
+              backgroundColor: "#181a24",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
               color: "#94a3b8",
               padding: "5px 10px",
-              borderRadius: 5,
+              borderRadius: 6,
               fontSize: 11,
               cursor: "pointer",
             }}
           >
-            🗑️ Clear Board
+            🗑️ Clear
           </button>
+
+          {/* REFRESH */}
           <button
             onClick={fetchIssues}
             style={{
-              background: "#1e293b",
-              border: "1px solid #334155",
-              color: "#e2e8f0",
+              backgroundColor: "#181a24",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              color: "#cbd5e1",
               padding: "5px 10px",
-              borderRadius: 5,
+              borderRadius: 6,
               fontSize: 11,
               cursor: "pointer",
             }}
           >
-            ↻ Refresh
+            ↻
+          </button>
+
+          {/* WISPR FLOW SCORECARD BUTTON */}
+          <button
+            onClick={() => setShowWisprModal(true)}
+            style={{
+              backgroundColor: "rgba(168, 85, 247, 0.15)",
+              border: "1px solid rgba(168, 85, 247, 0.4)",
+              color: "#d8b4fe",
+              padding: "5px 12px",
+              borderRadius: 6,
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <span>🎙️</span> Wispr Flow
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* KANBAN BOARD VIEW */}
+      {/* 5-COLUMN KANBAN GRID MATCHING THE SCREENSHOT EXACTLY */}
       <main
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${COLUMNS.length}, minmax(210px, 1fr))`,
-          gap: 12,
-          padding: 20,
-          overflowX: "auto",
+          gridTemplateColumns: "repeat(5, 1fr)",
+          gap: 16,
           minHeight: "calc(100vh - 120px)",
         }}
       >
         {COLUMNS.map((col) => {
-          const colIssues = issues.filter((i) => i.status === col.key);
+          const colIssues = getIssuesForColumn(col);
+          const count = colIssues.length;
+
           return (
             <div
               key={col.key}
               style={{
-                backgroundColor: "#0d0f18",
-                borderRadius: 8,
-                border: "1px solid rgba(255, 255, 255, 0.06)",
                 display: "flex",
                 flexDirection: "column",
-                maxHeight: "calc(100vh - 160px)",
+                minHeight: 500,
               }}
             >
-              {/* COLUMN HEADER */}
+              {/* COLUMN HEADER (e.g. "Inbox 2", "Up Next 5") */}
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "12px 14px",
-                  borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-                  borderTop: `3px solid ${col.color}`,
+                  gap: 8,
+                  marginBottom: 14,
+                  padding: "0 4px",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#f8fafc" }}>
-                    {col.label}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      backgroundColor: "rgba(255, 255, 255, 0.08)",
-                      color: "#94a3b8",
-                      padding: "1px 6px",
-                      borderRadius: 10,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {colIssues.length}
-                  </span>
-                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1" }}>
+                  {col.label}
+                </span>
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: "#64748b",
+                  }}
+                >
+                  {count}
+                </span>
               </div>
 
-              {/* CARDS LIST */}
+              {/* CARD LIST */}
               <div
                 style={{
-                  padding: 10,
-                  overflowY: "auto",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 10,
+                  gap: 12,
                   flex: 1,
                 }}
               >
                 {colIssues.length === 0 ? (
                   <div
                     style={{
-                      padding: "32px 16px",
+                      border: "1px dashed rgba(255, 255, 255, 0.05)",
+                      borderRadius: 8,
+                      padding: "24px 12px",
                       textAlign: "center",
                       color: "#475569",
                       fontSize: 12,
-                      fontStyle: "italic",
                     }}
                   >
-                    No issues in {col.label.toLowerCase()}
+                    No tickets
                   </div>
                 ) : (
-                  colIssues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      style={{
-                        backgroundColor: "#131622",
-                        borderRadius: 6,
-                        border: "1px solid rgba(255, 255, 255, 0.08)",
-                        padding: 12,
-                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-                        transition: "transform 0.15s ease",
-                      }}
-                    >
-                      {/* Top Badges */}
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            color: "#f59e0b",
-                            letterSpacing: "0.03em",
-                          }}
-                        >
-                          {issue.id}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 700,
-                            padding: "2px 6px",
-                            borderRadius: 3,
-                            backgroundColor:
-                              issue.severity === "CRITICAL"
-                                ? "rgba(239, 68, 68, 0.2)"
-                                : "rgba(245, 158, 11, 0.2)",
-                            color:
-                              issue.severity === "CRITICAL" ? "#ef4444" : "#f59e0b",
-                            border: `1px solid ${
-                              issue.severity === "CRITICAL"
-                                ? "rgba(239, 68, 68, 0.4)"
-                                : "rgba(245, 158, 11, 0.4)"
-                            }`,
-                          }}
-                        >
-                          {issue.severity}
-                        </span>
-                      </div>
+                  colIssues.map((issue) => {
+                    const isReviewCol = col.key === "review";
+                    const isDoneCol = col.key === "done";
 
-                      {/* Issue Title */}
+                    return (
                       <div
+                        key={issue.id}
                         style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: "#f1f5f9",
-                          marginBottom: 6,
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {issue.title}
-                      </div>
-
-                      {/* CWE & Location */}
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color: "#94a3b8",
-                          marginBottom: 8,
+                          backgroundColor: "#16171f",
+                          border: "1px solid rgba(255, 255, 255, 0.06)",
+                          borderRadius: 10,
+                          padding: 14,
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
                           display: "flex",
                           flexDirection: "column",
-                          gap: 3,
+                          gap: 10,
+                          transition: "border 0.15s, transform 0.15s",
                         }}
                       >
-                        <span style={{ color: "#cbd5e1" }}>
-                          🏷️ <code>{issue.cwe}</code>
-                        </span>
-                        <span style={{ color: "#64748b" }}>
-                          📁 {issue.target_file}:{issue.line_number}
-                        </span>
-                      </div>
+                        {/* TOP TIMESTAMP */}
+                        <div style={{ fontSize: 11, color: "#64748b" }}>
+                          {isReviewCol
+                            ? "Submitted for review 1 hour ago"
+                            : isDoneCol
+                            ? "Completed 2 hours ago"
+                            : formatRelativeTime(issue.created_at)}
+                        </div>
 
-                      {/* 4-Gate pills if in HUMAN_REVIEW or DONE */}
-                      {(issue.status === "HUMAN_REVIEW" || issue.status === "DONE") && (
+                        {/* TITLE */}
                         <div
                           style={{
-                            margin: "8px 0",
-                            padding: "6px 8px",
-                            borderRadius: 4,
-                            backgroundColor: "rgba(16, 185, 129, 0.08)",
-                            border: "1px solid rgba(16, 185, 129, 0.2)",
-                            fontSize: 10,
-                            color: "#10b981",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 3,
+                            fontSize: 13,
+                            fontWeight: 600,
+                            color: "#f8fafc",
+                            lineHeight: 1.35,
                           }}
                         >
-                          <div style={{ fontWeight: 700 }}>
-                            🛡️ 4-Gate Sandbox Verification:
-                          </div>
-                          <div>• Syntax & Indentation Lock: <strong>PASS</strong></div>
-                          <div>• Functional Regressions: <strong>PASS (0 failures)</strong></div>
-                          <div>• Exploit Neutralization: <strong>PASS (Blocked)</strong></div>
-                          <div>• Semgrep Rescan: <strong>CLEAN</strong></div>
-                          <div style={{ color: "#38bdf8", marginTop: 2 }}>
-                            📜 SLSA Level 3: <strong>ECDSA Signed</strong>
-                          </div>
+                          {issue.title}
                         </div>
-                      )}
 
-                      {/* Card Footer: Assignee & Action */}
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginTop: 10,
-                          paddingTop: 8,
-                          borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-                        }}
-                      >
-                        <span
+                        {/* INSET EVIDENCE / QUOTE BOX (MATCHING SCREENSHOT) */}
+                        <div
                           style={{
-                            fontSize: 10,
-                            color: "#94a3b8",
+                            backgroundColor: "#0f1016",
+                            border: "1px solid rgba(255, 255, 255, 0.04)",
+                            borderRadius: 6,
+                            padding: "8px 10px",
                             display: "flex",
-                            alignItems: "center",
-                            gap: 4,
+                            gap: 8,
+                            alignItems: "flex-start",
                           }}
                         >
-                          👤 @{issue.assigned_agent}
-                        </span>
-
-                        {issue.status === "HUMAN_REVIEW" && (
-                          <span
+                          <div
                             style={{
-                              fontSize: 10,
+                              width: 18,
+                              height: 18,
+                              borderRadius: "50%",
+                              backgroundColor:
+                                issue.assigned_agent === "vayu-analyst"
+                                  ? "#3b82f6"
+                                  : issue.assigned_agent === "vayu-remediator"
+                                  ? "#f59e0b"
+                                  : "#ec4899",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 9,
                               fontWeight: 700,
-                              color: "#f97316",
-                              backgroundColor: "rgba(249, 115, 22, 0.15)",
-                              padding: "2px 6px",
-                              borderRadius: 4,
-                              border: "1px solid rgba(249, 115, 22, 0.3)",
+                              color: "#fff",
+                              flexShrink: 0,
+                              marginTop: 1,
                             }}
                           >
-                            Awaiting /approve
+                            {issue.assigned_agent ? issue.assigned_agent[0].toUpperCase() : "A"}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: "#cbd5e1", marginBottom: 2 }}>
+                              @{issue.assigned_agent || "vayu-agent"}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 11,
+                                color: "#94a3b8",
+                                lineHeight: 1.35,
+                                overflow: "hidden",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: "vertical",
+                              }}
+                            >
+                              {issue.cwe}: Unsanitized user-controlled input reaches an execution sink ({issue.target_file}:{issue.line_number}).
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* BOTTOM PILLS ROW */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginTop: 2,
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            {/* CATEGORY / REPO PILL (e.g. Cuebox / command_injection) */}
+                            <span
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                padding: "2px 8px",
+                                borderRadius: 12,
+                                backgroundColor: "rgba(56, 189, 248, 0.12)",
+                                color: "#38bdf8",
+                                border: "1px solid rgba(56, 189, 248, 0.25)",
+                              }}
+                            >
+                              command_injection
+                            </span>
+
+                            {/* SEVERITY PILL */}
+                            <span
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                padding: "2px 6px",
+                                borderRadius: 4,
+                                backgroundColor: "rgba(239, 68, 68, 0.12)",
+                                color: "#f87171",
+                              }}
+                            >
+                              {issue.severity}
+                            </span>
+                          </div>
+
+                          <span style={{ fontSize: 10, color: "#64748b", fontFamily: "monospace" }}>
+                            {issue.id}
                           </span>
+                        </div>
+
+                        {/* SPECIAL BUTTON IN "REVIEW" COLUMN: 👍 APPROVE (MATCHING SCREENSHOT!) */}
+                        {isReviewCol && (
+                          <button
+                            onClick={() => handleApproveIssue(issue.id)}
+                            disabled={approvingId === issue.id}
+                            style={{
+                              marginTop: 6,
+                              width: "100%",
+                              padding: "6px 12px",
+                              borderRadius: 6,
+                              border: "1px solid rgba(74, 222, 128, 0.4)",
+                              backgroundColor: "rgba(74, 222, 128, 0.08)",
+                              color: "#4ade80",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: 6,
+                              transition: "background 0.15s",
+                            }}
+                          >
+                            <span>👍</span> {approvingId === issue.id ? "Approving..." : "Approve"}
+                          </button>
                         )}
 
-                        {issue.status === "DONE" && issue.github_pr_url && (
+                        {/* SPECIAL LINK IN "DONE" COLUMN: GitHub PR Link */}
+                        {isDoneCol && issue.github_pr_url && (
                           <a
                             href={issue.github_pr_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
-                              fontSize: 10,
+                              marginTop: 4,
+                              fontSize: 11,
                               color: "#38bdf8",
                               textDecoration: "none",
                               fontWeight: 600,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 4,
                             }}
                           >
-                            GitHub PR #42 ↗
+                            <span>🚀</span> GitHub PR #42 ↗
                           </a>
                         )}
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -585,7 +619,7 @@ export default function IssuesView() {
         })}
       </main>
 
-      {/* WISPR FLOW MODAL */}
+      {/* WISPR FLOW SCORECARD MODAL */}
       {showWisprModal && (
         <div
           style={{
@@ -618,7 +652,6 @@ export default function IssuesView() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* MODAL HEADER */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -675,7 +708,7 @@ export default function IssuesView() {
               </div>
             </div>
 
-            {/* DICTATION COMMAND PLAYBOOK */}
+            {/* NATURAL VOICE COMMANDS */}
             <div style={{ marginBottom: 20 }}>
               <h3 style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0", marginBottom: 8 }}>
                 🗣️ Dictated Voice Commands (Speak into Discord or Terminal)
@@ -695,7 +728,7 @@ export default function IssuesView() {
                     <span style={{ fontSize: 10, color: "#64748b" }}>Wispr Flow Hotkey</span>
                   </div>
                   <code style={{ fontSize: 12, color: "#f1f5f9", display: "block", fontFamily: "monospace" }}>
-                    &ldquo;At security incidents investigate samples vulnerable command injection&rdquo;
+                    &ldquo;Vayu, please check the code for any vulnerabilities before raising a PR on GitHub.&rdquo;
                   </code>
                 </div>
 
@@ -712,13 +745,12 @@ export default function IssuesView() {
                     <span style={{ fontSize: 10, color: "#64748b" }}>Wispr Flow Hotkey</span>
                   </div>
                   <code style={{ fontSize: 12, color: "#f1f5f9", display: "block", fontFamily: "monospace" }}>
-                    &ldquo;Approve VAYU 137. Verification checks look solid across all four gates. Ship the PR.&rdquo;
+                    &ldquo;Vayu, the fix looks good across all four gates, please approve and ship the pull request.&rdquo;
                   </code>
                 </div>
               </div>
             </div>
 
-            {/* SUBMISSION SCRIPT REFERENCE */}
             <div
               style={{
                 padding: 12,
@@ -732,25 +764,7 @@ export default function IssuesView() {
                 alignItems: "center",
               }}
             >
-              <span>📄 Full voiceover transcripts & demo video script stored at <strong>WISPR_VOICE_SCRIPT.md</strong></span>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText("samples/vulnerable/command_injection");
-                  alert("Copied target repo path to clipboard!");
-                }}
-                style={{
-                  background: "#a855f7",
-                  border: "none",
-                  color: "#fff",
-                  padding: "4px 8px",
-                  borderRadius: 4,
-                  fontSize: 10,
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                Copy Path
-              </button>
+              <span>📄 Transcripts and video voiceover script stored at <strong>WISPR_VOICE_SCRIPT.md</strong></span>
             </div>
           </div>
         </div>
@@ -758,4 +772,3 @@ export default function IssuesView() {
     </div>
   );
 }
-

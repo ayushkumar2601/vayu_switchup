@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AppLayout from "./components/AppLayout";
 
 export const metadata: Metadata = {
-  title: "Intelligence Designed To Evolve",
-  description: "Landing page",
+  title: "VAYU OS — Autonomous Security Engineering Squad",
+  description: "Linear-style security operations & autonomous remediation platform powered by Switch.",
 };
 
 export default function RootLayout({
@@ -21,7 +22,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
       </head>
       <body>
-        {children}
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );
