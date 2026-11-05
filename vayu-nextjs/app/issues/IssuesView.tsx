@@ -67,6 +67,15 @@ export default function IssuesView() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleClearBoard = async () => {
+    try {
+      await fetch("/api/issues", { method: "DELETE" });
+      await fetchIssues();
+    } catch (err) {
+      console.error("Failed to clear board:", err);
+    }
+  };
+
   const handleSimulateScan = async () => {
     setIsScanning(true);
     try {
@@ -266,6 +275,21 @@ export default function IssuesView() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button
+            onClick={handleClearBoard}
+            title="Clear all mock/stale issues from board"
+            style={{
+              background: "#1e1e2d",
+              border: "1px solid #3f3f5a",
+              color: "#94a3b8",
+              padding: "5px 10px",
+              borderRadius: 5,
+              fontSize: 11,
+              cursor: "pointer",
+            }}
+          >
+            🗑️ Clear Board
+          </button>
+          <button
             onClick={fetchIssues}
             style={{
               background: "#1e293b",
@@ -286,9 +310,9 @@ export default function IssuesView() {
       <main
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${COLUMNS.length}, minmax(280px, 1fr))`,
-          gap: 16,
-          padding: 24,
+          gridTemplateColumns: `repeat(${COLUMNS.length}, minmax(210px, 1fr))`,
+          gap: 12,
+          padding: 20,
           overflowX: "auto",
           minHeight: "calc(100vh - 120px)",
         }}

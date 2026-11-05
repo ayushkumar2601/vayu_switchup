@@ -55,3 +55,29 @@ print(json.dumps([i.to_dict() for i in issues]))
   }
 }
 
+export async function DELETE() {
+  try {
+    const pyScript = `
+import os
+import sys
+sys.path.insert(0, os.getcwd())
+from vayu_platform.state import global_state
+with global_state._lock:
+    with global_state._get_connection() as conn:
+        conn.execute("DELETE FROM issues")
+        conn.execute("DELETE FROM verifications")
+        conn.execute("DELETE FROM audit_log")
+        conn.commit()
+print("CLEARED")
+`;
+    await execFileAsync(pythonExecutable(), ["-c", pyScript], {
+      cwd: REPO_ROOT,
+      env: { ...process.env, PYTHONPATH: REPO_ROOT },
+      timeout: 5000,
+    });
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 });
+  }
+}
+
