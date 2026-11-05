@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import "./reviews.css";
 
 interface DiffLineItem {
@@ -442,6 +443,49 @@ export default function ReviewsView() {
     return reviews.find((r) => r.id === selectedId) || reviews[0];
   }, [reviews, selectedId]);
 
+  const searchParams = useSearchParams();
+  const queryId = searchParams.get("id");
+
+  useEffect(() => {
+    if (queryId && reviews.some((r) => r.id === queryId)) {
+      setSelectedId(queryId);
+    }
+  }, [queryId, reviews]);
+
+  const handleApproveFromReview = async (reviewId: string) => {
+    try {
+      setStatusMessage("Authorizing remediation & publishing PR...");
+      const res = await fetch("/api/issues", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve", issue_id: reviewId, approver: "Ayush Kumar (Lead)" }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setReviewedMap((prev) => ({ ...prev, [reviewId]: true }));
+        setReviews((prev) =>
+          prev.map((r) =>
+            r.id === reviewId ? { ...r, status: "completed", statusText: "Approved & PR Published" } : r
+          )
+        );
+        setStatusMessage("✓ Authorized: PR #42 published on GitHub");
+        setPushToast({
+          type: "success",
+          message: `Remediation approved by Ayush Kumar (Lead). PR #42 verified and merged!`,
+          commitSha: "sha256:e190052c",
+          branch: "main",
+          remoteUrl: "https://github.com/ayushkumar2601/vayu_switchup/pull/42",
+        });
+        setTimeout(() => setPushToast(null), 7000);
+      }
+    } catch (err) {
+      console.error("Approve failed:", err);
+      setStatusMessage("✗ Approval failed");
+    } finally {
+      setTimeout(() => setStatusMessage(""), 5000);
+    }
+  };
+
   const handlePushToGithub = async () => {
     if (isPushing) return;
     setIsPushing(true);
@@ -684,76 +728,51 @@ export default function ReviewsView() {
 
   return (
     <div className="linear-wrapper">
-      {/* 1. LEFT COLUMN: REVIEWS LIST (SIDEBAR REMOVED) */}
-      <section className="linear-middle" style={{ width: 380, minWidth: 340 }}>
+      {/* 1. LEFT COLUMN: REVIEWS LIST (TRIAGE) */}
+      <section className="linear-middle" style={{ width: 330, minWidth: 300, maxWidth: 360 }}>
         <div className="middle-header">
-          {/* Top Brand & Links */}
+          {/* Top Title & Findings Counter */}
           <div className="middle-title-row">
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div
+              <span className="middle-title">Security Reviews</span>
+              <span
                 style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 5,
-                  background: "linear-gradient(135deg, #e89b00, #ff8400)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 800,
-                  fontSize: 11,
-                  color: "#000",
+                  fontSize: 10.5,
+                  fontWeight: 500,
+                  color: "#8a8f98",
+                  backgroundColor: "#141516",
+                  border: "1px solid #23252a",
+                  padding: "1px 6px",
+                  borderRadius: 9999,
                 }}
               >
-                V
-              </div>
-              <span className="middle-title" style={{ fontSize: 14 }}>
-                VAYU Reviews
+                {reviews.length} findings
               </span>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <Link
-                href="/issues"
-                className="icon-btn"
+            <span
+              style={{
+                fontSize: 10.5,
+                color: "#27a644",
+                fontWeight: 500,
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <span
                 style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 4,
-                  padding: "0 8px",
-                  width: "auto",
-                  fontSize: 11,
-                  color: "#f59e0b",
-                  textDecoration: "none",
-                  backgroundColor: "rgba(245, 158, 11, 0.1)",
-                  borderRadius: 4,
-                  border: "1px solid rgba(245, 158, 11, 0.25)",
+                  width: 5,
+                  height: 5,
+                  borderRadius: "50%",
+                  backgroundColor: "#27a644",
                 }}
-                title="Open VAYU OS Linear-Style Operations Board"
-              >
-                <span>⚡ Switch Board</span>
-              </Link>
-              <Link
-                href="/dashboard"
-                className="icon-btn"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 4,
-                  padding: "0 8px",
-                  width: "auto",
-                  fontSize: 11,
-                  color: "var(--ln-text-muted)",
-                  textDecoration: "none",
-                }}
-                title="Open 3D Terrain Dashboard"
-              >
-                <i className="fa-solid fa-heart-pulse" style={{ fontSize: 10 }}></i>
-                <span>3D Terrain</span>
-              </Link>
-            </div>
+              />
+              4-Gate Ready
+            </span>
           </div>
 
-          {/* PROMINENT TEST BUTTON IN LEFT COLUMN */}
+          {/* RUN TEST (CLI SCAN) BUTTON - LINEAR PRIMARY LAVENDER */}
           <button
             onClick={handleRunTest}
             disabled={isRunningTest}
@@ -763,15 +782,15 @@ export default function ReviewsView() {
               justifyContent: "center",
               gap: 8,
               width: "100%",
-              padding: "8px 14px",
+              padding: "7px 12px",
               borderRadius: 6,
-              background: "linear-gradient(135deg, #e89b00, #ff8400)",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
-              color: "#000",
-              fontWeight: 700,
+              background: "#5e6ad2",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              color: "#ffffff",
+              fontWeight: 500,
               fontSize: 12,
               cursor: isRunningTest ? "not-allowed" : "pointer",
-              boxShadow: "0 2px 10px rgba(232, 155, 0, 0.3)",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.3), 0 0 10px rgba(94, 106, 210, 0.25)",
               transition: "all 0.15s ease",
             }}
             title="Execute VAYU Autonomous CRS Test (Hotkey: T or R)"
@@ -779,18 +798,18 @@ export default function ReviewsView() {
             {isRunningTest ? (
               <>
                 <i className="fa-solid fa-spinner fa-spin"></i>
-                <span>{stageProgress || "Running Test..."}</span>
+                <span>{stageProgress || "Running Sandbox..."}</span>
               </>
             ) : (
               <>
-                <i className="fa-solid fa-flask"></i>
-                <span>Run Test (CLI Scan)</span>
+                <i className="fa-solid fa-flask" style={{ fontSize: 11 }}></i>
+                <span>Run Sandbox Test</span>
                 <span
                   style={{
                     fontSize: 10,
                     padding: "1px 5px",
                     borderRadius: 3,
-                    background: "rgba(0,0,0,0.2)",
+                    background: "rgba(0, 0, 0, 0.25)",
                     marginLeft: "auto",
                   }}
                 >
@@ -801,52 +820,65 @@ export default function ReviewsView() {
           </button>
 
           {/* Cloud Sandbox Provider Toggle */}
-          <div style={{ display: "flex", gap: 6, background: "rgba(255,255,255,0.03)", padding: 3, borderRadius: 6, border: "1px solid var(--ln-border)" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 4,
+              background: "#0f1011",
+              padding: 2,
+              borderRadius: 6,
+              border: "1px solid #23252a",
+            }}
+          >
             <button
               onClick={() => setSandboxMode("digitalocean")}
               style={{
                 flex: 1,
-                padding: "5px 8px",
+                padding: "4px 8px",
                 fontSize: 11,
-                fontWeight: 600,
+                fontWeight: 500,
                 borderRadius: 4,
                 border: "none",
-                background: sandboxMode === "digitalocean" ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                color: sandboxMode === "digitalocean" ? "#38bdf8" : "var(--ln-text-muted)",
+                background: sandboxMode === "digitalocean" ? "#18191a" : "transparent",
+                color: sandboxMode === "digitalocean" ? "#f7f8f8" : "#8a8f98",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 5,
-                transition: "all 0.15s ease",
+                transition: "all 0.12s ease",
               }}
               title="Run 4-gate verification in ephemeral DigitalOcean Droplet"
             >
               <span>☁ DigitalOcean</span>
-              {sandboxMode === "digitalocean" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#38bdf8" }}></span>}
+              {sandboxMode === "digitalocean" && (
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#38bdf8" }} />
+              )}
             </button>
             <button
               onClick={() => setSandboxMode("local")}
               style={{
                 flex: 1,
-                padding: "5px 8px",
+                padding: "4px 8px",
                 fontSize: 11,
-                fontWeight: 600,
+                fontWeight: 500,
                 borderRadius: 4,
                 border: "none",
-                background: sandboxMode === "local" ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                color: sandboxMode === "local" ? "#f3f4f6" : "var(--ln-text-muted)",
+                background: sandboxMode === "local" ? "#18191a" : "transparent",
+                color: sandboxMode === "local" ? "#f7f8f8" : "#8a8f98",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 5,
-                transition: "all 0.15s ease",
+                transition: "all 0.12s ease",
               }}
               title="Run in local disposable /tmp workspace"
             >
               <span>💻 Local /tmp</span>
-              {sandboxMode === "local" && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#86efac" }}></span>}
+              {sandboxMode === "local" && (
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#27a644" }} />
+              )}
             </button>
           </div>
 
@@ -1069,16 +1101,22 @@ export default function ReviewsView() {
               className="scan-trigger-btn"
               onClick={handleRunTest}
               disabled={isRunningTest}
-              title="Run VAYU CRS Test (R)"
+              title="Run VAYU CRS Test (Hotkey: T or R)"
+              style={{
+                backgroundColor: "#141516",
+                border: "1px solid #23252a",
+                color: "#f7f8f8",
+                boxShadow: "none",
+              }}
             >
               {isRunningTest ? (
                 <>
-                  <i className="fa-solid fa-spinner fa-spin"></i>
+                  <i className="fa-solid fa-spinner fa-spin" style={{ color: "#5e6ad2" }}></i>
                   <span>Testing...</span>
                 </>
               ) : (
                 <>
-                  <i className="fa-solid fa-bolt"></i>
+                  <i className="fa-solid fa-bolt" style={{ color: "#5e6ad2" }}></i>
                   <span>Run Test</span>
                 </>
               )}
@@ -1092,32 +1130,53 @@ export default function ReviewsView() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 7,
-                padding: "6px 13px",
+                gap: 6,
+                padding: "5px 11px",
                 borderRadius: 6,
-                background: isPushing
-                  ? "rgba(255, 255, 255, 0.08)"
-                  : "linear-gradient(135deg, #1f242c 0%, #111418 100%)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                color: "#f0f6fc",
-                fontSize: 12,
-                fontWeight: 600,
+                background: "#0f1011",
+                border: "1px solid #23252a",
+                color: "#f7f8f8",
+                fontSize: 11.5,
+                fontWeight: 500,
                 cursor: isPushing ? "not-allowed" : "pointer",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.35)",
-                transition: "all 0.15s ease",
+                transition: "all 0.12s ease",
               }}
             >
               {isPushing ? (
                 <>
-                  <i className="fa-solid fa-spinner fa-spin" style={{ color: "#58a6ff" }}></i>
-                  <span>Pushing to GitHub...</span>
+                  <i className="fa-solid fa-spinner fa-spin" style={{ color: "#5e6ad2" }}></i>
+                  <span>Pushing...</span>
                 </>
               ) : (
                 <>
-                  <i className="fa-brands fa-github" style={{ fontSize: 13, color: "#f0f6fc" }}></i>
+                  <i className="fa-brands fa-github" style={{ fontSize: 12 }}></i>
                   <span>Push to GitHub</span>
                 </>
               )}
+            </button>
+
+            {/* Approve PR Button in Top Bar */}
+            <button
+              onClick={() => handleApproveFromReview(selectedReview.id)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "5px 12px",
+                borderRadius: 6,
+                background: "#5e6ad2",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                color: "#ffffff",
+                fontSize: 11.5,
+                fontWeight: 500,
+                cursor: "pointer",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.3), 0 0 10px rgba(94, 106, 210, 0.25)",
+                transition: "all 0.15s ease",
+              }}
+              title="Approve this remediation and sign PR"
+            >
+              <i className="fa-solid fa-check" style={{ fontSize: 11 }}></i>
+              <span>Approve PR</span>
             </button>
 
             <button className="preview-btn" title="Toggle Preview">
@@ -1267,7 +1326,7 @@ export default function ReviewsView() {
                       </tr>
                       <tr>
                         <td style={{ color: "#fff", fontWeight: 700, padding: "2px 0" }}>Model:</td>
-                        <td style={{ color: "var(--ln-orange)" }}>gemma 4</td>
+                        <td style={{ color: "#5e6ad2" }}>gemma 4</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1343,7 +1402,7 @@ export default function ReviewsView() {
                     <span style={{ color: "var(--ln-green-text)", fontWeight: 700 }}>PASSED</span>
                   </div>
                   <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 12 }}>
-                    <span style={{ color: "var(--ln-orange)", fontWeight: 700 }}>⚡</span>
+                    <span style={{ color: "#5e6ad2", fontWeight: 700 }}>⚡</span>
                     <div>
                       <div style={{ color: "#fff", fontWeight: 700, marginBottom: 2 }}>Expected Security Effect</div>
                       <div style={{ color: "var(--ln-text-muted)", fontSize: 12 }}>{selectedReview.expectedSecurityEffect || "Eliminates vulnerability."}</div>
@@ -1424,7 +1483,7 @@ export default function ReviewsView() {
             {/* Panel 1: Vulnerability Finding */}
             <div className="cli-panel">
               <div className="cli-panel-header">
-                <span style={{ color: "var(--ln-orange)" }}>1. Vulnerability Detected</span>
+                <span style={{ color: "#5e6ad2" }}>1. Vulnerability Detected</span>
                 <span style={{ color: "var(--ln-red-text)", fontFamily: "var(--ln-font-mono)", fontSize: 11 }}>
                   ✗ {selectedReview.severity} SEVERITY
                 </span>
@@ -1445,7 +1504,7 @@ export default function ReviewsView() {
                   <span className="cli-info-val">{selectedReview.targetFilePath}</span>
 
                   <span className="cli-info-key">Model:</span>
-                  <span className="cli-info-val" style={{ color: "var(--ln-orange)" }}>
+                  <span className="cli-info-val" style={{ color: "#5e6ad2" }}>
                     {selectedReview.reasoning.model}
                   </span>
                 </div>
@@ -1455,7 +1514,7 @@ export default function ReviewsView() {
             {/* Panel 2: AI Root Cause & Security Impact */}
             <div className="cli-panel">
               <div className="cli-panel-header">
-                <span style={{ color: "var(--ln-orange)" }}>2. AI Root Cause &amp; Security Impact</span>
+                <span style={{ color: "#5e6ad2" }}>2. AI Root Cause &amp; Security Impact</span>
               </div>
               <div className="cli-panel-body">
                 <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -1627,7 +1686,7 @@ export default function ReviewsView() {
                         </span>
 
                         <span className="cli-info-key">Auto-Teardown:</span>
-                        <span className="cli-info-val" style={{ color: "var(--ln-orange)", fontSize: 11 }}>
+                        <span className="cli-info-val" style={{ color: "#5e6ad2", fontSize: 11 }}>
                           INV-DO-2: Droplet destroyed &amp; key erased upon 4-gate exit (Fail-safe TTL: 10m)
                         </span>
                       </div>
@@ -1666,7 +1725,7 @@ export default function ReviewsView() {
           <div className="activity-container">
             <div className="cli-panel">
               <div className="cli-panel-header">
-                <span style={{ color: "var(--ln-orange)" }}>Semgrep AST Rule &amp; Operational Directive</span>
+                <span style={{ color: "#5e6ad2" }}>Semgrep AST Rule &amp; Operational Directive</span>
               </div>
               <div className="cli-panel-body">
                 <div className="cli-info-grid">

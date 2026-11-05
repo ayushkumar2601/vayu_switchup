@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import ReviewsView from "./ReviewsView";
 
 export const metadata: Metadata = {
@@ -7,5 +8,26 @@ export const metadata: Metadata = {
 };
 
 export default function ReviewsPage() {
-  return <ReviewsView />;
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+            backgroundColor: "#010102",
+            color: "#8a8f98",
+            fontFamily: "Inter, sans-serif",
+            fontSize: 13,
+          }}
+        >
+          Loading Security Reviews...
+        </div>
+      }
+    >
+      <ReviewsView />
+    </Suspense>
+  );
 }
