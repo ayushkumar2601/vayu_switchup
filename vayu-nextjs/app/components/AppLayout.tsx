@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Sidebar from "./Sidebar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -10,11 +10,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         display: "flex",
         width: "100vw",
         height: "100vh",
-        backgroundColor: "#0a0b10",
+        backgroundColor: "#010102",
         overflow: "hidden",
-        color: "#f8fafc",
+        color: "#f7f8f8",
         fontFamily:
-          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+          'Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
       }}
     >
       <Sidebar />
@@ -25,7 +25,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           height: "100vh",
           overflowY: "auto",
           position: "relative",
-          backgroundColor: "#0d0e15",
+          backgroundColor: "#010102",
         }}
       >
         {children}

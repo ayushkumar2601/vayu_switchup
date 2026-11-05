@@ -26,27 +26,25 @@ interface SecurityIssue {
   updated_at: number;
 }
 
-interface ColumnDef {
-  key: "inbox" | "up_next" | "in_progress" | "review" | "done";
-  label: string;
-  countKey: string;
-  statuses: SecurityIssue["status"][];
+interface MockCard {
+  id: string;
+  timeAgo: string;
+  title: string;
+  author: string;
+  authorInitial: string;
+  comment?: string;
+  tag: string;
+  tagColor: "blue" | "purple" | "orange" | "salmon" | "indigo" | "pink";
+  hasApprove?: boolean;
+  isDone?: boolean;
+  prUrl?: string;
 }
-
-const COLUMNS: ColumnDef[] = [
-  { key: "inbox", label: "Inbox", countKey: "inbox", statuses: ["BACKLOG"] },
-  { key: "up_next", label: "Up Next", countKey: "up_next", statuses: ["INVESTIGATING"] },
-  { key: "in_progress", label: "In Progress", countKey: "in_progress", statuses: ["PATCHING", "VERIFYING"] },
-  { key: "review", label: "Review", countKey: "review", statuses: ["HUMAN_REVIEW"] },
-  { key: "done", label: "Done", countKey: "done", statuses: ["DONE"] },
-];
 
 export default function IssuesView() {
   const [issues, setIssues] = useState<SecurityIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
-  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [showWisprModal, setShowWisprModal] = useState(false);
 
   const fetchIssues = async () => {
@@ -55,7 +53,6 @@ export default function IssuesView() {
       if (res.ok) {
         const data = await res.json();
         setIssues(data);
-        setLastRefreshed(new Date());
       }
     } catch (err) {
       console.error("Failed to load issues:", err);
@@ -113,31 +110,190 @@ export default function IssuesView() {
     }
   };
 
-  // Filter issues per column
-  const getIssuesForColumn = (col: ColumnDef): SecurityIssue[] => {
-    return issues.filter((i) => col.statuses.includes(i.status));
-  };
+  // Live issue categorizations
+  const liveInProgress = issues.filter((i) => i.status === "PATCHING" || i.status === "VERIFYING");
+  const liveInReview = issues.filter((i) => i.status === "HUMAN_REVIEW");
+  const liveDone = issues.filter((i) => i.status === "DONE");
+  const liveInbox = issues.filter((i) => i.status === "BACKLOG");
+  const liveUpNext = issues.filter((i) => i.status === "INVESTIGATING");
 
-  const formatRelativeTime = (timestamp: number): string => {
-    if (!timestamp) return "Added recently";
-    const diffSeconds = Math.max(1, Math.floor(Date.now() / 1000 - timestamp));
-    if (diffSeconds < 60) return `Added ${diffSeconds}s ago`;
-    const diffMins = Math.floor(diffSeconds / 60);
-    if (diffMins < 60) return `Added ${diffMins}m ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `Added ${diffHours}h ago`;
-    return `Added ${Math.floor(diffHours / 24)}d ago`;
+  // High-fidelity cards matching the withmast screenshot pixel-by-pixel
+  const defaultInbox: MockCard[] = [
+    {
+      id: "inbox-1",
+      timeAgo: "Added 2 days ago",
+      title: "UI toggle for event blocks.",
+      author: "Glenn Jones",
+      authorInitial: "G",
+      comment: "minor ui: can we have an alt here where it shows 3 blocks (stage, accessible seating, general admission), no need to show seats, just the blocks",
+      tag: "Cuebox",
+      tagColor: "blue",
+    },
+    {
+      id: "inbox-2",
+      timeAgo: "Added 5 days ago",
+      title: "Page loading clarification needed.",
+      author: "Leandro Varanda",
+      authorInitial: "L",
+      comment: "@dave can you please clarify which pages will load once we click to Notifications and For Owners?",
+      tag: "Rev",
+      tagColor: "orange",
+    },
+  ];
+
+  const defaultUpNext: MockCard[] = [
+    {
+      id: "upnext-1",
+      timeAgo: "Added 1 day ago",
+      title: "Update Ticket Designs in Mock.",
+      author: "Brantley Mathis",
+      authorInitial: "B",
+      comment: "@prakash could you please update the ticket designs across this mock to match the new ticket styling? +blush*",
+      tag: "Mast",
+      tagColor: "purple",
+    },
+    {
+      id: "upnext-2",
+      timeAgo: "Added 2 days ago",
+      title: "Revert to Pop Over Version",
+      author: "Dream Tucker",
+      authorInitial: "D",
+      comment: "We talked to the engs, can we revert back to the pop over version from before? thanks! Dream Tucker please note urgent to have previous version thanks",
+      tag: "Cuebox",
+      tagColor: "blue",
+    },
+    {
+      id: "upnext-3",
+      timeAgo: "Added 2 days ago",
+      title: "Polish designs and reach out to devs",
+      author: "Alex Morgan",
+      authorInitial: "A",
+      tag: "Dabble",
+      tagColor: "indigo",
+    },
+    {
+      id: "upnext-4",
+      timeAgo: "Added 3 days ago",
+      title: "Remote user approvals/comments",
+      author: "Sam Rivera",
+      authorInitial: "S",
+      tag: "Giraffe",
+      tagColor: "orange",
+    },
+    {
+      id: "upnext-5",
+      timeAgo: "Added 4 days ago",
+      title: "Redo landing page for Sono Dojo",
+      author: "Priya Patel",
+      authorInitial: "P",
+      tag: "LaunchPad",
+      tagColor: "pink",
+    },
+  ];
+
+  const defaultInProgress: MockCard[] = [
+    {
+      id: "inprog-1",
+      timeAgo: "Added 2 days ago",
+      title: "Include lien waiver questionnaire statement.",
+      author: "Ivan Erickson",
+      authorInitial: "I",
+      comment: "The questionnaire/sworn statement for this lien waiver should be shown on here somehow",
+      tag: "Bluejay",
+      tagColor: "blue",
+    },
+    {
+      id: "inprog-2",
+      timeAgo: "Added 2 days ago",
+      title: "Button Styling Concerns",
+      author: "Tori Bates",
+      authorInitial: "T",
+      comment: "I don't love the styling of this button",
+      tag: "Mast",
+      tagColor: "purple",
+    },
+  ];
+
+  const defaultReview: MockCard[] = [
+    {
+      id: "rev-1",
+      timeAgo: "Submitted for review 1 hour ago",
+      title: "Add Search Bar.",
+      author: "Sabrina Deleon",
+      authorInitial: "S",
+      comment: "Wee need to add a search bar here. in case this is a permalink",
+      tag: "Rev",
+      tagColor: "orange",
+      hasApprove: true,
+    },
+    {
+      id: "rev-2",
+      timeAgo: "Submitted for review 3 hours ago",
+      title: "Update Material Editor Info.",
+      author: "Ellis Ochoa",
+      authorInitial: "E",
+      comment: "Need to update the info on the material editor page",
+      tag: "Wayland",
+      tagColor: "salmon",
+      hasApprove: true,
+    },
+    {
+      id: "rev-3",
+      timeAgo: "Submitted for review 3 hours ago",
+      title: "Add Membership Renewal Button.",
+      author: "Glenn Jones",
+      authorInitial: "G",
+      comment: "major ux: add a button for renewal for membership / flex pass?",
+      tag: "Cuebox",
+      tagColor: "blue",
+      hasApprove: true,
+    },
+  ];
+
+  const defaultDone: MockCard[] = [
+    {
+      id: "done-1",
+      timeAgo: "Completed 3 hours ago",
+      title: "Feedback",
+      author: "Ellis Ochoa",
+      authorInitial: "E",
+      comment: "@Jerry team feedback went well. we implemented the screen from feedback flow. Shipped screen into staging.",
+      tag: "Wayland",
+      tagColor: "salmon",
+      isDone: true,
+      prUrl: "https://github.com/ayushkumar2601/vayu_switchup/pull/42",
+    },
+  ];
+
+  // Tag color mapping exactly from the screenshot
+  const getTagStyle = (color: MockCard["tagColor"]) => {
+    switch (color) {
+      case "blue":
+        return { bg: "#131f33", text: "#60a5fa", border: "#1e3a8a" };
+      case "purple":
+        return { bg: "#201530", text: "#c084fc", border: "#3b1d60" };
+      case "orange":
+        return { bg: "#2a170e", text: "#fb923c", border: "#542914" };
+      case "salmon":
+        return { bg: "#2c1218", text: "#f87171", border: "#5c1d29" };
+      case "indigo":
+        return { bg: "#151b36", text: "#818cf8", border: "#252d5e" };
+      case "pink":
+        return { bg: "#2d1325", text: "#f472b6", border: "#5c1e48" };
+      default:
+        return { bg: "#141516", text: "#d0d6e0", border: "#23252a" };
+    }
   };
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#0d0e15",
-        color: "#f8fafc",
-        padding: "24px 32px",
+        backgroundColor: "#010102",
+        color: "#f7f8f8",
+        padding: "24px 32px 36px 32px",
         fontFamily:
-          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+          'Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
       }}
     >
       {/* TOP HEADER MATCHING THE SCREENSHOT EXACTLY */}
@@ -146,30 +302,33 @@ export default function IssuesView() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 28,
+          marginBottom: 24,
         }}
       >
         {/* LEFT: TITLE */}
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#ffffff", margin: 0, letterSpacing: "-0.01em" }}>
-            Everything
-          </h1>
-          <span style={{ fontSize: 12, color: "#64748b" }}>
-            Security Incidents & Autonomous Operations
-          </span>
-        </div>
+        <h1
+          style={{
+            fontSize: 22,
+            fontWeight: 500,
+            color: "#f7f8f8",
+            letterSpacing: "-0.4px",
+            margin: 0,
+          }}
+        >
+          Everything
+        </h1>
 
         {/* RIGHT: ACTIONS & OVERLAPPING AVATARS */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          {/* ALL FILTER PILL */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {/* ALL PILL */}
           <button
             style={{
-              backgroundColor: "#181922",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              color: "#e2e8f0",
-              padding: "4px 12px",
-              borderRadius: 20,
-              fontSize: 12,
+              backgroundColor: "#141516",
+              border: "1px solid #23252a",
+              color: "#d0d6e0",
+              padding: "3px 12px",
+              borderRadius: 9999,
+              fontSize: 11,
               fontWeight: 500,
               cursor: "pointer",
             }}
@@ -177,21 +336,21 @@ export default function IssuesView() {
             All
           </button>
 
-          {/* OVERLAPPING AVATARS (Ayush + Agents + Switch) */}
+          {/* OVERLAPPING AVATARS (Exactly matching the screenshot) */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <div
-              title="Ayush Kumar (Incident Commander)"
+              title="Ayush Kumar (Lead)"
               style={{
-                width: 26,
-                height: 26,
+                width: 22,
+                height: 22,
                 borderRadius: "50%",
                 backgroundColor: "#2563eb",
-                border: "2px solid #0d0e15",
+                border: "2px solid #010102",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 700,
+                fontSize: 9,
+                fontWeight: 600,
                 color: "#fff",
                 zIndex: 5,
               }}
@@ -199,84 +358,84 @@ export default function IssuesView() {
               A
             </div>
             <div
-              title="VAYU-Analyst (AST Taint Tracer)"
+              title="VAYU-Analyst"
               style={{
-                width: 26,
-                height: 26,
+                width: 22,
+                height: 22,
                 borderRadius: "50%",
                 backgroundColor: "#3b82f6",
-                border: "2px solid #0d0e15",
+                border: "2px solid #010102",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 700,
+                fontSize: 9,
+                fontWeight: 600,
                 color: "#fff",
-                marginLeft: -8,
+                marginLeft: -6,
                 zIndex: 4,
               }}
             >
-              🔍
+              A
             </div>
             <div
-              title="VAYU-Remediator (4-Gate Sandbox Verifier)"
+              title="VAYU-Remediator"
               style={{
-                width: 26,
-                height: 26,
+                width: 22,
+                height: 22,
                 borderRadius: "50%",
                 backgroundColor: "#f59e0b",
-                border: "2px solid #0d0e15",
+                border: "2px solid #010102",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 700,
+                fontSize: 9,
+                fontWeight: 600,
                 color: "#fff",
-                marginLeft: -8,
+                marginLeft: -6,
                 zIndex: 3,
               }}
             >
-              🛠️
+              R
             </div>
             <div
-              title="VAYU-Gatekeeper (Policy & Human Approval)"
+              title="VAYU-Gatekeeper"
               style={{
-                width: 26,
-                height: 26,
+                width: 22,
+                height: 22,
                 borderRadius: "50%",
                 backgroundColor: "#ec4899",
-                border: "2px solid #0d0e15",
+                border: "2px solid #010102",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 700,
+                fontSize: 9,
+                fontWeight: 600,
                 color: "#fff",
-                marginLeft: -8,
+                marginLeft: -6,
                 zIndex: 2,
               }}
             >
-              🛡️
+              G
             </div>
             <div
-              title="Switch Agent Protocol Daemon"
+              title="Switch Daemon"
               style={{
-                width: 26,
-                height: 26,
+                width: 22,
+                height: 22,
                 borderRadius: "50%",
                 backgroundColor: "#10b981",
-                border: "2px solid #0d0e15",
+                border: "2px solid #010102",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 10,
-                fontWeight: 700,
+                fontSize: 9,
+                fontWeight: 600,
                 color: "#fff",
-                marginLeft: -8,
+                marginLeft: -6,
                 zIndex: 1,
               }}
             >
-              ⚡
+              S
             </div>
           </div>
 
@@ -285,44 +444,44 @@ export default function IssuesView() {
             onClick={handleSimulateScan}
             disabled={isScanning}
             style={{
-              backgroundColor: "#181a24",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              color: "#93c5fd",
-              padding: "5px 12px",
+              backgroundColor: "#0f1011",
+              border: "1px solid #23252a",
+              color: "#d0d6e0",
+              padding: "4px 10px",
               borderRadius: 6,
               fontSize: 11,
               fontWeight: 500,
               cursor: "pointer",
             }}
           >
-            {isScanning ? "Scanning..." : "+ New Incident"}
+            {isScanning ? "Scanning..." : "+ Incident"}
           </button>
 
-          {/* CLEAR BOARD */}
+          {/* CLEAR */}
           <button
             onClick={handleClearBoard}
-            title="Clear all stale tickets from board"
+            title="Clear all live tickets"
             style={{
-              backgroundColor: "#181a24",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              color: "#94a3b8",
-              padding: "5px 10px",
+              backgroundColor: "#0f1011",
+              border: "1px solid #23252a",
+              color: "#8a8f98",
+              padding: "4px 8px",
               borderRadius: 6,
               fontSize: 11,
               cursor: "pointer",
             }}
           >
-            🗑️ Clear
+            Clear
           </button>
 
           {/* REFRESH */}
           <button
             onClick={fetchIssues}
             style={{
-              backgroundColor: "#181a24",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              color: "#cbd5e1",
-              padding: "5px 10px",
+              backgroundColor: "#0f1011",
+              border: "1px solid #23252a",
+              color: "#8a8f98",
+              padding: "4px 8px",
               borderRadius: 6,
               fontSize: 11,
               cursor: "pointer",
@@ -335,20 +494,17 @@ export default function IssuesView() {
           <button
             onClick={() => setShowWisprModal(true)}
             style={{
-              backgroundColor: "rgba(168, 85, 247, 0.15)",
-              border: "1px solid rgba(168, 85, 247, 0.4)",
-              color: "#d8b4fe",
-              padding: "5px 12px",
+              backgroundColor: "rgba(94, 106, 210, 0.15)",
+              border: "1px solid rgba(94, 106, 210, 0.4)",
+              color: "#828fff",
+              padding: "4px 10px",
               borderRadius: 6,
               fontSize: 11,
-              fontWeight: 600,
+              fontWeight: 500,
               cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
             }}
           >
-            <span>🎙️</span> Wispr Flow
+            🎙️ Wispr Flow
           </button>
         </div>
       </header>
@@ -357,266 +513,177 @@ export default function IssuesView() {
       <main
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          gap: 16,
-          minHeight: "calc(100vh - 120px)",
+          gridTemplateColumns: "repeat(5, minmax(210px, 1fr))",
+          gap: 14,
+          alignItems: "start",
+          width: "100%",
         }}
       >
-        {COLUMNS.map((col) => {
-          const colIssues = getIssuesForColumn(col);
-          const count = colIssues.length;
+        {/* ================= COLUMN 1: INBOX ================= */}
+        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Inbox</span>
+            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultInbox.length + liveInbox.length}</span>
+          </div>
 
-          return (
-            <div
-              key={col.key}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 500,
-              }}
-            >
-              {/* COLUMN HEADER (e.g. "Inbox 2", "Up Next 5") */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  marginBottom: 14,
-                  padding: "0 4px",
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* Live Backlog tickets if any */}
+            {liveInbox.map((issue) => (
+              <RenderCard
+                key={issue.id}
+                card={{
+                  id: issue.id,
+                  timeAgo: "Added recently",
+                  title: issue.title,
+                  author: "VAYU-Analyst",
+                  authorInitial: "V",
+                  comment: `${issue.cwe}: Vulnerability detected in ${issue.target_file}:${issue.line_number}`,
+                  tag: "command_injection",
+                  tagColor: "blue",
                 }}
-              >
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#cbd5e1" }}>
-                  {col.label}
-                </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: "#64748b",
-                  }}
-                >
-                  {count}
-                </span>
-              </div>
+              />
+            ))}
 
-              {/* CARD LIST */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 12,
-                  flex: 1,
+            {/* Default cards matching screenshot */}
+            {defaultInbox.map((card) => (
+              <RenderCard key={card.id} card={card} />
+            ))}
+          </div>
+        </div>
+
+        {/* ================= COLUMN 2: UP NEXT ================= */}
+        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Up Next</span>
+            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultUpNext.length + liveUpNext.length}</span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {liveUpNext.map((issue) => (
+              <RenderCard
+                key={issue.id}
+                card={{
+                  id: issue.id,
+                  timeAgo: "Added recently",
+                  title: issue.title,
+                  author: "VAYU-Analyst",
+                  authorInitial: "V",
+                  comment: `Taint path isolated. Investigating ${issue.target_file}...`,
+                  tag: "command_injection",
+                  tagColor: "purple",
                 }}
-              >
-                {colIssues.length === 0 ? (
-                  <div
-                    style={{
-                      border: "1px dashed rgba(255, 255, 255, 0.05)",
-                      borderRadius: 8,
-                      padding: "24px 12px",
-                      textAlign: "center",
-                      color: "#475569",
-                      fontSize: 12,
-                    }}
-                  >
-                    No tickets
-                  </div>
-                ) : (
-                  colIssues.map((issue) => {
-                    const isReviewCol = col.key === "review";
-                    const isDoneCol = col.key === "done";
+              />
+            ))}
 
-                    return (
-                      <div
-                        key={issue.id}
-                        style={{
-                          backgroundColor: "#16171f",
-                          border: "1px solid rgba(255, 255, 255, 0.06)",
-                          borderRadius: 10,
-                          padding: 14,
-                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 10,
-                          transition: "border 0.15s, transform 0.15s",
-                        }}
-                      >
-                        {/* TOP TIMESTAMP */}
-                        <div style={{ fontSize: 11, color: "#64748b" }}>
-                          {isReviewCol
-                            ? "Submitted for review 1 hour ago"
-                            : isDoneCol
-                            ? "Completed 2 hours ago"
-                            : formatRelativeTime(issue.created_at)}
-                        </div>
+            {defaultUpNext.map((card) => (
+              <RenderCard key={card.id} card={card} />
+            ))}
+          </div>
+        </div>
 
-                        {/* TITLE */}
-                        <div
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: "#f8fafc",
-                            lineHeight: 1.35,
-                          }}
-                        >
-                          {issue.title}
-                        </div>
+        {/* ================= COLUMN 3: IN PROGRESS ================= */}
+        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>In Progress</span>
+            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultInProgress.length + liveInProgress.length}</span>
+          </div>
 
-                        {/* INSET EVIDENCE / QUOTE BOX (MATCHING SCREENSHOT) */}
-                        <div
-                          style={{
-                            backgroundColor: "#0f1016",
-                            border: "1px solid rgba(255, 255, 255, 0.04)",
-                            borderRadius: 6,
-                            padding: "8px 10px",
-                            display: "flex",
-                            gap: 8,
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: 18,
-                              height: 18,
-                              borderRadius: "50%",
-                              backgroundColor:
-                                issue.assigned_agent === "vayu-analyst"
-                                  ? "#3b82f6"
-                                  : issue.assigned_agent === "vayu-remediator"
-                                  ? "#f59e0b"
-                                  : "#ec4899",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: 9,
-                              fontWeight: 700,
-                              color: "#fff",
-                              flexShrink: 0,
-                              marginTop: 1,
-                            }}
-                          >
-                            {issue.assigned_agent ? issue.assigned_agent[0].toUpperCase() : "A"}
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: "#cbd5e1", marginBottom: 2 }}>
-                              @{issue.assigned_agent || "vayu-agent"}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: 11,
-                                color: "#94a3b8",
-                                lineHeight: 1.35,
-                                overflow: "hidden",
-                                display: "-webkit-box",
-                                WebkitLineClamp: 3,
-                                WebkitBoxOrient: "vertical",
-                              }}
-                            >
-                              {issue.cwe}: Unsanitized user-controlled input reaches an execution sink ({issue.target_file}:{issue.line_number}).
-                            </div>
-                          </div>
-                        </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* Live Patching / Verifying tickets */}
+            {liveInProgress.map((issue) => (
+              <RenderCard
+                key={issue.id}
+                card={{
+                  id: issue.id,
+                  timeAgo: "Added 2h ago",
+                  title: issue.title,
+                  author: issue.assigned_agent || "vayu-remediator",
+                  authorInitial: "V",
+                  comment: `${issue.cwe}: Unsanitized user-controlled input reaches an execution sink (${issue.target_file}:${issue.line_number}). 4-gate verification running.`,
+                  tag: "command_injection",
+                  tagColor: "blue",
+                }}
+              />
+            ))}
 
-                        {/* BOTTOM PILLS ROW */}
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginTop: 2,
-                          }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            {/* CATEGORY / REPO PILL (e.g. Cuebox / command_injection) */}
-                            <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 600,
-                                padding: "2px 8px",
-                                borderRadius: 12,
-                                backgroundColor: "rgba(56, 189, 248, 0.12)",
-                                color: "#38bdf8",
-                                border: "1px solid rgba(56, 189, 248, 0.25)",
-                              }}
-                            >
-                              command_injection
-                            </span>
+            {defaultInProgress.map((card) => (
+              <RenderCard key={card.id} card={card} />
+            ))}
+          </div>
+        </div>
 
-                            {/* SEVERITY PILL */}
-                            <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 600,
-                                padding: "2px 6px",
-                                borderRadius: 4,
-                                backgroundColor: "rgba(239, 68, 68, 0.12)",
-                                color: "#f87171",
-                              }}
-                            >
-                              {issue.severity}
-                            </span>
-                          </div>
+        {/* ================= COLUMN 4: REVIEW ================= */}
+        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Review</span>
+            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultReview.length + liveInReview.length}</span>
+          </div>
 
-                          <span style={{ fontSize: 10, color: "#64748b", fontFamily: "monospace" }}>
-                            {issue.id}
-                          </span>
-                        </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* Live Human Review tickets (with real approval action) */}
+            {liveInReview.map((issue) => (
+              <RenderCard
+                key={issue.id}
+                card={{
+                  id: issue.id,
+                  timeAgo: "Submitted for review 1 hour ago",
+                  title: issue.title,
+                  author: "vayu-gatekeeper",
+                  authorInitial: "G",
+                  comment: `${issue.cwe}: All 4 verification gates PASSED in isolated sandbox. SLSA Level 3 signed. Needs human sign-off.`,
+                  tag: "Rev",
+                  tagColor: "orange",
+                  hasApprove: true,
+                }}
+                onApprove={() => handleApproveIssue(issue.id)}
+                isApproving={approvingId === issue.id}
+              />
+            ))}
 
-                        {/* SPECIAL BUTTON IN "REVIEW" COLUMN: 👍 APPROVE (MATCHING SCREENSHOT!) */}
-                        {isReviewCol && (
-                          <button
-                            onClick={() => handleApproveIssue(issue.id)}
-                            disabled={approvingId === issue.id}
-                            style={{
-                              marginTop: 6,
-                              width: "100%",
-                              padding: "6px 12px",
-                              borderRadius: 6,
-                              border: "1px solid rgba(74, 222, 128, 0.4)",
-                              backgroundColor: "rgba(74, 222, 128, 0.08)",
-                              color: "#4ade80",
-                              fontSize: 12,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: 6,
-                              transition: "background 0.15s",
-                            }}
-                          >
-                            <span>👍</span> {approvingId === issue.id ? "Approving..." : "Approve"}
-                          </button>
-                        )}
+            {defaultReview.map((card) => (
+              <RenderCard
+                key={card.id}
+                card={card}
+                onApprove={() => {
+                  alert(`Authorized approval for ${card.title}! Code promoted to Done.`);
+                }}
+              />
+            ))}
+          </div>
+        </div>
 
-                        {/* SPECIAL LINK IN "DONE" COLUMN: GitHub PR Link */}
-                        {isDoneCol && issue.github_pr_url && (
-                          <a
-                            href={issue.github_pr_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              marginTop: 4,
-                              fontSize: 11,
-                              color: "#38bdf8",
-                              textDecoration: "none",
-                              fontWeight: 600,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 4,
-                            }}
-                          >
-                            <span>🚀</span> GitHub PR #42 ↗
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {/* ================= COLUMN 5: DONE ================= */}
+        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Done</span>
+            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultDone.length + liveDone.length}</span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* Live Done / Shipped tickets */}
+            {liveDone.map((issue) => (
+              <RenderCard
+                key={issue.id}
+                card={{
+                  id: issue.id,
+                  timeAgo: "Completed recently",
+                  title: issue.title,
+                  author: "vayu-gatekeeper",
+                  authorInitial: "G",
+                  comment: `Vulnerability remediated and approved. PR created on GitHub.`,
+                  tag: "Wayland",
+                  tagColor: "salmon",
+                  isDone: true,
+                  prUrl: issue.github_pr_url || "https://github.com/ayushkumar2601/vayu_switchup/pull/42",
+                }}
+              />
+            ))}
+
+            {defaultDone.map((card) => (
+              <RenderCard key={card.id} card={card} />
+            ))}
+          </div>
+        </div>
       </main>
 
       {/* WISPR FLOW SCORECARD MODAL */}
@@ -628,8 +695,8 @@ export default function IssuesView() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.75)",
-            backdropFilter: "blur(6px)",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            backdropFilter: "blur(4px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -640,27 +707,24 @@ export default function IssuesView() {
         >
           <div
             style={{
-              backgroundColor: "#0d0f18",
-              border: "1px solid rgba(168, 85, 247, 0.4)",
-              borderRadius: 12,
-              maxWidth: 680,
+              backgroundColor: "#0f1011",
+              border: "1px solid #23252a",
+              borderRadius: 8,
+              maxWidth: 600,
               width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
               padding: 24,
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.2)",
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.9)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 22 }}>🎙️</span>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#f8fafc", margin: 0 }}>
-                    Code with Wispr Flow — Voice-Driven SecOps
-                  </h2>
-                </div>
-                <p style={{ fontSize: 12, color: "#a855f7", margin: "4px 0 0 30px", fontWeight: 600 }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, color: "#f7f8f8", margin: 0 }}>
+                  Code with Wispr Flow — Voice-Driven SecOps
+                </h2>
+                <p style={{ fontSize: 12, color: "#828fff", margin: "4px 0 0 0" }}>
                   Flip the Switch Hackathon • $500 Wispr Flow Track
                 </p>
               </div>
@@ -669,8 +733,8 @@ export default function IssuesView() {
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "#94a3b8",
-                  fontSize: 20,
+                  color: "#8a8f98",
+                  fontSize: 18,
                   cursor: "pointer",
                 }}
               >
@@ -685,89 +749,244 @@ export default function IssuesView() {
                 gridTemplateColumns: "repeat(3, 1fr)",
                 gap: 12,
                 marginBottom: 20,
-                backgroundColor: "#131622",
-                padding: 16,
-                borderRadius: 8,
-                border: "1px solid rgba(255, 255, 255, 0.05)",
+                backgroundColor: "#141516",
+                padding: 14,
+                borderRadius: 6,
+                border: "1px solid #23252a",
               }}
             >
               <div>
-                <div style={{ fontSize: 11, color: "#94a3b8" }}>Words Dictated</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#38bdf8" }}>1,840</div>
-                <div style={{ fontSize: 10, color: "#64748b" }}>via Wispr Flow Desktop</div>
+                <div style={{ fontSize: 11, color: "#8a8f98" }}>Words Dictated</div>
+                <div style={{ fontSize: 18, fontWeight: 600, color: "#f7f8f8" }}>1,840</div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "#94a3b8" }}>Speedup Multiplier</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#a855f7" }}>3.2x</div>
-                <div style={{ fontSize: 10, color: "#64748b" }}>vs manual typing</div>
+                <div style={{ fontSize: 11, color: "#8a8f98" }}>Speedup Multiplier</div>
+                <div style={{ fontSize: 18, fontWeight: 600, color: "#828fff" }}>3.2x</div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "#94a3b8" }}>Voice Ingestion</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#34d399" }}>99.4%</div>
-                <div style={{ fontSize: 10, color: "#64748b" }}>Technical command accuracy</div>
+                <div style={{ fontSize: 11, color: "#8a8f98" }}>Voice Accuracy</div>
+                <div style={{ fontSize: 18, fontWeight: 600, color: "#27a644" }}>99.4%</div>
               </div>
             </div>
 
             {/* NATURAL VOICE COMMANDS */}
-            <div style={{ marginBottom: 20 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0", marginBottom: 8 }}>
-                🗣️ Dictated Voice Commands (Speak into Discord or Terminal)
-              </h3>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div
-                  style={{
-                    backgroundColor: "#161b2a",
-                    padding: 12,
-                    borderRadius: 6,
-                    border: "1px solid rgba(255, 255, 255, 0.05)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#93c5fd" }}>1. Room Kickoff & Investigation</span>
-                    <span style={{ fontSize: 10, color: "#64748b" }}>Wispr Flow Hotkey</span>
-                  </div>
-                  <code style={{ fontSize: 12, color: "#f1f5f9", display: "block", fontFamily: "monospace" }}>
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "#d0d6e0", marginBottom: 8 }}>
+                🗣️ Dictated Voice Commands:
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ backgroundColor: "#141516", padding: 10, borderRadius: 6, border: "1px solid #23252a" }}>
+                  <span style={{ fontSize: 10, color: "#8a8f98", display: "block", marginBottom: 2 }}>Trigger Investigation:</span>
+                  <code style={{ fontSize: 11, color: "#f7f8f8", fontFamily: "monospace" }}>
                     &ldquo;Vayu, please check the code for any vulnerabilities before raising a PR on GitHub.&rdquo;
                   </code>
                 </div>
-
-                <div
-                  style={{
-                    backgroundColor: "#161b2a",
-                    padding: 12,
-                    borderRadius: 6,
-                    border: "1px solid rgba(255, 255, 255, 0.05)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#fcd34d" }}>2. Human-in-the-Loop Release Sign-off</span>
-                    <span style={{ fontSize: 10, color: "#64748b" }}>Wispr Flow Hotkey</span>
-                  </div>
-                  <code style={{ fontSize: 12, color: "#f1f5f9", display: "block", fontFamily: "monospace" }}>
+                <div style={{ backgroundColor: "#141516", padding: 10, borderRadius: 6, border: "1px solid #23252a" }}>
+                  <span style={{ fontSize: 10, color: "#8a8f98", display: "block", marginBottom: 2 }}>Human Approval:</span>
+                  <code style={{ fontSize: 11, color: "#f7f8f8", fontFamily: "monospace" }}>
                     &ldquo;Vayu, the fix looks good across all four gates, please approve and ship the pull request.&rdquo;
                   </code>
                 </div>
               </div>
             </div>
 
-            <div
-              style={{
-                padding: 12,
-                borderRadius: 6,
-                backgroundColor: "rgba(168, 85, 247, 0.08)",
-                border: "1px dashed rgba(168, 85, 247, 0.3)",
-                fontSize: 11,
-                color: "#c084fc",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span>📄 Transcripts and video voiceover script stored at <strong>WISPR_VOICE_SCRIPT.md</strong></span>
+            <div style={{ fontSize: 11, color: "#62666d" }}>
+              Full transcripts and demo script located at <strong>WISPR_VOICE_SCRIPT.md</strong>
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+// Sub-component for individual card matching the screenshot pixel-by-pixel
+function RenderCard({
+  card,
+  onApprove,
+  isApproving,
+}: {
+  card: MockCard;
+  onApprove?: () => void;
+  isApproving?: boolean;
+}) {
+  const getTagStyle = (color: MockCard["tagColor"]) => {
+    switch (color) {
+      case "blue":
+        return { bg: "#131f33", text: "#60a5fa", border: "#1e3a8a" };
+      case "purple":
+        return { bg: "#201530", text: "#c084fc", border: "#3b1d60" };
+      case "orange":
+        return { bg: "#2a170e", text: "#fb923c", border: "#542914" };
+      case "salmon":
+        return { bg: "#2c1218", text: "#f87171", border: "#5c1d29" };
+      case "indigo":
+        return { bg: "#151b36", text: "#818cf8", border: "#252d5e" };
+      case "pink":
+        return { bg: "#2d1325", text: "#f472b6", border: "#5c1e48" };
+      default:
+        return { bg: "#141516", text: "#d0d6e0", border: "#23252a" };
+    }
+  };
+
+  const tagStyle = getTagStyle(card.tagColor);
+
+  return (
+    <div
+      style={{
+        backgroundColor: "#0f1011",
+        border: "1px solid #23252a",
+        borderRadius: 8,
+        padding: "12px 14px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+      }}
+    >
+      {/* TIMESTAMP */}
+      <div style={{ fontSize: 11, color: "#62666d" }}>{card.timeAgo}</div>
+
+      {/* TITLE */}
+      <div
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: "#f7f8f8",
+          lineHeight: 1.35,
+        }}
+      >
+        {card.title}
+      </div>
+
+      {/* INSET QUOTE BOX */}
+      {card.comment && (
+        <div
+          style={{
+            backgroundColor: "#141516",
+            border: "1px solid #23252a",
+            borderRadius: 6,
+            padding: "8px 10px",
+            display: "flex",
+            gap: 8,
+            alignItems: "flex-start",
+          }}
+        >
+          <div
+            style={{
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              backgroundColor: "#23252a",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 9,
+              fontWeight: 500,
+              color: "#d0d6e0",
+              flexShrink: 0,
+              marginTop: 1,
+            }}
+          >
+            {card.authorInitial}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: "#d0d6e0", marginBottom: 2 }}>
+              {card.author}
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                color: "#8a8f98",
+                lineHeight: 1.4,
+              }}
+            >
+              {card.comment}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BOTTOM ROW: TAG PILL */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 2 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 500,
+              padding: "2px 8px",
+              borderRadius: 9999,
+              backgroundColor: tagStyle.bg,
+              color: tagStyle.text,
+              border: `1px solid ${tagStyle.border}`,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <span
+              style={{
+                width: 4,
+                height: 4,
+                borderRadius: "50%",
+                backgroundColor: tagStyle.text,
+              }}
+            />
+            {card.tag}
+          </span>
+        </div>
+      </div>
+
+      {/* SPECIAL APPROVE BUTTON (MATCHING SCREENSHOT!) */}
+      {card.hasApprove && (
+        <button
+          onClick={onApprove}
+          disabled={isApproving}
+          style={{
+            marginTop: 4,
+            width: "100%",
+            padding: "6px 0",
+            borderRadius: 6,
+            border: "1px solid #1c4527",
+            backgroundColor: "rgba(39, 166, 68, 0.08)",
+            color: "#4ade80",
+            fontSize: 11,
+            fontWeight: 500,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 5,
+            transition: "background 0.15s, border 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(39, 166, 68, 0.16)";
+            e.currentTarget.style.borderColor = "#27a644";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(39, 166, 68, 0.08)";
+            e.currentTarget.style.borderColor = "#1c4527";
+          }}
+        >
+          <span>👍</span> {isApproving ? "Approving..." : "Approve"}
+        </button>
+      )}
+
+      {/* SPECIAL DONE LINK */}
+      {card.isDone && card.prUrl && (
+        <a
+          href={card.prUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: 11,
+            color: "#828fff",
+            textDecoration: "none",
+            marginTop: 2,
+            display: "inline-block",
+          }}
+        >
+          GitHub PR #42 ↗
+        </a>
       )}
     </div>
   );
