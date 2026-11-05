@@ -14,6 +14,10 @@ if [ ! -f "$PYTHON_BIN" ]; then
     PYTHON_BIN="python3"
 fi
 
+if [ -f "$REPO_ROOT/.env.local" ]; then
+    source "$REPO_ROOT/.env.local"
+fi
+
 export PYTHONPATH="$REPO_ROOT"
 export SWITCH_ROOM_ID="${SWITCH_ROOM_ID:-security-incidents}"
 export SWITCH_MOCK_MODE="${SWITCH_MOCK_MODE:-true}"

@@ -51,6 +51,23 @@ class VayuDiscordBot:
 
     def _setup_routes(self) -> None:
         """Register command and agent handlers."""
+        async def handle_help(payload) -> OutboundMessage:
+            return OutboundMessage(
+                room_id=payload.room_id,
+                sender_agent_id="vayu-orchestrator",
+                content=(
+                    "👋 **VAYU OS — Autonomous SecOps Squad on Switch**\n\n"
+                    "**Available Multi-Agent Commands:**\n"
+                    "• `/vayu scan <path>` or `@vayu-analyst investigate <path>` — Static analysis & AST taint graph audit\n"
+                    "• `/vayu fix <issue_id>` — Patch synthesis with local Ollama & 4-Gate Sandbox verification\n"
+                    "• `/approve <issue_id>` — Incident commander sign-off to verify invariants and create GitHub PR\n"
+                    "• `/reject <issue_id>` — Discard patch and wipe ephemeral sandbox\n\n"
+                    "📊 **Real-time Operations Kanban:** `http://localhost:3000/issues`"
+                ),
+            )
+
+        self.dispatcher.register_command("/help", handle_help)
+        self.dispatcher.register_command("/vayu", handle_help)
         self.dispatcher.register_command("/vayu scan", handle_analyst_task)
         self.dispatcher.register_command("/vayu investigate", handle_analyst_task)
         self.dispatcher.register_command("/vayu fix", handle_remediator_task)
@@ -74,17 +91,27 @@ class VayuDiscordBot:
             if message.author.bot or message.author == self.client.user:
                 return
 
-            # If channel_filter is set, only respond in matching channels or if directly mentioned
             channel_name = getattr(message.channel, "name", "")
             bot_mentioned = self.client.user in message.mentions if self.client.user else False
-            
-            if self.channel_filter and channel_name != self.channel_filter and not bot_mentioned:
-                return
-
             content = message.content.strip()
+
             # Clean bot mention from content if present
             if bot_mentioned and self.client.user:
                 content = content.replace(f"<@{self.client.user.id}>", "@vayu").replace(f"<@!{self.client.user.id}>", "@vayu").strip()
+
+            is_command = content.startswith("/")
+            allowed_channels = {self.channel_filter, "security-incidents", "general"}
+            if not bot_mentioned and not is_command and channel_name not in allowed_channels:
+                return
+
+            # If user just sent a bare mention to the bot
+            if bot_mentioned and (not content or content in ("@vayu", "@security-incidents")):
+                await message.channel.send(
+                    "👋 **VAYU OS Autonomous SecOps Team is Online!**\n"
+                    "Try: `@security-incidents investigate samples/vulnerable/command_injection`\n"
+                    "Or: `/vayu scan samples/vulnerable/command_injection` | `/help`"
+                )
+                return
 
             logger.info(f"Received message from {message.author.name} in #{channel_name}: {content}")
 
