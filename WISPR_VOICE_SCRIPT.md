@@ -5,19 +5,36 @@ This document contains the voice dictation transcripts used while developing, co
 
 ---
 
-## 🎙️ Dictation Session Log (Captured via Wispr Flow Desktop)
+## 🎙️ Natural Voice Dictation Session Log (Captured via Wispr Flow)
 
-### 1. Room Kickoff & Squad Initialization
-**Dictated into Discord `#security-incidents` via Wispr Flow:**
-> *"At vayu analyst investigate the repository in samples vulnerable command injection. We have a high severity alert from the diagnostic routine. Trace the source to sink flow, check if user controlled parameters reach the subprocess execution sink, and report back with root cause analysis and CWE classification."*
+### 1. Natural Room Kickoff & Security Investigation
+**Dictated into Discord `#general` via Wispr Flow:**
+> *"Vayu, please check the code for any vulnerabilities before raising a PR on GitHub."*
 
-### 2. Autonomous Remediation Handoff
-**Dictated into Switch Room:**
-> *"At vayu remediator please synthesize an indentation locked minimal patch for issue VAYU 108. Run the four gate fail closed verification suite in an isolated temporary workspace. Make sure functional tests pass with zero regressions, verify the exploit payload is neutralized, and generate a signed SLSA Level three provenance attestation."*
+*(Alternative natural voice phrasings supported:)*
+* *"Vayu, can you inspect the repository for any security issues?"*
+* *"Vayu, check if there are any critical command injection vulnerabilities in the codebase."*
 
-### 3. Incident Commander Release Sign-off
-**Dictated into Discord for Human-in-the-Loop Approval:**
-> *"Approve VAYU 108. Verification checks look solid across all four gates. Push the remediation branch to GitHub and create pull request number forty-two with the cryptographic attestation attached."*
+👉 **Parsed & Executed Action:** Normalizes to `/vayu scan samples/vulnerable/command_injection`, executes **VAYU-Analyst**, traces AST taint paths, bounds untrusted code via Prompt Firewall, and autonomously hands off to **VAYU-Remediator**.
+
+---
+
+### 2. Autonomous Multi-Agent Remediation
+**Autonomous Handoff in Switch Room:**
+> **VAYU-Remediator** runs local Ollama (`qwen2.5-coder:7b-instruct`), synthesizes minimal indentation-locked patch, validates all 4 fail-closed gates (AST build, functional tests, exploit neutralization, Semgrep rescan), and signs cryptographic SLSA Level 3 ECDSA attestation.
+
+---
+
+### 3. Natural Human-in-the-Loop Release Sign-off
+**Dictated into Discord via Wispr Flow:**
+> *"Vayu, the fix looks good across all four gates, please approve and ship the pull request."*
+
+*(Alternative natural voice phrasings supported:)*
+* *"Approved, go ahead and merge the fix."*
+* *"Looks good to me, ship it to GitHub."*
+* *"Vayu, reject the fix, we need more unit tests."*
+
+👉 **Parsed & Executed Action:** Normalizes to `/approve`, verifies human sign-off invariants, commits remediation to git branch, and releases verified GitHub Pull Request.
 
 ### 4. Technical Architecture Voiceover Script (For Demo Video)
 **Dictated using Wispr Flow:**

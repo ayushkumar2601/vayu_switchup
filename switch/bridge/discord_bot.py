@@ -50,6 +50,54 @@ class VayuDiscordBot:
         self.client = discord.Client(intents=intents)
         self._bind_client_events()
 
+    @staticmethod
+    def parse_natural_intent(raw_text: str) -> Optional[str]:
+        """Convert natural conversational speech/text into standard VAYU actions."""
+        t = raw_text.lower()
+
+        # Extract explicit issue ID if mentioned
+        issue_match = re.search(r"\b(VAYU-[A-Za-z0-9_-]+)\b", raw_text, re.IGNORECASE)
+        issue_id = issue_match.group(1).upper() if issue_match else ""
+
+        # Extract explicit path if mentioned
+        path_match = re.search(r"\b(samples/[A-Za-z0-9_\-\./]+)\b", raw_text)
+        target_path = path_match.group(1) if path_match else "samples/vulnerable/command_injection"
+
+        # Rejection Intents
+        if any(k in t for k in ["reject", "declined", "don't merge", "discard", "needs test"]):
+            return f"/reject {issue_id}".strip()
+
+        # Approval Intents
+        if any(k in t for k in ["approve", "approved", "looks good", "ship it", "go ahead", "merge the fix", "authorize"]):
+            return f"/approve {issue_id}".strip()
+
+        # Investigation / Scan Intents
+        scan_triggers = [
+            "check the code",
+            "check for vulnerabilities",
+            "check for any vulnerabilities",
+            "find vulnerabilities",
+            "any vulnerabilities",
+            "security issues",
+            "vulnerabilities",
+            "investigate",
+            "scan",
+            "audit",
+            "inspect",
+            "examine",
+        ]
+        if any(k in t for k in scan_triggers):
+            return f"/vayu scan {target_path}".strip()
+
+        # Fix / Remediation Intents
+        if any(k in t for k in ["fix", "patch", "remediate", "generate a fix"]):
+            return f"/vayu fix {issue_id or target_path}".strip()
+
+        if any(k in t for k in ["help", "status", "who are you"]):
+            return "/help"
+
+        return None
+
     def _setup_routes(self) -> None:
         """Register command and agent handlers."""
         async def handle_help(payload) -> OutboundMessage:
@@ -115,21 +163,26 @@ class VayuDiscordBot:
             content = re.sub(r"@security-incidents\b", "@vayu", content, flags=re.IGNORECASE)
             content = content.strip()
 
-            # Normalize common action verbs into standard slash commands preserving argument case
-            clean_words = content.replace("@vayu", "").strip().split()
-            first_word = clean_words[0].lower() if clean_words else ""
-            remaining = " ".join(clean_words[1:]) if len(clean_words) > 1 else ""
+            # Natural Language Intent Classification (for Wispr Flow voice dictation)
+            natural_command = self.parse_natural_intent(raw_content)
+            if natural_command:
+                content = natural_command
+            else:
+                # Fallback: normalize common action verbs into standard slash commands
+                clean_words = content.replace("@vayu", "").strip().split()
+                first_word = clean_words[0].lower() if clean_words else ""
+                remaining = " ".join(clean_words[1:]) if len(clean_words) > 1 else ""
 
-            if first_word in ("investigate", "scan", "audit"):
-                content = f"/vayu scan {remaining}".strip()
-            elif first_word in ("fix", "patch", "remediate"):
-                content = f"/vayu fix {remaining}".strip()
-            elif first_word in ("approve", "/approve"):
-                content = f"/approve {remaining}".strip()
-            elif first_word in ("reject", "/reject"):
-                content = f"/reject {remaining}".strip()
-            elif first_word in ("help", "status", "info"):
-                content = "/help"
+                if first_word in ("investigate", "scan", "audit"):
+                    content = f"/vayu scan {remaining or 'samples/vulnerable/command_injection'}".strip()
+                elif first_word in ("fix", "patch", "remediate"):
+                    content = f"/vayu fix {remaining}".strip()
+                elif first_word in ("approve", "/approve"):
+                    content = f"/approve {remaining}".strip()
+                elif first_word in ("reject", "/reject"):
+                    content = f"/reject {remaining}".strip()
+                elif first_word in ("help", "status", "info"):
+                    content = "/help"
 
             # Check channel permissions: allow designated incident channel, general, commands, or direct mentions
             is_command = content.startswith("/")
