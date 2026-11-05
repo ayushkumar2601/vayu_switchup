@@ -8,8 +8,9 @@ dispatches to VAYU agents, manages autonomous remediation handoffs, and posts re
 import asyncio
 import logging
 import os
+import re
 import sys
-from typing import Optional
+from typing import Any, Optional
 
 try:
     import discord
@@ -114,9 +115,9 @@ class VayuDiscordBot:
             content = re.sub(r"@security-incidents\b", "@vayu", content, flags=re.IGNORECASE)
             content = content.strip()
 
-            # Normalize common action verbs into standard slash commands
-            clean_words = content.lower().replace("@vayu", "").strip().split()
-            first_word = clean_words[0] if clean_words else ""
+            # Normalize common action verbs into standard slash commands preserving argument case
+            clean_words = content.replace("@vayu", "").strip().split()
+            first_word = clean_words[0].lower() if clean_words else ""
             remaining = " ".join(clean_words[1:]) if len(clean_words) > 1 else ""
 
             if first_word in ("investigate", "scan", "audit"):
