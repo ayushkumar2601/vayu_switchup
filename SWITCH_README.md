@@ -2,7 +2,7 @@
 ## Autonomous Security Engineering Team & Multi-Agent Operations Platform
 ### *Detect vulnerabilities. Delegate remediation. Verify every patch. Ship secure code — together with AI teammates.*
 
-[![Tests Passing](https://img.shields.io/badge/Tests-202%20Passing-brightgreen?style=for-the-badge&logo=pytest)](https://github.com/ayushkumar2601/vayucs)
+[![Tests Passing](https://img.shields.io/badge/Tests-212%20Passing-brightgreen?style=for-the-badge&logo=pytest)](https://github.com/ayushkumar2601/vayucs)
 [![Switch Protocol](https://img.shields.io/badge/Switch-Agent%20Protocol%20v1.0-blueviolet?style=for-the-badge)](https://github.com/sandbox-quantum/switch)
 [![Verification](https://img.shields.io/badge/Verification-4--Gate%20Fail--Closed-success?style=for-the-badge)](https://github.com/ayushkumar2601/vayucs)
 [![SLSA Level 3](https://img.shields.io/badge/Provenance-SLSA%20Level%203%20ECDSA-orange?style=for-the-badge)](https://github.com/ayushkumar2601/vayucs)

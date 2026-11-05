@@ -22,10 +22,12 @@ def _extract_issue_id(content: str, args: list[str]) -> Optional[str]:
     """Extract issue ID from command arguments or message text."""
     if args:
         for arg in args:
-            match = re.search(r"\b(VAYU-\d+)\b", arg, re.IGNORECASE)
+            match = re.search(r"\b(VAYU-[A-Za-z0-9_-]+)\b", arg, re.IGNORECASE)
             if match:
                 return match.group(1).upper()
-    match = re.search(r"\b(VAYU-\d+)\b", content, re.IGNORECASE)
+        if args[0].strip():
+            return args[0].strip().upper()
+    match = re.search(r"\b(VAYU-[A-Za-z0-9_-]+)\b", content, re.IGNORECASE)
     return match.group(1).upper() if match else None
 
 
@@ -38,11 +40,12 @@ async def handle_gatekeeper_approval(payload: CommandPayload | SwitchMessage) ->
 
     issue_id = _extract_issue_id(content, args)
     if not issue_id:
-        # Fall back to the most recent issue awaiting review
-        pending = global_state.list_issues(status="HUMAN_REVIEW")
-        if pending:
-            issue_id = pending[0].id
-        else:
+        if not args:
+            # Fall back to the most recent issue awaiting review only if user didn't specify an arg
+            pending = global_state.list_issues(status="HUMAN_REVIEW")
+            if pending:
+                issue_id = pending[0].id
+        if not issue_id:
             return OutboundMessage(
                 room_id=room_id,
                 sender_agent_id="vayu-gatekeeper",

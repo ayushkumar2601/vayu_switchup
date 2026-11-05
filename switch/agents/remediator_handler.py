@@ -27,7 +27,7 @@ DEFAULT_TARGET = "samples/vulnerable/command_injection"
 
 def _extract_issue_id(content: str) -> Optional[str]:
     """Find issue ID like VAYU-101 in content."""
-    match = re.search(r"\b(VAYU-\d+)\b", content, re.IGNORECASE)
+    match = re.search(r"\b(VAYU-[A-Za-z0-9_-]+)\b", content, re.IGNORECASE)
     return match.group(1).upper() if match else None
 
 

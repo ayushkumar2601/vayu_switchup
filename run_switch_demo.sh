@@ -27,8 +27,8 @@ echo "• Squad Members:      @vayu-analyst, @vayu-remediator, @vayu-gatekeeper"
 echo "=============================================================================="
 
 if [ "$1" = "--test" ]; then
-    echo "Running complete test suite (202 passing tests)..."
-    "$PYTHON_BIN" -m pytest tests/test_switch_agents.py tests/ -k "not cloud" -q
+    echo "Running complete test suite (212 passing tests)..."
+    "$PYTHON_BIN" -m pytest tests/test_switch_agents.py tests/test_brutal_comprehensive.py tests/ -k "not cloud" -q
     exit 0
 fi
 
