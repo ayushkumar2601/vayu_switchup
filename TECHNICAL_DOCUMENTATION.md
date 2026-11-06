@@ -833,6 +833,13 @@ The Base64-encoded signature and PEM-encoded public key are bundled into `attest
 
 ### 5.1 Architecture & Room Topology
 
+<div align="center">
+  <img src="images/discord1.png" alt="Switch AI Multi-Agent Incident Investigation in Discord" width="850" />
+  <p><i>Figure 5.1: Multi-agent incident investigation in #security-incidents powered by Switch AI and @vayu-analyst.</i></p>
+  <img src="images/discord2.png" alt="Switch AI 4-Gate Sandbox Remediation and Human Sign-Off" width="850" />
+  <p><i>Figure 5.2: @vayu-remediator 4-gate verification traces and @vayu-gatekeeper human release sign-off.</i></p>
+</div>
+
 VAYU OS integrates natively with **SandboxAQ Switch** (`sandbox-quantum/switch`) to deploy an autonomous DevSecOps incident response team into team messaging environments (Discord, Slack). The system operates on an event-driven room architecture:
 
 ```
@@ -896,6 +903,13 @@ The squad consists of three specialized agent personas with formal trust boundar
 ```
 
 ### 5.3 Wispr Flow Voice Intent Parsing & Normalization Engine
+
+<div align="center">
+  <img src="images/wisprflow_insightscard.png" alt="Wispr Flow Usage Scorecard" width="700" />
+  <p><i>Figure 5.3: Official Wispr Flow usage scorecard demonstrating voice dictation productivity and usage metrics.</i></p>
+  <img src="images/wisprflow_transcript.png" alt="Wispr Flow Spoken Transcription" width="700" />
+  <p><i>Figure 5.4: Live spoken audio transcription and intent normalization into multi-agent commands.</i></p>
+</div>
 
 To enable hands-free voice operations during security emergencies, `switch/bridge/discord_bot.py` incorporates a natural language speech intent parser. Rather than forcing rigid command syntax, spoken dictations captured via **Wispr Flow** are dynamically normalized into structured operational commands:
 
@@ -1089,6 +1103,11 @@ tags: [security, sast, reasoning, semgrep]
 
 ### 7.2 Bundled Skills Catalog
 
+<div align="center">
+  <img src="images/vayuskills_cli.png" alt="VAYU Agent Skills CLI Engine" width="850" />
+  <p><i>Figure 7.1: Standalone VAYU agent skills CLI engine displaying the 8 bundled security reasoning skills.</i></p>
+</div>
+
 VAYU includes eight pre-installed, high-integrity AI agent skills in `crs/skills_catalog/`:
 
 | Skill Name | Version | Description | Target Use Case |
@@ -1176,7 +1195,7 @@ The VAYU OS operations console is built on **Next.js 16 (Turbopack)**, **React 1
 ### 8.3 Linear Kanban Operations Board (`/issues`)
 
 <div align="center">
-  <img src="blog_pics/kanban_board.png" alt="Linear Kanban Operations Board" width="900" />
+  <img src="images/inbox.png" alt="Linear Kanban Operations Board" width="900" />
   <p><i>Figure 8.1: Real-time 5-column Linear operations board tracking security incidents across Analyst, Remediator, and Gatekeeper squads.</i></p>
 </div>
 
@@ -1189,7 +1208,7 @@ Located at `/issues`, this view provides a high-density, five-column workflow tr
 ### 8.4 Linear Grouped Triage List (`/my-issues`)
 
 <div align="center">
-  <img src="blog_pics/linear_issues.png" alt="Linear My Issues View" width="900" />
+  <img src="images/myissues.png" alt="Linear My Issues View" width="900" />
   <p><i>Figure 8.2: Streamlined Linear developer triage queue structured with grouped categories, PR indicators, and live multi-agent status badges.</i></p>
 </div>
 
@@ -1202,7 +1221,7 @@ Located at `/my-issues`, this view provides a streamlined developer triage queue
 ### 8.5 Interactive Code Review Console & Direct GitHub Push (`/reviews`)
 
 <div align="center">
-  <img src="blog_pics/reviews_diff.png" alt="Linear Reviews Console Diff Viewer" width="900" />
+  <img src="images/reviews.png" alt="Linear Reviews Console Diff Viewer" width="900" />
   <p><i>Figure 8.3: Pixel-perfect Linear Reviews UI showing line-numbered code diff with word-level syntax highlighting, reviewed status toggles, and 4-gate verification traces.</i></p>
 </div>
 
@@ -1216,7 +1235,7 @@ Located at `/reviews`, this view serves as the formal audit and release station:
 ### 8.6 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph (`/dashboard` & `/pulse`)
 
 <div align="center">
-  <img src="blog_pics/3d_terrain.png" alt="3D Codebase Reasoning Terrain" width="900" />
+  <img src="images/pulse.png" alt="3D Codebase Reasoning Terrain" width="900" />
   <p><i>Figure 8.4: WebGL point-cloud elevation terrain visualizing codebase complexity, file nesting depth, and real-time vulnerability thermal cooling.</i></p>
 </div>
 
@@ -1227,7 +1246,7 @@ Located at `/pulse` and `/dashboard`, this view provides high-level architectura
 ### 8.7 Autonomous SecOps Command Center & Landing Experience (`/`)
 
 <div align="center">
-  <img src="blog_pics/landing_hero.png" alt="VAYU OS Landing Page" width="900" />
+  <img src="images/landing.png" alt="VAYU OS Landing Page" width="900" />
   <p><i>Figure 8.5: High-performance command center landing experience with instantaneous navigation to the 3D Threat Arena and SecOps console.</i></p>
 </div>
 

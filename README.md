@@ -20,6 +20,10 @@
   <a href="#-license"><img src="https://img.shields.io/badge/License-Apache%202.0-yellow?style=flat-square" alt="License" /></a>
 </p>
 
+<p align="center">
+  <img src="images/landing.png" alt="VAYU OS Autonomous Cyber Reasoning Command Center" width="100%" />
+</p>
+
 ---
 
 ## 🏆 Latent Hackathon Submission (Flip the Switch 2026)
@@ -69,44 +73,96 @@ bash run_switch_demo.sh --test
 
 ## 📸 Visual Showcase & Architecture Gallery
 
-<!-- ==============================================================================
-     SCREENSHOT GALLERY PLACEHOLDERS (Drop your hackathon pictures here)
-     ============================================================================== -->
+### 1. Web Operations Suite & 3D Threat Arena
 
-### 1. Linear Kanban Incident Board (`/issues`)
+#### A. Cinematic Command Center Gateway (`/`)
 <div align="center">
-  <img src="blog_pics/kanban_board.png" alt="Linear Kanban Incident Board" width="900" />
-  <p><i>Figure 1: Real-time 5-column Linear operations board tracking security incidents across Analyst, Remediator, and Gatekeeper squads.</i></p>
+  <img src="images/landing.png" alt="VAYU OS Command Center Landing Page" width="900" />
+  <p><i>Figure 1: High-performance command center landing experience with instantaneous navigation to the 3D Threat Arena and SecOps console.</i></p>
 </div>
 
-### 2. Linear Code Review Console & AST Diff Viewer (`/reviews`)
+#### B. 3D WebGL Codebase Threat Terrain (`/pulse`)
 <div align="center">
-  <img src="blog_pics/reviews_diff.png" alt="Linear Reviews Console Diff Viewer" width="900" />
-  <p><i>Figure 2: Pixel-perfect Linear Reviews UI showing line-numbered code diff with word-level green/red syntax highlighting, reviewed status toggles, and 4-gate verification traces.</i></p>
+  <img src="images/pulse.png" alt="3D Codebase Reasoning Terrain" width="900" />
+  <p><i>Figure 2: WebGL point-cloud elevation terrain visualizing codebase complexity, file nesting depth, and real-time vulnerability thermal cooling as 4-gate verification passes with 95% confidence.</i></p>
 </div>
 
-### 3. Linear Issue Triage & Engineering Sprints (`/my-issues`)
+#### C. Operations Kanban Incident Board (`/issues`)
 <div align="center">
-  <img src="blog_pics/linear_issues.png" alt="Linear My Issues View" width="900" />
-  <p><i>Figure 3: Linear sprint view with group triage across In Review, In Progress, and Todo, tracking active AI agent remediations and pull requests.</i></p>
+  <img src="images/inbox.png" alt="Linear Operations Kanban Incident Board" width="900" />
+  <p><i>Figure 3: Real-time 5-column operations board tracking security incidents across Analyst, Remediator, and Gatekeeper squads with live SQLite sync and 1-click approvals.</i></p>
 </div>
 
-### 4. 3D Codebase Reasoning Terrain & Visualizer (`/pulse`)
+#### D. Personal Engineering Sprints & Triage (`/my-issues`)
 <div align="center">
-  <img src="blog_pics/3d_terrain.png" alt="3D Codebase Reasoning Terrain" width="900" />
-  <p><i>Figure 4: WebGL point-cloud elevation terrain visualizing codebase complexity, file nesting depth, and real-time vulnerability thermal cooling as patches pass verification.</i></p>
+  <img src="images/myissues.png" alt="Linear Personal Issues View" width="900" />
+  <p><i>Figure 4: Developer triage queue grouped across In Review, In Progress, and Todo, tracking active AI agent remediations and pull requests.</i></p>
 </div>
 
-### 5. VAYU OS Autonomous Command Center & Landing Experience (`/`)
+#### E. Code Review Console & AST Unified Diff Viewer (`/reviews`)
 <div align="center">
-  <img src="blog_pics/landing_hero.png" alt="VAYU OS Landing Page" width="900" />
-  <p><i>Figure 5: High-performance command center landing experience with instantaneous navigation to the 3D Threat Arena and SecOps console.</i></p>
+  <img src="images/reviews.png" alt="Code Review Console Diff Viewer" width="900" />
+  <p><i>Figure 5: Code review UI showing line-numbered diff with word-level syntax highlighting, reviewed status toggles, 4-gate verification traces, and push-to-GitHub release actions.</i></p>
 </div>
 
-### 6. Switch Multi-Agent Collaboration in Discord with Wispr Flow Voice
+---
+
+### 2. Switch AI Multi-Agent Collaboration in Discord
+
+#### A. Multi-Agent Incident Investigation (`@vayu-analyst`)
 <div align="center">
-  <img src="blog_pics/discord_wispr.png" alt="Discord / Switch Multi-Agent Room & Wispr Voice Flow" width="900" />
-  <p><i>Figure 6: Natural spoken voice input dictated through Wispr Flow automatically normalized by VAYU's Intent Normalization Engine into multi-agent investigation and authorization workflows.</i></p>
+  <img src="images/discord1.png" alt="Discord Switch AI Incident Investigation" width="900" />
+  <p><i>Figure 6: Switch AI routes user incident requests in #security-incidents. @vayu-analyst inspects the AST taint graph and identifies root cause CWE-78 command injection.</i></p>
+</div>
+
+#### B. 4-Gate Sandbox Remediation & Gatekeeper Authorization (`@vayu-gatekeeper`)
+<div align="center">
+  <img src="images/discord2.png" alt="Discord Switch AI Remediation and PR Authorization" width="900" />
+  <p><i>Figure 7: @vayu-remediator passes all 4 fail-closed gates in the sandbox, and @vayu-gatekeeper requests human authorization before publishing the signed GitHub PR.</i></p>
+</div>
+
+---
+
+### 3. Code with Wispr — Voice-Driven SecOps & Usage Scorecard
+
+#### A. Official Wispr Flow Usage Scorecard
+<div align="center">
+  <img src="images/wisprflow_insightscard.png" alt="Wispr Flow Usage Scorecard" width="900" />
+  <p><i>Figure 8: Official Wispr Flow Usage Card from the Desktop App Insights, demonstrating voice productivity during VAYU development.</i></p>
+</div>
+
+#### B. Wispr Flow Voice Activity & Productivity Metrics
+<div align="center">
+  <img src="images/wisprflow_insights.png" alt="Wispr Flow Insights Dashboard" width="900" />
+  <p><i>Figure 9: In-depth Wispr Flow insights dashboard showing voice dictation activity and speed metrics.</i></p>
+</div>
+
+#### C. Wispr Flow Spoken Intent Normalization & Live Transcript
+<div align="center">
+  <img src="images/wisprflow_transcript.png" alt="Wispr Flow Voice Transcript" width="900" />
+  <p><i>Figure 10: Real-time spoken dictation transcription seamlessly converting natural voice requests into actionable multi-agent security workflows.</i></p>
+</div>
+
+---
+
+### 4. Native CLI & FastMCP Terminal Engine
+
+#### A. VAYU Agent Skills Catalog Engine (`./vayu skills list`)
+<div align="center">
+  <img src="images/vayuskills_cli.png" alt="VAYU Agent Skills CLI Engine" width="900" />
+  <p><i>Figure 11: Standalone terminal CLI showing 8 bundled AI agent skills across static analysis, verification, patching, and prompt-injection defense.</i></p>
+</div>
+
+#### B. Headless Security Audit & Taint Graph Execution
+<div align="center">
+  <img src="images/vayucli1.png" alt="VAYU CLI Headless Audit" width="900" />
+  <p><i>Figure 12: Autonomous repository scanning and deterministic vulnerability detection via the terminal runner.</i></p>
+</div>
+
+#### C. 4-Gate Verification Traces & SLSA Provenance Attestation
+<div align="center">
+  <img src="images/vayucli2.png" alt="VAYU CLI 4-Gate Verification Traces" width="900" />
+  <p><i>Figure 13: Terminal execution traces for 4-gate sandbox verification, indentation lock enforcement, and cryptographic provenance signing.</i></p>
 </div>
 
 ---
