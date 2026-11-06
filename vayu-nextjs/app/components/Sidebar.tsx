@@ -156,6 +156,29 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
         {/* WORKSPACES NAVIGATION */}
         <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Link
+            href="/my-issues"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              fontSize: 12.5,
+              fontWeight: isActive("/my-issues") ? 600 : 400,
+              color: isActive("/my-issues") ? "#f7f8f8" : "#8a8f98",
+              backgroundColor: isActive("/my-issues") ? "#141516" : "transparent",
+              border: isActive("/my-issues") ? "1px solid #23252a" : "1px solid transparent",
+              borderRadius: 6,
+              padding: collapsed ? "6px 0" : "6px 8px",
+              textDecoration: "none",
+              justifyContent: collapsed ? "center" : "flex-start",
+              transition: "all 0.12s ease",
+            }}
+            title="My issues — Linear Assigned Triage List"
+          >
+            <span style={{ fontSize: 13 }}>🎯</span>
+            {!collapsed && <span>My issues</span>}
+          </Link>
+
+          <Link
             href="/issues"
             style={{
               display: "flex",

@@ -336,6 +336,63 @@ export default function IssuesView() {
             All
           </button>
 
+          {/* VIEW SWITCHER: LIST vs BOARD */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#0f1011",
+              border: "1px solid #23252a",
+              borderRadius: 6,
+              padding: 2,
+            }}
+          >
+            <Link
+              href="/my-issues"
+              title="Switch to Linear Grouped List View"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#8a8f98",
+                padding: "3px 7px",
+                borderRadius: 4,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+            </Link>
+
+            <button
+              title="Board View (Active)"
+              style={{
+                background: "#18191a",
+                border: "none",
+                color: "#f7f8f8",
+                padding: "3px 7px",
+                borderRadius: 4,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <line x1="9" y1="3" x2="9" y2="21" />
+                <line x1="15" y1="3" x2="15" y2="21" />
+              </svg>
+            </button>
+          </div>
+
           {/* OVERLAPPING AVATARS (Exactly matching the screenshot) */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <div
