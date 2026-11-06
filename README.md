@@ -12,6 +12,7 @@
 </p>
 
 <p align="center">
+  <a href="https://youtu.be/6ezBwMZC6as"><img src="https://img.shields.io/badge/Demo%20Video-YouTube%20(2m%2046s)-red?style=flat-square&logo=youtube&logoColor=white" alt="Live Demo Video" /></a>
   <a href="https://github.com/ayushkumar2601/vayu_switchup"><img src="https://img.shields.io/badge/GitHub-ayushkumar2601%2Fvayu__switchup-blueviolet?style=flat-square&logo=github" alt="GitHub Repo" /></a>
   <a href="#-quickstart--reproduction-guide"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python Version" /></a>
   <a href="#-quickstart--reproduction-guide"><img src="https://img.shields.io/badge/Tests-212%20Passing-brightgreen?style=flat-square&logo=pytest&logoColor=white" alt="212 Passing Tests" /></a>
@@ -28,6 +29,7 @@
 
 ## 🏆 Latent Hackathon Submission (Flip the Switch 2026)
 
+* **🎥 Live Demonstration Video (2m 46s):** **[Watch the Full Workflow on YouTube](https://youtu.be/6ezBwMZC6as)**
 * **Primary Track:** **Track 01 — Best Business Workflow ($2,000)**  
   *Enterprise Autonomous Security Incident Response Squad:* An engineering team collaborates in real time with `@vayu-analyst`, `@vayu-remediator`, and `@vayu-gatekeeper` in `#security-incidents` via Switch Agent Protocol. Detect zero-days, synthesize verified indentation-locked patches, run 4-gate sandbox verification, and authorize GitHub pull request releases using conversational chat or Wispr Flow voice.
 * **Secondary Track:** **Track 02 — Best Personal / Creative Workflow ($2,000)**  

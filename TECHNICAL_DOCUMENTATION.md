@@ -3,7 +3,7 @@
 ### Multi-Agent Incident Response Squad, 4-Gate Fail-Closed Sandbox Verification, FastMCP, SLSA Level 3 Provenance & Linear UI Suite
 
 *Specification Version: 3.0.0 | Release: Switch SecOps & Multi-Agent Edition | Target: Python 3.11+ & Next.js 16*  
-*Repository: [ayushkumar2601/vayu_switchup](https://github.com/ayushkumar2601/vayu_switchup) | Author: Ayush Kumar*
+*Repository: [ayushkumar2601/vayu_switchup](https://github.com/ayushkumar2601/vayu_switchup) | Live Demo Video: [YouTube (2m 46s)](https://youtu.be/6ezBwMZC6as) | Author: Ayush Kumar*
 
 ---
 
