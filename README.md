@@ -75,30 +75,38 @@ bash run_switch_demo.sh --test
 
 ### 1. Linear Kanban Incident Board (`/issues`)
 <div align="center">
-  <!-- 📸 PLACEHOLDER: SCREENSHOT 1 (Linear Kanban Incident Board) -->
-  <img src="blog_pics/kanban_board.png" alt="Linear Kanban Incident Board" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+Linear+Kanban+Operations+Board+(/issues)';" />
+  <img src="blog_pics/kanban_board.png" alt="Linear Kanban Incident Board" width="900" />
   <p><i>Figure 1: Real-time 5-column Linear operations board tracking security incidents across Analyst, Remediator, and Gatekeeper squads.</i></p>
 </div>
 
 ### 2. Linear Code Review Console & AST Diff Viewer (`/reviews`)
 <div align="center">
-  <!-- 📸 PLACEHOLDER: SCREENSHOT 2 (Linear Reviews Console Diff Viewer) -->
-  <img src="blog_pics/reviews_diff.png" alt="Linear Reviews Console Diff Viewer" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+Linear+Reviews+Console+Diff+Viewer+(/reviews)';" />
+  <img src="blog_pics/reviews_diff.png" alt="Linear Reviews Console Diff Viewer" width="900" />
   <p><i>Figure 2: Pixel-perfect Linear Reviews UI showing line-numbered code diff with word-level green/red syntax highlighting, reviewed status toggles, and 4-gate verification traces.</i></p>
 </div>
 
-### 3. Switch Multi-Agent Collaboration in Discord with Wispr Flow Voice
+### 3. Linear Issue Triage & Engineering Sprints (`/my-issues`)
 <div align="center">
-  <!-- 📸 PLACEHOLDER: SCREENSHOT 3 (Discord / Switch Multi-Agent Room & Wispr Voice Flow) -->
-  <img src="blog_pics/discord_wispr.png" alt="Discord / Switch Multi-Agent Room & Wispr Voice Flow" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+Switch+Multi-Agent+Discord+Channel+%26+Wispr+Voice+Dictation';" />
-  <p><i>Figure 3: Natural spoken voice input dictated through Wispr Flow automatically normalized by VAYU's Intent Normalization Engine into multi-agent investigation and authorization workflows.</i></p>
+  <img src="blog_pics/linear_issues.png" alt="Linear My Issues View" width="900" />
+  <p><i>Figure 3: Linear sprint view with group triage across In Review, In Progress, and Todo, tracking active AI agent remediations and pull requests.</i></p>
 </div>
 
-### 4. 3D Codebase Reasoning Terrain & Visualizer (`/dashboard`)
+### 4. 3D Codebase Reasoning Terrain & Visualizer (`/pulse`)
 <div align="center">
-  <!-- 📸 PLACEHOLDER: SCREENSHOT 4 (3D Codebase Reasoning Terrain) -->
-  <img src="blog_pics/3d_terrain.png" alt="3D Codebase Reasoning Terrain" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+3D+WebGL+Codebase+Threat+Terrain+(/dashboard)';" />
+  <img src="blog_pics/3d_terrain.png" alt="3D Codebase Reasoning Terrain" width="900" />
   <p><i>Figure 4: WebGL point-cloud elevation terrain visualizing codebase complexity, file nesting depth, and real-time vulnerability thermal cooling as patches pass verification.</i></p>
+</div>
+
+### 5. VAYU OS Autonomous Command Center & Landing Experience (`/`)
+<div align="center">
+  <img src="blog_pics/landing_hero.png" alt="VAYU OS Landing Page" width="900" />
+  <p><i>Figure 5: High-performance command center landing experience with instantaneous navigation to the 3D Threat Arena and SecOps console.</i></p>
+</div>
+
+### 6. Switch Multi-Agent Collaboration in Discord with Wispr Flow Voice
+<div align="center">
+  <img src="blog_pics/discord_wispr.png" alt="Discord / Switch Multi-Agent Room & Wispr Voice Flow" width="900" />
+  <p><i>Figure 6: Natural spoken voice input dictated through Wispr Flow automatically normalized by VAYU's Intent Normalization Engine into multi-agent investigation and authorization workflows.</i></p>
 </div>
 
 ---

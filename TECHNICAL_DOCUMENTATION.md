@@ -1175,6 +1175,11 @@ The VAYU OS operations console is built on **Next.js 16 (Turbopack)**, **React 1
 
 ### 8.3 Linear Kanban Operations Board (`/issues`)
 
+<div align="center">
+  <img src="blog_pics/kanban_board.png" alt="Linear Kanban Operations Board" width="900" />
+  <p><i>Figure 8.1: Real-time 5-column Linear operations board tracking security incidents across Analyst, Remediator, and Gatekeeper squads.</i></p>
+</div>
+
 Located at `/issues`, this view provides a high-density, five-column workflow tracking security remediation tickets across their complete lifecycle:
 - **Columns**: `Inbox` (newly discovered), `Up Next` (triaged), `In Progress` (under remediation), `Review` (pending human approval), `Done` (merged & released).
 - **Live SQLite Sync**: Polls `/api/incidents` every 2 seconds to reflect multi-agent updates in real time.
@@ -1182,6 +1187,11 @@ Located at `/issues`, this view provides a high-density, five-column workflow tr
 - **Visual Metadata**: Issue ID (`VAYU-138`), assignee avatar (`@vayu-analyst`, `@vayu-remediator`, `@vayu-gatekeeper`), severity pill (`HIGH`, `MEDIUM`), and CWE badge.
 
 ### 8.4 Linear Grouped Triage List (`/my-issues`)
+
+<div align="center">
+  <img src="blog_pics/linear_issues.png" alt="Linear My Issues View" width="900" />
+  <p><i>Figure 8.2: Streamlined Linear developer triage queue structured with grouped categories, PR indicators, and live multi-agent status badges.</i></p>
+</div>
 
 Located at `/my-issues`, this view provides a streamlined developer triage queue structured exactly like Linear's personal task view:
 - **Grouped Categories**: `In Review (3)`, `In Progress (4)`, `Todo (4)`.
@@ -1191,6 +1201,11 @@ Located at `/my-issues`, this view provides a streamlined developer triage queue
 
 ### 8.5 Interactive Code Review Console & Direct GitHub Push (`/reviews`)
 
+<div align="center">
+  <img src="blog_pics/reviews_diff.png" alt="Linear Reviews Console Diff Viewer" width="900" />
+  <p><i>Figure 8.3: Pixel-perfect Linear Reviews UI showing line-numbered code diff with word-level syntax highlighting, reviewed status toggles, and 4-gate verification traces.</i></p>
+</div>
+
 Located at `/reviews`, this view serves as the formal audit and release station:
 - **Side-by-Side Unified Diff**: Colorized diff highlighting exact removals (red) and additions (green).
 - **Four-Gate Telemetry Badges**: Individual status indicators for Gate 1 (Build), Gate 2 (Tests), Gate 3 (Exploit), and Gate 4 (Rescan).
@@ -1198,13 +1213,30 @@ Located at `/reviews`, this view serves as the formal audit and release station:
 - **Direct GitHub Push Integration**: Operators click **"Push to GitHub"**, which executes `POST /api/git/push`, stages the verified patch, signs the commit with SLSA provenance, and creates a GitHub pull request.
 - **Keyboard Navigation**: Vim-inspired navigation (`J`/`K` to move through issues, `1`-`5` to switch inspection tabs, `R` to run verification, `P` to push).
 
-### 8.6 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph (`/dashboard`)
+### 8.6 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph (`/dashboard` & `/pulse`)
 
-Located at `/dashboard`, this view provides high-level architectural observability:
+<div align="center">
+  <img src="blog_pics/3d_terrain.png" alt="3D Codebase Reasoning Terrain" width="900" />
+  <p><i>Figure 8.4: WebGL point-cloud elevation terrain visualizing codebase complexity, file nesting depth, and real-time vulnerability thermal cooling.</i></p>
+</div>
+
+Located at `/pulse` and `/dashboard`, this view provides high-level architectural observability:
 - **3D Codebase Terrain (`Terrain.tsx`)**: Renders the repository topology as an interactive Three.js point-cloud elevation map. Elevation indicates file complexity and indentation depth. Vulnerable lines pulse in thermal orange/red, cooling to blue/cyan once patches are verified.
 - **SVG Dynamic System Flow (`System.tsx`)**: Graph simulating client ingress flows through web routes, authentication middleware, and database execution sinks, visually demonstrating how VAYU severs the taint vector.
 
-### 8.7 Responsive Collapsible Navigation & Fluid Viewports
+### 8.7 Autonomous SecOps Command Center & Landing Experience (`/`)
+
+<div align="center">
+  <img src="blog_pics/landing_hero.png" alt="VAYU OS Landing Page" width="900" />
+  <p><i>Figure 8.5: High-performance command center landing experience with instantaneous navigation to the 3D Threat Arena and SecOps console.</i></p>
+</div>
+
+The root landing page (`/`) presents an edge-to-edge cinematic command center:
+- **Zero-Distraction Clean Canvas**: Sidebar and navigation bars are conditionally unmounted on the landing route for an immersive full-bleed presentation.
+- **Instant "Enter Arena" Gateway**: A dedicated glowing Linear CTA links directly to `/pulse`, transitioning operators straight into the 3D threat arena.
+- **Telemetry Counters**: Real-time counters showing 0 False Positives, 100% Patch Verification, and 24/7 Autonomous SecOps uptime.
+
+### 8.8 Responsive Collapsible Navigation & Fluid Viewports
 
 All pages share the global `Sidebar.tsx` component:
 - **Expandable / Collapsible**: Toggles between 220px expanded width and 64px compact icon-only mode with smooth CSS transitions.
