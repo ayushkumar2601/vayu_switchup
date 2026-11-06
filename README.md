@@ -34,6 +34,13 @@
   *Enterprise Autonomous Security Incident Response Squad:* An engineering team collaborates in real time with `@vayu-analyst`, `@vayu-remediator`, and `@vayu-gatekeeper` in `#security-incidents` via Switch Agent Protocol. Detect zero-days, synthesize verified indentation-locked patches, run 4-gate sandbox verification, and authorize GitHub pull request releases using conversational chat or Wispr Flow voice.
 * **Secondary Track:** **Track 02 — Best Personal / Creative Workflow ($2,000)**  
   *Personal Security Debt & Zero-Day Backlog:* Solo developers connect personal codebases in `#personal-security` with voice dictation (*"Vayu, audit my repo for security debt and prepare PRs"*), automatically populating an autonomous Linear-style triage board.
+* **Core Contribution Track:** **Track 03 — Best Core Contribution ($100 × 20)**  
+  *5 Live Upstream Pull Requests to Switch Core (`sandbox-quantum/switch`):*
+  1. [PR #1630 — Mistral Vibe Provider (Issue #774, P0)](https://github.com/sandbox-quantum/switch/pull/1630)
+  2. [PR #1644 — Qwen Code Provider (Issue #782, P1)](https://github.com/sandbox-quantum/switch/pull/1644)
+  3. [PR #1645 — Grok Build Provider (Issue #775, P0)](https://github.com/sandbox-quantum/switch/pull/1645)
+  4. [PR #1646 — JetBrains Junie Provider (Issue #787, P1)](https://github.com/sandbox-quantum/switch/pull/1646)
+  5. [PR #1647 — Cloudflare Service Connector (Issue #828, P2)](https://github.com/sandbox-quantum/switch/pull/1647)
 * **Side Track:** **Code with Wispr ($500)**  
   *Voice-Driven Security Operations:* Instant voice-to-action intent normalization turning natural spoken language into verified security dispatches: [docs/WISPR_VOICE_SCRIPT.md](docs/WISPR_VOICE_SCRIPT.md).
 * **Side Track:** **Best Technical Blog (AirPods 5)**  
