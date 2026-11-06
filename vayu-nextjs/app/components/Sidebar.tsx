@@ -65,71 +65,35 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 10,
+              gap: 6,
               textDecoration: "none",
             }}
           >
-            {/* Iconic Concentric VAYU Glyph */}
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                boxShadow: "0 0 12px rgba(37, 99, 235, 0.35)",
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#93c5fd" strokeWidth="1.6" strokeDasharray="3 3" />
-                <path
-                  d="M7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12"
-                  stroke="#ffffff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <circle cx="12" cy="12" r="2.8" fill="#60a5fa" />
-              </svg>
-            </div>
             {!collapsed && (
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "#f7f8f8",
-                    letterSpacing: "-0.2px",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  VAYU OS
-                </span>
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 500,
-                    color: "#27a644",
-                    letterSpacing: "0.2px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: "50%",
-                      backgroundColor: "#27a644",
-                      boxShadow: "0 0 6px rgba(39, 166, 68, 0.6)",
-                    }}
-                  />
-                  SecOps Squad
-                </span>
-              </div>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#f7f8f8",
+                  letterSpacing: "-0.2px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                VAYU <span style={{ fontSize: 9, color: "#8a8f98" }}>⌵</span>
+              </span>
+            )}
+            {collapsed && (
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: "#f7f8f8",
+                }}
+              >
+                V
+              </span>
             )}
           </Link>
 
@@ -226,23 +190,23 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
         {/* WORKSPACES NAVIGATION */}
         <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Link
-            href="/dashboard"
+            href="/pulse"
             style={{
               display: "flex",
               alignItems: "center",
               gap: 8,
               fontSize: 12.5,
-              fontWeight: isActive("/dashboard") ? 600 : 400,
-              color: isActive("/dashboard") ? "#f7f8f8" : "#8a8f98",
-              backgroundColor: isActive("/dashboard") ? "#141516" : "transparent",
-              border: isActive("/dashboard") ? "1px solid #23252a" : "1px solid transparent",
+              fontWeight: isActive("/pulse") || isActive("/dashboard") ? 600 : 400,
+              color: isActive("/pulse") || isActive("/dashboard") ? "#f7f8f8" : "#8a8f98",
+              backgroundColor: isActive("/pulse") || isActive("/dashboard") ? "#141516" : "transparent",
+              border: isActive("/pulse") || isActive("/dashboard") ? "1px solid #23252a" : "1px solid transparent",
               borderRadius: 6,
               padding: collapsed ? "6px 0" : "6px 8px",
               textDecoration: "none",
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.12s ease",
             }}
-            title="Pulse — System Telemetry & 3D Reasoning Desk"
+            title="Pulse — System Telemetry & 3D Reasoning Arena"
           >
             <span style={{ fontSize: 13, display: "flex", alignItems: "center" }}>
               <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
