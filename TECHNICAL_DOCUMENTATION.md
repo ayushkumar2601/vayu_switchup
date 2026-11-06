@@ -1,8 +1,9 @@
-# ⚡ VAYU — Master Technical Documentation & System Specification
-## Autonomous Cyber Reasoning System (CRS) with Multi-Tier Sandboxing, Guarded LLM Synthesis, Model Context Protocol (MCP), and SLSA v1.0 Cryptographic Provenance
+# ⚡ VAYU OS — Master Technical Documentation & System Specification
+## Autonomous Cyber Reasoning System (CRS) & Switch SecOps Multi-Agent Platform
+### Multi-Agent Incident Response Squad, 4-Gate Fail-Closed Sandbox Verification, FastMCP, SLSA Level 3 Provenance & Linear UI Suite
 
-*Specification Version: 2.5.0 | Release: Production / Hacktoberfest Edition | Target: Python 3.10+ & Next.js 16*  
-*Repository: [ayushkumar2601/vayu_hacktoberfest](https://github.com/ayushkumar2601/vayu_hacktoberfest) | Author: Ayush Kumar*
+*Specification Version: 3.0.0 | Release: Switch SecOps & Multi-Agent Edition | Target: Python 3.11+ & Next.js 16*  
+*Repository: [ayushkumar2601/vayu_switchup](https://github.com/ayushkumar2601/vayu_switchup) | Author: Ayush Kumar*
 
 ---
 
@@ -33,32 +34,40 @@
      - 4.6.4 Dynamic Self-Correction Feedback Loop
    - 4.7 Cryptographic Provenance & SLSA v1.0 Attestations (`crs/reporting/`)
    - 4.8 CI/CD Integration & OASIS SARIF v2.1.0 Export (`crs/cicd/`)
-5. [The Model Context Protocol (MCP) Server (`vayu_mcp/`)](#5-the-model-context-protocol-mcp-server-vayu_mcp)
-   - 5.1 Protocol Architecture & FastMCP `stdio` Transport
-   - 5.2 Complete Specification of the 9 MCP Tools
-   - 5.3 Multi-Client Configuration Matrix (Claude Desktop, Cursor, Windsurf, Claude Code)
-   - 5.4 Session State Isolation & Security Boundary Enforcement
-6. [The VAYU Skills Ecosystem (`crs/skills_cli/`)](#6-the-vayu-skills-ecosystem-crs-skills_cli)
-   - 6.1 Agent Skills Specification & Standard Directory Structure
-   - 6.2 Bundled Skills Catalog
-   - 6.3 Skills CLI Architecture & Command Reference
-7. [Real-Time Streaming Engine & Web Review Console](#7-real-time-streaming-engine--web-review-console)
-   - 7.1 Newline-Delimited JSON (NDJSON) Wire Protocol (`crs/stream.py`)
-   - 7.2 Next.js 16 Web Dashboard Architecture (`vayu-nextjs/`)
-   - 7.3 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph
-   - 7.4 Web Review Console & Direct GitHub Commit/PR Push
-8. [Data Contracts, Schemas & Protocols](#8-data-contracts-schemas--protocols)
-   - 8.1 Internal Pydantic Domain Schemas (`crs/core/schemas.py`)
-   - 8.2 In-Toto SLSA v1.0 Attestation Payload Format
-   - 8.3 OASIS SARIF v2.1.0 Schema Mapping
-9. [Complete CLI & Operational Reference](#9-complete-cli--operational-reference)
-   - 9.1 `crs.vayu` / `vayu scan` CLI Reference
-   - 9.2 `vayu skills` CLI Reference
-   - 9.3 `vayu-mcp` CLI Reference
-   - 9.4 Environment Variable Configuration Reference
-10. [Security Threat Modeling & STRIDE Analysis](#10-security-threat-modeling--stride-analysis)
-11. [Performance Benchmarks, Token Economics & Hardware Requirements](#11-performance-benchmarks-token-economics--hardware-requirements)
-12. [Developer Guide, Testing & Quality Assurance](#12-developer-guide-testing--quality-assurance)
+5. [Switch Multi-Agent Protocol & SecOps Room Architecture (`switch/`)](#5-switch-multi-agent-protocol--secops-room-architecture-switch)
+   - 5.1 Architecture & Room Topology
+   - 5.2 Agent Profiles & Behavioral Contracts (`@vayu-analyst`, `@vayu-remediator`, `@vayu-gatekeeper`)
+   - 5.3 Wispr Flow Voice Intent Parsing & Normalization Engine
+   - 5.4 Multi-Agent Incident Orchestration Lifecycle & State Machine
+6. [The Model Context Protocol (MCP) Server (`vayu_mcp/`)](#6-the-model-context-protocol-mcp-server-vayu_mcp)
+   - 6.1 Protocol Architecture & FastMCP `stdio` Transport
+   - 6.2 Complete Specification of the 9 MCP Tools
+   - 6.3 Multi-Client Configuration Matrix (Claude Desktop, Cursor, Windsurf, Claude Code)
+   - 6.4 Session State Isolation & Security Boundary Enforcement
+7. [The VAYU Skills Ecosystem (`crs/skills_cli/`)](#7-the-vayu-skills-ecosystem-crs-skills_cli)
+   - 7.1 Agent Skills Specification & Standard Directory Structure
+   - 7.2 Bundled Skills Catalog
+   - 7.3 Skills CLI Architecture & Command Reference
+8. [Real-Time Streaming Engine & Next.js 16 Linear UI Suite](#8-real-time-streaming-engine--nextjs-16-linear-ui-suite)
+   - 8.1 Newline-Delimited JSON (NDJSON) Wire Protocol (`crs/stream.py`)
+   - 8.2 Next.js 16 Architecture & Linear Design System Tokens
+   - 8.3 Linear Kanban Operations Board (`/issues`)
+   - 8.4 Linear Grouped Triage List (`/my-issues`)
+   - 8.5 Interactive Code Review Console & Direct GitHub Push (`/reviews`)
+   - 8.6 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph (`/dashboard`)
+   - 8.7 Responsive Collapsible Navigation & Fluid Viewports
+9. [Data Contracts, Schemas & Protocols](#9-data-contracts-schemas--protocols)
+   - 9.1 Internal Pydantic Domain Schemas (`crs/core/schemas.py`)
+   - 9.2 In-Toto SLSA v1.0 Attestation Payload Format
+   - 9.3 OASIS SARIF v2.1.0 Schema Mapping
+10. [Complete CLI & Operational Reference](#10-complete-cli--operational-reference)
+    - 10.1 `crs.vayu` / `vayu scan` CLI Reference
+    - 10.2 `vayu skills` CLI Reference
+    - 10.3 `vayu-mcp` CLI Reference
+    - 10.4 Environment Variable Configuration Reference
+11. [Security Threat Modeling & STRIDE Analysis](#11-security-threat-modeling--stride-analysis)
+12. [Performance Benchmarks, Token Economics & Hardware Requirements](#12-performance-benchmarks-token-economics--hardware-requirements)
+13. [Developer Guide, Testing & Quality Assurance](#13-developer-guide-testing--quality-assurance)
 
 ---
 
@@ -84,7 +93,7 @@ $$\textbf{FIND} \xrightarrow{\text{Deterministic SAST}} \textbf{REASON} \xrighta
 
 ### 1.3 Core Architectural Invariants & Non-Negotiables
 
-Every subsystem, API, CLI tool, and background task in VAYU strictly complies with five non-negotiable architectural safety invariants:
+Every subsystem, API, CLI tool, background task, and multi-agent persona in VAYU strictly complies with six non-negotiable architectural safety invariants:
 
 | # | Invariant | Technical Enforcement | Threat Prevented |
 |---|---|---|---|
@@ -93,6 +102,7 @@ Every subsystem, API, CLI tool, and background task in VAYU strictly complies wi
 | **I3** | **4-Gate Fail-Closed Verification** | A candidate patch is designated `VERIFIED` if and only if it sequentially passes four independent, deterministic verification gates: (1) Syntax/Compilation AST Check, (2) Functional Unit Test Suite, (3) Security Invariant AST Inspection, and (4) Semgrep AST Cleanliness Rescan. Any failure immediately triggers a `REJECTED` verdict. | Broken builds, silent business logic regressions, incomplete fixes, superficial edits that do not eradicate the vulnerability. |
 | **I4** | **Hostile Repository & Ephemeral Isolation** | Target repositories are treated as hostile, untrusted inputs. All patch applications, builds, test runners, and exploit verifications execute inside isolated ephemeral workspaces (either local `/tmp` disposable directory trees or isolated **DigitalOcean Cloud KVM Droplets** with in-memory Ed25519 tunnels and a 10-minute self-destruct TTL). The original target repository remains **100% untouched** (byte-for-byte SHA-256 fingerprint verified). | Developer machine compromise, malicious `setup.py`/`Makefile` build hooks, test suite privilege escalation. |
 | **I5** | **Cryptographic Provenance & Traceability** | Every remediation run outputs an **in-toto SLSA v1.0 Attestation** containing the SHA-256 digests of the input repository, proposed patch, test outcomes, builder identity, and an **ECDSA (P-256)** digital signature. | Supply chain tampering, untraceable automated commits, unverified code injection into production branches. |
+| **I6** | **Strict Human-in-the-Loop Release Enforcement** | An AI agent is strictly forbidden from self-approving or publishing code to remote git branches. Remediation PRs are opened and merged **only** when an authenticated human Incident Commander issues an explicit authorization (e.g., `/approve <issue_id>`). | Rogue autonomous code deployments, unreviewed logic alterations reaching production CI/CD pipelines. |
 
 ---
 
@@ -100,32 +110,36 @@ Every subsystem, API, CLI tool, and background task in VAYU strictly complies wi
 
 ### 2.1 7-Layer System Topology Diagram
 
-VAYU is partitioned into seven strictly decoupled layers with explicit data boundaries:
+VAYU OS is partitioned into seven strictly decoupled layers with explicit data boundaries:
 
 ```mermaid
 flowchart TD
-    subgraph L1 ["Layer 1: Presentation, Protocol & Ingestion Layer"]
+    subgraph L1 ["Layer 1: Presentation, Protocol, Multi-Agent & Ingestion Layer"]
         CLI["CLI Interactive Runner (crs.vayu)"]
         SkillsCLI["Skills CLI & Catalog (vayu skills)"]
         MCPServer["FastMCP stdio Server (vayu_mcp.server)"]
-        WebDashboard["Next.js 16 Real-Time Review Console (vayu-nextjs)"]
+        SwitchBridge["Switch Agent Bridge & Discord Gateway (switch/bridge/)"]
+        WebDashboard["Next.js 16 Linear UI Suite (/issues, /my-issues, /reviews, /dashboard)"]
         StreamAPI["NDJSON Streaming Process (crs.stream)"]
         RepoLoader["Repository Loader & SHA-256 Fingerprinter (crs.ingestion)"]
     end
 
-    subgraph L2 ["Layer 2: Deterministic Static Analysis Layer"]
+    subgraph L2 ["Layer 2: Multi-Agent SecOps Squad Layer (Switch)"]
+        Analyst["@vayu-analyst: AST Taint & Investigation"]
+        Remediator["@vayu-remediator: Patch Synthesis & 4 Gates"]
+        Gatekeeper["@vayu-gatekeeper: Invariants & Release Auth"]
+    end
+
+    subgraph L3 ["Layer 3: Deterministic Static Analysis & AST Layer"]
         SemgrepRunner["Semgrep Subprocess Isolation Runner"]
         RuleCatalog["AST Vulnerability Rules (rules/semgrep/demo_rules.yml)"]
         Normalizer["Finding Normalizer & Deduplication Engine"]
-    end
-
-    subgraph L3 ["Layer 3: Guardrails & Context Bounding Layer"]
         EvidenceBuilder["Evidence Builder (±5 Line Window)"]
         PromptFirewall["Prompt Firewall (Data/Instruction Quarantined JSON)"]
     end
 
     subgraph L4 ["Layer 4: Guarded AI Reasoning Layer (Untrusted Boundary)"]
-        OllamaClient["Local Ollama Client (gemma4 / qwen / llama3)"]
+        OllamaClient["Local Ollama Client (qwen2.5-coder:7b / llama3)"]
         OfflineClient["Offline Deterministic Rule Engine"]
         EnsembleClient["Multi-Model Ensemble Dispatcher"]
     end
@@ -143,7 +157,7 @@ flowchart TD
             LocalPatchApplier["Patch Applier"]
             Gate1L["Gate 1: Syntax AST Check"]
             Gate2L["Gate 2: Functional Pytest Suite"]
-            Gate3L["Gate 3: Security Invariant AST Check"]
+            Gate3L["Gate 3: Exploit Neutralization PoC"]
             Gate4L["Gate 4: Semgrep Static Rescan"]
         end
         subgraph CloudSandbox ["Cloud Mode: DigitalOcean KVM Droplet"]
@@ -155,7 +169,7 @@ flowchart TD
         end
     end
 
-    subgraph L7 ["Layer 7: Provenance, SARIF & CI/CD Export Layer"]
+    subgraph L7 ["Layer 7: Provenance, SARIF & Git Release Layer"]
         SLSABuilder["in-toto SLSA v1.0 Attestation Builder"]
         ECDSASigner["ECDSA (P-256 / SECP256R1) Cryptographic Signer"]
         SARIFExporter["OASIS SARIF v2.1.0 Exporter"]
@@ -166,6 +180,9 @@ flowchart TD
     CLI --> RepoLoader
     SkillsCLI --> RepoLoader
     MCPServer --> RepoLoader
+    SwitchBridge --> Analyst
+    Analyst --> Remediator
+    Remediator --> Gatekeeper
     WebDashboard --> StreamAPI
     StreamAPI --> RepoLoader
     RepoLoader --> SemgrepRunner
@@ -188,118 +205,117 @@ flowchart TD
     SLSABuilder --> ECDSASigner
     ECDSASigner --> SARIFExporter
     SARIFExporter --> GHAction
+    Gatekeeper --> GHAction
 ```
 
 ### 2.2 Complete Codebase Directory & Subsystem Inventory
 
 ```
-/Users/ayush/Desktop/hackto/vayu/
-├── crs/                             # Core Autonomous Cyber Reasoning System
-│   ├── cicd/                        # CI/CD runners, SARIF, and GitHub annotations
+vayucs/
+├── README.md                      # Root system overview, quickstart & Linear UI previews
+├── TECHNICAL_DOCUMENTATION.md     # Unified monolithic technical manual (this document)
+├── run_switch_demo.sh             # Interactive Switch multi-agent demo & test runner
+├── requirements.txt               # Production Python dependencies
+├── setup.py                       # Python package configuration
+│
+├── switch/                        # SandboxAQ Switch Multi-Agent Implementation
+│   ├── bridge/
+│   │   ├── discord_bot.py         # Discord REST gateway & Wispr Flow voice intent parser
+│   │   ├── room_bridge.py         # Switch SSE inbound & HTTP POST outbound room client
+│   │   └── models.py              # Switch event schemas & message data structures
+│   ├── agents/
+│   │   ├── analyst.py             # VAYU-Analyst: AST taint flow & Prompt Firewall
+│   │   ├── remediator.py          # VAYU-Remediator: Patch synthesis & 4-gate verification
+│   │   └── gatekeeper.py          # VAYU-Gatekeeper: Invariant enforcement & PR releases
+│   └── tests/                     # Switch unit, integration, and E2E test suite (17 tests)
+│
+├── crs/                           # Core Autonomous Cyber Reasoning System
+│   ├── cicd/                      # CI/CD runners, SARIF, and GitHub annotations
 │   │   ├── __init__.py
-│   │   └── ci_runner.py             # SARIF v2.1.0 exporter & GH Actions annotations
-│   ├── core/                        # Shared Pydantic domain models & schemas
+│   │   └── ci_runner.py           # SARIF v2.1.0 exporter & GH Actions annotations
+│   ├── core/                      # Shared Pydantic domain models & schemas
 │   │   ├── __init__.py
-│   │   └── schemas.py               # TargetRepository, VulnerabilityFinding, PatchProposal, etc.
-│   ├── guardrails/                  # Prompt injection defense & isolation
+│   │   └── schemas.py             # TargetRepository, VulnerabilityFinding, PatchProposal, etc.
+│   ├── guardrails/                # Prompt injection defense & isolation
 │   │   ├── __init__.py
-│   │   └── prompt_firewall.py       # JSON delimiter encapsulation & untrusted data quarantine
-│   ├── ingestion/                   # Repository traversal & cryptographic hashing
+│   │   └── prompt_firewall.py     # JSON delimiter encapsulation & untrusted data quarantine
+│   ├── ingestion/                 # Repository traversal & cryptographic hashing
 │   │   ├── __init__.py
-│   │   └── repository_loader.py     # Traversal, pruning (.git, node_modules), SHA-256 fingerprinting
-│   ├── patching/                    # Indentation lock & patch generation
+│   │   └── repository_loader.py   # Traversal, pruning (.git, node_modules), SHA-256 fingerprinting
+│   ├── patching/                  # Indentation lock & patch generation
 │   │   ├── __init__.py
-│   │   ├── patch_generator.py       # Minimal edit synthesis & indentation lock algorithm
-│   │   └── patch_validator.py       # Deterministic structural diff checks (single-file, hunk sanity)
-│   ├── reasoning/                   # Multi-provider LLM & heuristic reasoning
+│   │   ├── patch_generator.py     # Minimal edit synthesis & indentation lock algorithm
+│   │   └── patch_validator.py     # Deterministic structural diff checks (single-file, hunk sanity)
+│   ├── reasoning/                 # Multi-provider LLM & heuristic reasoning
 │   │   ├── __init__.py
-│   │   ├── ensemble_client.py       # Fallback dispatcher across multiple model backends
-│   │   ├── evidence_builder.py      # Bounded ±5 line context extractor
-│   │   ├── llm_client.py            # Base abstract reasoning client interface
-│   │   ├── offline_client.py        # Zero-dependency deterministic offline rule engine
-│   │   ├── ollama_client.py         # HTTP client for Ollama API with schema validation
-│   │   ├── ollama_config.py         # Ollama endpoint & model configuration
-│   │   ├── ollama_demo.py           # Standalone reasoning verification script
-│   │   └── reasoning_engine.py      # High-level vulnerability analysis & exploitability reasoner
-│   ├── reporting/                   # Provenance & cryptographic attestations
+│   │   ├── ensemble_client.py     # Fallback dispatcher across multiple model backends
+│   │   ├── evidence_builder.py    # Bounded ±5 line context extractor
+│   │   ├── llm_client.py          # Base abstract reasoning client interface
+│   │   ├── offline_client.py      # Zero-dependency deterministic offline rule engine
+│   │   ├── ollama_client.py       # HTTP client for Ollama API with schema validation
+│   │   ├── ollama_config.py       # Ollama endpoint & model configuration
+│   │   └── reasoning_engine.py    # High-level vulnerability analysis & exploitability reasoner
+│   ├── reporting/                 # Provenance & cryptographic attestations
 │   │   ├── __init__.py
-│   │   ├── provenance.py            # Audit ledger generation & JSON serialization
-│   │   └── slsa_provenance.py       # in-toto SLSA v1.0 builder & ECDSA P-256 digital signing
-│   ├── skills_catalog/              # 8 Bundled AI Agent Skills (SKILL.md)
-│   │   ├── mcp-development/SKILL.md
-│   │   ├── patch-verification/SKILL.md
-│   │   ├── prompt-injection-defense/SKILL.md
-│   │   ├── sast-workflow/SKILL.md
-│   │   ├── secure-code-review/SKILL.md
-│   │   ├── security-analysis/SKILL.md
-│   │   ├── vayu-development/SKILL.md
-│   │   └── vulnerability-remediation/SKILL.md
-│   ├── skills_cli/                  # Modern Agent Skills CLI implementation
-│   │   ├── __init__.py
-│   │   ├── catalog.py               # Catalog indexing, searching & remote git fetching
-│   │   ├── commands.py              # Click commands: list, search, add, remove, info, doctor
-│   │   ├── installer.py             # Project (.agents/skills) & global installation engine
-│   │   ├── models.py                # SkillEntry & YAML frontmatter parser
-│   │   └── ui.py                    # Rich visual tables, spinners, and panels
-│   ├── static_analysis/             # AST Static Application Security Testing
-│   │   ├── __init__.py
-│   │   ├── normalizer.py            # Semgrep JSON to VulnerabilityFinding normalizer
-│   │   ├── scanner.py               # High-level SAST scanner coordinator
-│   │   ├── semgrep_runner.py        # Subprocess runner with timeout & rule isolation
-│   │   └── taint_graph.py           # Preliminary taint tracking data structure
-│   ├── verification/                # 4-Gate Fail-Closed Verification Engine
-│   │   ├── __init__.py
-│   │   ├── cloud/                   # DigitalOcean Ephemeral Cloud Droplet Sandboxing
-│   │   │   ├── __init__.py
-│   │   │   ├── do_client.py         # Zero-dependency REST API v2 client (urllib.request)
-│   │   │   ├── do_config.py         # Droplet configuration (region, size, image, TTL)
-│   │   │   ├── do_workspace.py      # Cloud droplet lifecycle manager (create, upload, run, destroy)
-│   │   │   └── ssh_tunnel.py        # RAM-only Ed25519 keypair generation & SSH command runner
-│   │   ├── fuzz_generator.py        # Input fuzzing generator for dynamic PoC tests
-│   │   ├── language_runners.py      # Polyglot build & syntax checkers (Python, Go, Rust, Node)
-│   │   ├── patch_applier.py         # In-memory unified diff application engine
-│   │   ├── remote_runner.py         # Standalone 4-gate verification harness executed inside Droplets
-│   │   ├── security_verifier.py     # AST regression verifier & Semgrep rescan runner
-│   │   ├── test_runner.py           # Pytest & build validation runner
-│   │   ├── verification_engine.py   # Verification orchestrator dispatching to local or cloud
-│   │   └── workspace.py             # Local ephemeral /tmp workspace manager
-│   ├── demo.py                      # Interactive demo orchestration script
-│   ├── orchestrator.py              # CRSPipeline multi-stage orchestrator
-│   ├── server.py                    # In-memory SSE pipeline event broadcaster
-│   ├── stream.py                    # NDJSON streaming engine for real-time web dashboard
-│   └── vayu.py                      # Main VAYU CLI entry point (Click + Rich UI)
-├── docs/                            # Deep technical reference guides
-│   ├── mcp-clients.md               # MCP Client configuration guide (Claude, Cursor, Windsurf)
-│   ├── mcp-security.md              # MCP security architecture & threat model
-│   └── mcp-server.md                # FastMCP server documentation & 9 tools reference
-├── rules/                           # Static analysis rule catalogs
-│   └── semgrep/
-│       └── demo_rules.yml           # AST detection patterns for CWE-78, 89, 502, 328, 798, 22
-├── samples/                         # Real-world benchmark testbeds
-│   └── vulnerable/
-│       └── command_injection/       # Vulnerable target repository with app.py & pytest suite
-├── tests/                           # 188 Comprehensive Automated Test Suites
-│   ├── mcp_server/                  # MCP server protocol & tool unit tests
-│   ├── verification/                # Local & cloud verification engine tests
-│   └── test_*.py                    # Complete subsystem unit tests (schemas, pipeline, CLI, skills)
-├── vayu-nextjs/                     # Next.js 16 Web Dashboard & Review Console
-│   ├── app/                         # App Router (dashboard, api routes, review console)
-│   │   ├── api/run/route.ts         # NDJSON streaming bridge spawning python -m crs.stream
-│   │   ├── api/push-github/route.ts # Direct GitHub branch & PR creation API
-│   │   ├── dashboard/page.tsx       # Live visualization & real-time telemetry dashboard
-│   │   └── review/page.tsx          # Interactive diff review & patch approval console
-│   └── src/components/              # Three.js 3D terrain & SVG system flow visualizers
-├── vayu_mcp/                        # Model Context Protocol (FastMCP) Server Package
-│   ├── __init__.py
-│   ├── config.py                    # MCP boundary paths & environment configuration
-│   ├── server.py                    # FastMCP server registration & tool exports
-│   ├── session.py                   # Multi-run session manager & state cache
-│   └── tools.py                     # Implementations of the 9 core MCP tools
-├── action.yml                       # Reusable GitHub Action definition
-├── ARCHITECTURE.md                  # System architecture specification
-├── DESIGN.md                        # Formal system design & security invariants
-├── pyproject.toml                   # Python package specification & CLI entry points
-└── requirements.txt                 # Runtime dependencies
+│   │   ├── provenance.py          # Audit ledger generation & JSON serialization
+│   │   └── slsa_provenance.py     # in-toto SLSA v1.0 builder & ECDSA P-256 digital signing
+│   ├── skills_catalog/            # 8 Bundled AI Agent Skills (SKILL.md)
+│   ├── skills_cli/                # Modern Agent Skills CLI implementation
+│   ├── static_analysis/           # AST Static Application Security Testing
+│   ├── verification/              # 4-Gate Fail-Closed Verification Engine
+│   │   ├── cloud/                 # DigitalOcean Ephemeral Cloud Droplet Sandboxing
+│   │   ├── language_runners.py    # Polyglot build & syntax checkers (Python, Go, Rust, Node)
+│   │   ├── patch_applier.py       # In-memory unified diff application engine
+│   │   ├── remote_runner.py       # Standalone 4-gate verification harness executed inside Droplets
+│   │   ├── security_verifier.py   # AST regression verifier & Semgrep rescan runner
+│   │   ├── test_runner.py         # Pytest & build validation runner
+│   │   ├── verification_engine.py # Verification orchestrator dispatching to local or cloud
+│   │   └── workspace.py           # Local ephemeral /tmp workspace manager
+│   ├── orchestrator.py            # CRSPipeline multi-stage orchestrator
+│   ├── stream.py                  # NDJSON streaming engine for real-time web dashboard
+│   └── vayu.py                    # Main VAYU CLI entry point (Click + Rich UI)
+│
+├── vayu-nextjs/                   # Next.js 16 Linear-Style Web Operations Console
+│   ├── app/                       # App Router
+│   │   ├── issues/                # Linear Kanban Board (/issues)
+│   │   ├── my-issues/             # Linear Grouped Triage List (/my-issues)
+│   │   ├── reviews/               # Interactive Code Review Console & Diff Viewer (/reviews)
+│   │   ├── dashboard/             # 3D WebGL Threat Terrain & System Simulation (/dashboard)
+│   │   ├── components/            # Sidebar, Header, Keyboard Shortcut Modals
+│   │   └── api/                   # REST API routes (git push, run, incidents)
+│   └── public/                    # Icons, audio chimes & visual assets
+│
+├── vayu_mcp/                      # Model Context Protocol (FastMCP) Server Package
+│   ├── config.py                  # MCP boundary paths & environment configuration
+│   ├── server.py                  # FastMCP server registration & tool exports
+│   ├── session.py                 # Multi-run session manager & state cache
+│   └── tools.py                   # Implementations of the 9 core MCP tools
+│
+├── samples/vulnerable/            # Validated Vulnerability Testbeds
+│   ├── command_injection/         # CWE-78: Subprocess Shell Injection (app.py)
+│   ├── path_traversal/            # CWE-22: Arbitrary File Read (app.py)
+│   └── sql_injection/             # CWE-89: SQLite String Formatting Injection (app.py)
+│
+├── tests/                         # 195 Core CRS Automated Test Suites
+│
+└── docs/                          # In-Depth Technical Reference Documentation
+    ├── README.md                  # Documentation Hub Index & Directory Matrix
+    ├── ARCHITECTURE.md            # 7-Layer Subsystem Breakdown & AIxCC Principles
+    ├── DESIGN.md                  # Formal Security Invariants & Mathematical Proofs
+    ├── SWITCH_README.md           # Switch Multi-Agent Protocol Specification
+    ├── WISPR_VOICE_SCRIPT.md      # Wispr Flow Voice Script & Dictation Guides
+    ├── BLOG_POST.md               # Technical Deep-Dive Hackathon Blog Post
+    ├── skills.md                  # Engineering Handbook & Subagent Directives
+    ├── HOW_TO_USE.md              # Operational Setup & Ollama Running Instructions
+    ├── cloud-and-local-sandboxing.md # DigitalOcean Cloud Droplet Sandboxing Guide
+    ├── cli-reference.md           # CLI Command Reference & Flag Matrix
+    ├── mcp-server.md              # FastMCP Server Architecture & Tool Reference
+    ├── mcp-clients.md             # MCP Client Setup (Claude Desktop, Cursor, Windsurf)
+    ├── mcp-security.md            # MCP Security Boundaries & Threat Model
+    ├── skills-ecosystem.md        # Agent Skills Architecture & CLI Reference
+    ├── slsa-and-sarif.md          # SLSA Level 3 Provenance & SARIF Exporter
+    ├── web-review-console.md      # Web Console Architecture & NDJSON Protocol
+    └── api-reference.md           # Python API Module Reference
 ```
 
 ### 2.3 Process Boundaries, Network Isolation & Data Trust Classification
@@ -763,9 +779,141 @@ The Base64-encoded signature and PEM-encoded public key are bundled into `attest
 
 ---
 
-## 5. The Model Context Protocol (MCP) Server (`vayu_mcp/`)
+## 5. Switch Multi-Agent Protocol & SecOps Room Architecture (`switch/`)
 
-### 5.1 Protocol Architecture & FastMCP `stdio` Transport
+### 5.1 Architecture & Room Topology
+
+VAYU OS integrates natively with **SandboxAQ Switch** (`sandbox-quantum/switch`) to deploy an autonomous DevSecOps incident response team into team messaging environments (Discord, Slack). The system operates on an event-driven room architecture:
+
+```
+[ Incident Commander / Developer ]
+                ▲
+                │ (Spoken Voice via Wispr Flow or Slash Commands)
+                ▼
+  [ Discord / Slack Bridge (switch/bridge/discord_bot.py) ]
+                ▲
+                │ (SSE Inbound Stream: /api/rooms/{room}/events)
+                │ (HTTP POST Outbound: /api/rooms/{room}/messages)
+                ▼
+  [ Switch Agent Bridge (switch/bridge/room_bridge.py) ]
+                │
+    ┌───────────┼───────────┐
+    ▼           ▼           ▼
+[@vayu-analyst] [@vayu-remediator] [@vayu-gatekeeper]
+ (Taint Graph)   (4-Gate Sandbox)   (Release Auth)
+    │           │           │
+    └───────────┴───────────┘
+                ▼
+  [ Shared Incident Ledger & Telemetry (SQLite) ]
+                ▼
+  [ Linear Web UI Suite (/issues, /my-issues, /reviews) ]
+```
+
+The bridge maintains persistent Server-Sent Events (SSE) connections to Switch room endpoints. When an incident or command is posted to `#security-incidents`, events are dispatched asynchronously to registered agent loops.
+
+### 5.2 Agent Profiles & Behavioral Contracts
+
+The squad consists of three specialized agent personas with formal trust boundaries:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                         VAYU OS MULTI-AGENT SPECIFICATIONS                             │
+├────────────────────┬───────────────────────────────────────────────────────────────────┤
+│ 🔍 @vayu-analyst   │ Role: Static Application Security Testing & Taint Investigation   │
+│                    │ Subsystem: switch/agents/analyst.py, crs/static_analysis/         │
+│                    │ Responsibilities: Ingests repository code, maps AST taint paths   │
+│                    │ from untrusted sources to execution sinks, identifies CWE-78,    │
+│                    │ CWE-22, CWE-89, bounds context into ±5 line windows, and isolates │
+│                    │ evidence inside Prompt Firewall delimiters.                       │
+│                    │ Boundary: Read-only. Cannot write to disk, git, or approve PRs.   │
+├────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ 🛠️ @vayu-remediator│ Role: Patch Synthesis & 4-Gate Ephemeral Sandbox Verification     │
+│                    │ Subsystem: switch/agents/remediator.py, crs/verification/         │
+│                    │ Responsibilities: Consumes investigation reports, prompts local   │
+│                    │ Ollama (qwen2.5-coder:7b-instruct), locks indentation to source   │
+│                    │ code whitespace, applies patch to disposable sandbox (/tmp or DO),│
+│                    │ runs all 4 verification gates, and signs SLSA Level 3 ECDSA ledger│
+│                    │ Boundary: Synthesis & verification only. Self-approval forbidden. │
+├────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ 🛡️ @vayu-gatekeeper│ Role: Security Invariant Enforcement & Git Release Authorization │
+│                    │ Subsystem: switch/agents/gatekeeper.py, crs/cicd/                 │
+│                    │ Responsibilities: Listens for human authorization (/approve <id>),│
+│                    │ verifies that all 4 verification gates passed with signed SLSA    │
+│                    │ provenance, creates remediation git branch, commits the fix, and   │
+│                    │ publishes the verified GitHub Pull Request to the chat room.      │
+│                    │ Boundary: Gatekeeper enforces human sign-off; blocks auto-push.  │
+└────────────────────┴───────────────────────────────────────────────────────────────────┘
+```
+
+### 5.3 Wispr Flow Voice Intent Parsing & Normalization Engine
+
+To enable hands-free voice operations during security emergencies, `switch/bridge/discord_bot.py` incorporates a natural language speech intent parser. Rather than forcing rigid command syntax, spoken dictations captured via **Wispr Flow** are dynamically normalized into structured operational commands:
+
+```python
+# Natural speech normalization table (switch/bridge/discord_bot.py)
+SPEECH_PATTERNS = {
+    # Investigation triggers:
+    # "Vayu, please check the code for any vulnerabilities before raising a PR on GitHub."
+    # "Vayu, can you inspect the repository for any security issues?"
+    r"(?i).*check.*(vulnerabilit|security|code).*": "/vayu scan samples/vulnerable/command_injection",
+    r"(?i).*scan.*": "/vayu scan samples/vulnerable/command_injection",
+    r"(?i).*investigate.*": "/vayu scan samples/vulnerable/command_injection",
+    
+    # Release sign-off triggers:
+    # "Vayu, the fix looks good across all four gates, please approve and ship the pull request."
+    # "Approved, go ahead and merge the fix."
+    r"(?i).*(approve|looks good|ship it|go ahead).*": "/approve",
+    
+    # Rejection triggers:
+    # "Vayu, reject the fix, we need more unit tests."
+    r"(?i).*reject.*": "/reject",
+}
+```
+
+This architecture allows an Incident Commander wearing a headset to speak natural English while Wispr Flow transcribes audio in real time, triggering the entire AST analysis, local LLM synthesis, 4-gate sandbox verification, and GitHub pull request lifecycle in under 2 minutes.
+
+### 5.4 Multi-Agent Incident Orchestration Lifecycle & State Machine
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Commander as Incident Commander (Wispr Flow)
+    participant Room as Discord / Switch Room (#security-incidents)
+    participant Analyst as @vayu-analyst
+    participant Remediator as @vayu-remediator
+    participant Sandbox as 4-Gate Sandbox (Local / Cloud)
+    participant Gatekeeper as @vayu-gatekeeper
+    participant GitHub as Remote GitHub Repository
+
+    Commander->>Room: 🗣️ "Vayu, please check the code for vulnerabilities before raising a PR"
+    Room->>Analyst: Normalized Event: /vayu scan samples/vulnerable/command_injection
+    Analyst->>Analyst: Semgrep AST scan + AST taint traversal
+    Analyst->>Room: Investigation Report (VAYU-138, CWE-78) + Handoff to Remediator
+    
+    Room->>Remediator: Remediation Handoff Event (Finding: VAYU-138)
+    Remediator->>Remediator: Local Ollama prompt with Prompt Firewall + Indentation Lock
+    Remediator->>Sandbox: Apply unified diff to ephemeral workspace
+    Sandbox->>Sandbox: Gate 1: Build / AST Syntax Check (PASS)
+    Sandbox->>Sandbox: Gate 2: Functional Pytest Suite (PASS)
+    Sandbox->>Sandbox: Gate 3: Exploit Neutralization PoC (PASS)
+    Sandbox->>Sandbox: Gate 4: Semgrep Static Rescan (PASS)
+    Sandbox-->>Remediator: 4/4 Gates Verified Green
+    Remediator->>Remediator: Sign in-toto SLSA Level 3 Provenance (ECDSA P-256)
+    Remediator->>Room: Post Verification Report + Prompt Commander for Sign-off
+
+    Commander->>Room: 🗣️ "The fix looks good across all four gates, approve and ship the PR"
+    Room->>Gatekeeper: Normalized Event: /approve VAYU-138
+    Gatekeeper->>Gatekeeper: Verify Invariant 6 (Human Sign-off & 4/4 Verification Proof)
+    Gatekeeper->>GitHub: Create branch vayu-fix/vayu-138-cwe78 & Commit Verified Patch
+    Gatekeeper->>GitHub: Open Verified Pull Request #42 with SLSA Attestation
+    Gatekeeper->>Room: Release Complete! PR Link: github.com/ayushkumar2601/vayucs/pull/42
+```
+
+---
+
+## 6. The Model Context Protocol (MCP) Server (`vayu_mcp/`)
+
+### 6.1 Protocol Architecture & FastMCP `stdio` Transport
 
 The **VAYU MCP Server** connects AI coding assistants (Claude Desktop, Cursor, Windsurf, Claude Code) directly to VAYU's autonomous Cyber Reasoning System over standard Model Context Protocol (MCP) using JSON-RPC over `stdio`.
 
@@ -799,7 +947,7 @@ The **VAYU MCP Server** connects AI coding assistants (Claude Desktop, Cursor, W
 
 The server is built using Anthropic's official `mcp.server.fastmcp.FastMCP` SDK. To preserve transport integrity, all logging is directed to `sys.stderr`.
 
-### 5.2 Complete Specification of the 9 MCP Tools
+### 6.2 Complete Specification of the 9 MCP Tools
 
 | # | Tool Name | Description | Arguments | Returns |
 |---|---|---|---|---|
@@ -813,7 +961,7 @@ The server is built using Anthropic's official `mcp.server.fastmcp.FastMCP` SDK.
 | **8** | `vayu_export_sarif` | Generates and exports an OASIS SARIF v2.1.0 static analysis report. | `run_id` (str, req)<br>`output_path` (str, opt) | Path to saved SARIF report and full SARIF JSON document. |
 | **9** | `vayu_get_provenance` | Generates a verifiable in-toto SLSA v1.0 attestation with an ECDSA (P-256) digital signature. | `run_id` (str, req)<br>`output_path` (str, opt) | In-toto Statement v1 payload, Base64 ECDSA signature, and verifying public key. |
 
-### 5.3 Multi-Client Configuration Matrix
+### 6.3 Multi-Client Configuration Matrix
 
 #### Claude Desktop (`claude_desktop_config.json`)
 ```json
@@ -850,7 +998,7 @@ The server is built using Anthropic's official `mcp.server.fastmcp.FastMCP` SDK.
 }
 ```
 
-### 5.4 Session State Isolation & Security Boundary Enforcement
+### 6.4 Session State Isolation & Security Boundary Enforcement
 
 `SessionManager` isolates concurrent runs using unique UUIDs (`run_id`). Each `RunState` encapsulates:
 - The `AnalysisTarget` and its composite SHA-256 fingerprint.
@@ -863,9 +1011,9 @@ The server is built using Anthropic's official `mcp.server.fastmcp.FastMCP` SDK.
 
 ---
 
-## 6. The VAYU Skills Ecosystem (`crs/skills_cli/`)
+## 7. The VAYU Skills Ecosystem (`crs/skills_cli/`)
 
-### 6.1 Agent Skills Specification & Standard Directory Structure
+### 7.1 Agent Skills Specification & Standard Directory Structure
 
 VAYU incorporates a native Agent Skills framework (`vayu skills`) compatible with the open Agent Skills specification. A skill is a self-contained directory containing instructions, workflows, and rules formatted in markdown with YAML frontmatter:
 
@@ -889,7 +1037,7 @@ tags: [security, sast, reasoning, semgrep]
 ---
 ```
 
-### 6.2 Bundled Skills Catalog
+### 7.2 Bundled Skills Catalog
 
 VAYU includes eight pre-installed, high-integrity AI agent skills in `crs/skills_catalog/`:
 
@@ -904,7 +1052,7 @@ VAYU includes eight pre-installed, high-integrity AI agent skills in `crs/skills
 | **`mcp-development`** | 1.0.0 | Model Context Protocol tool development, JSON-RPC, and FastMCP. | Building and debugging MCP tools, clients, and session states. |
 | **`vayu-development`** | 1.0.0 | VAYU system architecture, coding invariants, and test standards. | Extending VAYU, adding verification runners, modifying core pipelines. |
 
-### 6.3 Skills CLI Architecture & Command Reference
+### 7.3 Skills CLI Architecture & Command Reference
 
 The Skills CLI is implemented in `crs/skills_cli/` using Click and Rich:
 
@@ -936,9 +1084,9 @@ vayu skills remove security-analysis
 
 ---
 
-## 7. Real-Time Streaming Engine & Web Review Console
+## 8. Real-Time Streaming Engine & Next.js 16 Linear UI Suite
 
-### 7.1 Newline-Delimited JSON (NDJSON) Wire Protocol (`crs/stream.py`)
+### 8.1 Newline-Delimited JSON (NDJSON) Wire Protocol (`crs/stream.py`)
 
 To deliver sub-second telemetry to the Next.js web console without polling, `crs/stream.py` emits newline-delimited JSON (NDJSON) events directly over `sys.stdout`. Each event conforms to:
 
@@ -951,38 +1099,72 @@ To deliver sub-second telemetry to the Next.js web console without polling, `crs
 - `target`: Metadata describing codebase name, file count, and composite SHA-256 fingerprint.
 - `repo_map`: Codebase topology containing line counts and indentation depths for all source files.
 - `findings`: Array of normalized `VulnerabilityFinding` objects discovered by Semgrep.
-- `evidence`: Quarantined source code context ($\pm 5$ lines).
+- `evidence`: Quarantined source code context (±5 lines).
 - `reasoning`: Root cause, impact, and remediation strategy generated by the model.
 - `patch`: Canonical unified diff with expected security effect.
 - `check`: Individual gate execution outcome (`build`, `tests`, `security_regression`, `static_rescan`).
 - `done`: Final pipeline decision (`VERIFIED` or `REJECTED`) with summary statistics.
 - `error`: Error payload detailing failure stage, message, and fatal status.
 
-### 7.2 Next.js 16 Web Dashboard Architecture (`vayu-nextjs/`)
+### 8.2 Next.js 16 Architecture & Linear Design System Tokens
 
-The web dashboard is built using **Next.js 16**, **React 19**, **TailwindCSS**, **Three.js**, and **Turbopack**:
-- **App Router (`app/`)**: Modern React Server Components and Route Handlers.
-- **Streaming Route (`app/api/run/route.ts`)**: Spawns `python -m crs.stream <target>` as a child process and pipes stdout chunks directly into a `ReadableStream` consumed by the browser's `fetch()` reader.
-- **State Reducer (`app/dashboard/runReducer.ts`)**: A deterministic Redux-style action-state reducer processing incoming stream events and updating the UI state.
+The VAYU OS operations console is built on **Next.js 16 (Turbopack)**, **React 19**, and **TailwindCSS**, engineered strictly according to the **Linear Design System**:
 
-### 7.3 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph
+| Token Category | Token Variable | Hex Value / Metric | Usage Context |
+|---|---|---|---|
+| **Canvas** | `canvas` | `#010102` | Deepest dark backdrop across all views |
+| **Surface Step 1** | `surface-1` | `#0f1011` | Standard card containers, table rows, collapsed panels |
+| **Surface Step 2** | `surface-2` | `#141516` | Lifted cards, selected states, modal backgrounds |
+| **Surface Step 3** | `surface-3` | `#18191a` | Active controls, hovered elements, pill badges |
+| **Hairline Border** | `hairline` | `#23252a` | Default 1px card separators and container outlines |
+| **Hairline Strong** | `hairline-strong`| `#34343a` | Focused card borders, divider rules |
+| **Linear Accent** | `primary` | `#5e6ad2` | Lavender-blue brand mark, active tabs, focus rings |
+| **Ink** | `ink` | `#f7f8f8` | Primary display headers, issue titles |
+| **Ink Muted** | `ink-muted` | `#d0d6e0` | Secondary descriptions, timestamps, metadata |
+| **Ink Subtle** | `ink-subtle` | `#8a8f98` | Muted labels, keyboard shortcut badges, icons |
 
-- **3D Codebase Terrain (`Terrain.tsx`)**: Renders the target codebase as a dynamic Three.js point-cloud landscape. File paths form the X-axis, line numbers form the Z-axis, and elevation (Y-axis) represents code line length and indentation depth. Vulnerable lines pulse in thermal crimson (`#ef4444`); upon verification, they transition into emerald green (`#10b981`).
-- **SVG Dynamic System Flow (`System.tsx`)**: Interactive node-graph illustrating telemetry request flows across ingress, authentication, daemon dispatch, and database execution. Risk paths animate with red pulse waves while vulnerable, snapping into a secure state with a cryptographic shield indicator when verified.
+### 8.3 Linear Kanban Operations Board (`/issues`)
 
-### 7.4 Web Review Console & Direct GitHub Commit/PR Push
+Located at `/issues`, this view provides a high-density, five-column workflow tracking security remediation tickets across their complete lifecycle:
+- **Columns**: `Inbox` (newly discovered), `Up Next` (triaged), `In Progress` (under remediation), `Review` (pending human approval), `Done` (merged & released).
+- **Live SQLite Sync**: Polls `/api/incidents` every 2 seconds to reflect multi-agent updates in real time.
+- **One-Click Human Approval**: Items in the `Review` column feature a prominent `👍 Approve` button that triggers `/api/incidents` approval, cutting a git branch and publishing a PR without leaving the board.
+- **Visual Metadata**: Issue ID (`VAYU-138`), assignee avatar (`@vayu-analyst`, `@vayu-remediator`, `@vayu-gatekeeper`), severity pill (`HIGH`, `MEDIUM`), and CWE badge.
 
-The **Web Review Console** (`app/review/page.tsx`) provides an interactive interface for human-in-the-loop audit:
-1. **Side-by-Side Diff Inspection**: Colorized unified diff viewer highlighting exact additions and deletions.
-2. **Gate Proof Inspection**: Expandable verification logs showing raw compiler stdout, pytest execution times, and Semgrep rescan output.
-3. **Cryptographic Attestation Verification**: Visual rendering of the in-toto SLSA statement and ECDSA P-256 public key.
-4. **Direct GitHub Push Integration (`app/api/push-github/route.ts`)**: Operators can click **"Push to GitHub"**, which automatically authenticates via GitHub Personal Access Token, creates a new remediation branch (e.g., `vayu/remediation-cwe78-9f4a1c`), commits the verified patch, and opens a Pull Request with the SLSA attestation embedded in the PR description.
+### 8.4 Linear Grouped Triage List (`/my-issues`)
+
+Located at `/my-issues`, this view provides a streamlined developer triage queue structured exactly like Linear's personal task view:
+- **Grouped Categories**: `In Review (3)`, `In Progress (4)`, `Todo (4)`.
+- **3-Bar Signal Priority**: Visual priority indicators (`HIGH`, `MEDIUM`, `LOW`) matching Linear's triple-bar icons.
+- **Branch & PR Badges**: Displays associated Git branches and PR indicators (`⑂ #54910`).
+- **Live Agent Status**: Pulsing agent status badges (`Working... @vayu-remediator`) show active subagents currently processing issues.
+
+### 8.5 Interactive Code Review Console & Direct GitHub Push (`/reviews`)
+
+Located at `/reviews`, this view serves as the formal audit and release station:
+- **Side-by-Side Unified Diff**: Colorized diff highlighting exact removals (red) and additions (green).
+- **Four-Gate Telemetry Badges**: Individual status indicators for Gate 1 (Build), Gate 2 (Tests), Gate 3 (Exploit), and Gate 4 (Rescan).
+- **Dual-Mode Sandbox Toggle**: Seamlessly switches between `☁ DigitalOcean` KVM Droplets and `💻 Local /tmp` ephemeral sandboxes.
+- **Direct GitHub Push Integration**: Operators click **"Push to GitHub"**, which executes `POST /api/git/push`, stages the verified patch, signs the commit with SLSA provenance, and creates a GitHub pull request.
+- **Keyboard Navigation**: Vim-inspired navigation (`J`/`K` to move through issues, `1`-`5` to switch inspection tabs, `R` to run verification, `P` to push).
+
+### 8.6 WebGL 3D Codebase Terrain Visualizer & SVG System Architecture Graph (`/dashboard`)
+
+Located at `/dashboard`, this view provides high-level architectural observability:
+- **3D Codebase Terrain (`Terrain.tsx`)**: Renders the repository topology as an interactive Three.js point-cloud elevation map. Elevation indicates file complexity and indentation depth. Vulnerable lines pulse in thermal orange/red, cooling to blue/cyan once patches are verified.
+- **SVG Dynamic System Flow (`System.tsx`)**: Graph simulating client ingress flows through web routes, authentication middleware, and database execution sinks, visually demonstrating how VAYU severs the taint vector.
+
+### 8.7 Responsive Collapsible Navigation & Fluid Viewports
+
+All pages share the global `Sidebar.tsx` component:
+- **Expandable / Collapsible**: Toggles between 220px expanded width and 64px compact icon-only mode with smooth CSS transitions.
+- **Fluid Layout**: Content containers use fluid relative positioning (`position: relative; width: 100%`) with automatic canvas resize observers, eliminating sidebar overlap collisions across screen sizes from 1240px to 4K.
 
 ---
 
-## 8. Data Contracts, Schemas & Protocols
+## 9. Data Contracts, Schemas & Protocols
 
-### 8.1 Internal Pydantic Domain Schemas (`crs/core/schemas.py`)
+### 9.1 Internal Pydantic Domain Schemas (`crs/core/schemas.py`)
 
 ```python
 class Severity(str, Enum):
@@ -1062,9 +1244,9 @@ class CRSRunResult(BaseModel):
 
 ---
 
-## 9. Complete CLI & Operational Reference
+## 10. Complete CLI & Operational Reference
 
-### 9.1 `crs.vayu` / `vayu scan` CLI Reference
+### 10.1 `crs.vayu` / `vayu scan` CLI Reference
 
 ```bash
 # Basic scan against a local repository
@@ -1087,7 +1269,7 @@ python -m crs.vayu scan samples/vulnerable/command_injection --sandbox digitaloc
 
 ---
 
-### 9.2 `vayu skills` CLI Reference
+### 10.2 `vayu skills` CLI Reference
 
 ```bash
 vayu skills list                      # List bundled and installed skills
@@ -1101,7 +1283,7 @@ vayu skills doctor                    # Verify skills environment health
 
 ---
 
-### 9.3 `vayu-mcp` CLI Reference
+### 10.3 `vayu-mcp` CLI Reference
 
 ```bash
 # Launch MCP server over stdio
@@ -1113,7 +1295,7 @@ python -m vayu_mcp.server --config /path/to/mcp_config.json
 
 ---
 
-### 9.4 Environment Variable Configuration Reference
+### 10.4 Environment Variable Configuration Reference
 
 Create a `.env.local` file in your workspace root:
 
@@ -1152,7 +1334,7 @@ export GITHUB_REPO=ayushkumar2601/vayu_hacktoberfest
 
 ---
 
-## 10. Security Threat Modeling & STRIDE Analysis
+## 11. Security Threat Modeling & STRIDE Analysis
 
 | STRIDE Category | Specific Threat Scenario | VAYU Defense Mechanism |
 |---|---|---|
@@ -1165,9 +1347,9 @@ export GITHUB_REPO=ayushkumar2601/vayu_hacktoberfest
 
 ---
 
-## 11. Performance Benchmarks, Token Economics & Hardware Requirements
+## 12. Performance Benchmarks, Token Economics & Hardware Requirements
 
-### 11.1 Execution Latency Profile (Apple Silicon M2 / AMD Ryzen 9)
+### 12.1 Execution Latency Profile (Apple Silicon M2 / AMD Ryzen 9)
 
 Benchmarked against a 500-line Python service with active command injection:
 
@@ -1187,7 +1369,7 @@ Benchmarked against a 500-line Python service with active command injection:
 | **Total Remediation Cycle** | **Local Ephemeral Sandbox** | **$\approx 4.5\text{ s}$** | **$<150\text{ MB}$ (CRS)** | **Zero (Air-gapped)** |
 | **Total Cloud Remediation** | **DigitalOcean Cloud KVM Droplet** | **$\approx 65 - 85\text{ s}$** | **$<150\text{ MB}$ (CRS)** | **DO API + SSH** |
 
-### 11.2 Token Economics & Context Optimization
+### 12.2 Token Economics & Context Optimization
 
 Traditional LLM coding agents transmit entire source files (1,000–5,000 tokens per call). For repositories with multiple findings, this exhausts context windows and balloons API costs.
 
@@ -1198,27 +1380,28 @@ VAYU's $\pm 5$ line bounding extracts only the relevant AST slice:
 
 ---
 
-## 12. Developer Guide, Testing & Quality Assurance
+## 13. Developer Guide, Testing & Quality Assurance
 
-### 12.1 Running the Automated Test Suite
+### 13.1 Running the Automated Test Suite
 
-VAYU maintains a comprehensive test suite of **188 automated unit and integration tests** covering all subsystems:
+VAYU OS maintains a comprehensive test suite of **212 automated unit and integration tests** (195 Core CRS + 17 Switch Multi-Agent tests) executed with 100% green pass rate:
 
 ```bash
 # 1. Activate virtual environment
 source venv/bin/activate
 
-# 2. Run complete pytest suite
-pytest tests/ -v
+# 2. Run complete pytest suite across all subsystems (212 tests)
+pytest tests/ switch/tests/ -v
 
-# 3. Run specific subsystem tests
-pytest tests/test_verification_engine.py -v
-pytest tests/mcp_server/test_server_protocol.py -v
-pytest tests/test_skills_cli.py -v
-pytest tests/test_patch_generator.py -v
+# 3. Run Switch Multi-Agent squad tests specifically
+pytest switch/tests/ -v
+
+# 4. Run automated demo & test verification scripts
+bash run_switch_demo.sh --test
+bash run_switch_demo.sh --demo
 ```
 
-### 12.2 Adding Custom Semgrep Rules
+### 13.2 Adding Custom Semgrep Rules
 
 To add a new vulnerability detection pattern:
 1. Open `rules/semgrep/demo_rules.yml`.
@@ -1226,7 +1409,7 @@ To add a new vulnerability detection pattern:
 3. Add AST regression patterns to `crs/verification/security_verifier.py`.
 4. Add a corresponding test case in `tests/test_security_verifier.py`.
 
-### 12.3 Extending Language Verification Support
+### 13.3 Extending Language Verification Support
 
 To add verification support for a new programming language (e.g., Go, Rust, TypeScript):
 1. Open `crs/verification/language_runners.py`.
@@ -1238,4 +1421,4 @@ To add verification support for a new programming language (e.g., Go, Rust, Type
 
 ---
 
-*VAYU: Autonomous Cyber Reasoning System — Built with precision, verifiable safety, and mathematical invariants.*
+*VAYU OS: Autonomous Cyber Reasoning System — Built with precision, verifiable safety, and mathematical invariants.*
