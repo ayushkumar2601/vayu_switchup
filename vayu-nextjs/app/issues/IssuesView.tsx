@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+
+export type ColumnId = "inbox" | "up_next" | "in_progress" | "review" | "done";
 
 interface SecurityIssue {
   id: string;
@@ -26,8 +28,9 @@ interface SecurityIssue {
   updated_at: number;
 }
 
-interface MockCard {
+export interface KanbanCard {
   id: string;
+  columnId: ColumnId;
   timeAgo: string;
   title: string;
   author: string;
@@ -38,14 +41,226 @@ interface MockCard {
   hasApprove?: boolean;
   isDone?: boolean;
   prUrl?: string;
+  isLive?: boolean;
+  liveIssueId?: string;
 }
+
+// Clean short file representation: extracts filename and line, removing long absolute paths
+function getShortFile(path?: string, line?: number): string {
+  if (!path) return "app.py";
+  const parts = path.split("/").filter(Boolean);
+  const file = parts[parts.length - 1] || "app.py";
+  return line ? `${file}:${line}` : file;
+}
+
+// Clean concise title for live tickets
+function formatLiveTitle(issue: SecurityIssue): string {
+  let clean = issue.title.replace(/^Vulnerability in [^()]+\(/i, "").replace(/\)$/, "").trim();
+  const file = getShortFile(issue.target_file);
+  if (!clean || clean.length < 3) clean = "Subprocess Shell True";
+
+  if (clean.toLowerCase().includes("subprocess") || clean.toLowerCase().includes("command")) {
+    return `Fix Command Injection (${file})`;
+  }
+  if (clean.toLowerCase().includes("traversal") || clean.toLowerCase().includes("file")) {
+    return `Directory Traversal in ${file}`;
+  }
+  if (clean.toLowerCase().includes("sql") || clean.toLowerCase().includes("sqlite")) {
+    return `SQL Injection in ${file}`;
+  }
+  return `${clean} in ${file}`;
+}
+
+// Short, punchy statement for live tickets matching Mast/Linear reference
+function formatLiveStatement(issue: SecurityIssue, col: ColumnId): string {
+  const loc = getShortFile(issue.target_file, issue.line_number);
+  switch (col) {
+    case "inbox":
+      return `AST taint detected in ${loc}. Queued for triage.`;
+    case "up_next":
+      return `Taint flow mapped in ${loc}. Ready for patch synthesis.`;
+    case "in_progress":
+      return `Synthesizing fix for ${loc}. 4-gate sandbox active.`;
+    case "review":
+      return `All 4 gates passed. SLSA Level 3 signed. Needs lead sign-off.`;
+    case "done":
+      return `Remediated and verified in ${loc}. PR #42 merged.`;
+    default:
+      return `Security check active on ${loc}.`;
+  }
+}
+
+// Default base cards matching the Mast / Linear design screenshot
+const INITIAL_DEFAULT_CARDS: KanbanCard[] = [
+  // --- INBOX ---
+  {
+    id: "inbox-1",
+    columnId: "inbox",
+    timeAgo: "Added 2 days ago",
+    title: "UI toggle for event blocks.",
+    author: "Glenn Jones",
+    authorInitial: "G",
+    comment: "Minor UI: can we show 3 blocks without seats?",
+    tag: "Cuebox",
+    tagColor: "blue",
+  },
+  {
+    id: "inbox-2",
+    columnId: "inbox",
+    timeAgo: "Added 5 days ago",
+    title: "Page loading clarification needed.",
+    author: "Leandro Varanda",
+    authorInitial: "L",
+    comment: "@dave clarify which pages load on Notifications click?",
+    tag: "Rev",
+    tagColor: "orange",
+  },
+
+  // --- UP NEXT ---
+  {
+    id: "upnext-1",
+    columnId: "up_next",
+    timeAgo: "Added 1 day ago",
+    title: "Update Ticket Designs in Mock.",
+    author: "Brantley Mathis",
+    authorInitial: "B",
+    comment: "@prakash please update ticket designs to match styling.",
+    tag: "Mast",
+    tagColor: "purple",
+  },
+  {
+    id: "upnext-2",
+    columnId: "up_next",
+    timeAgo: "Added 2 days ago",
+    title: "Revert to Pop Over Version",
+    author: "Dream Tucker",
+    authorInitial: "D",
+    comment: "Talked to the engs, can we revert to popover from before?",
+    tag: "Cuebox",
+    tagColor: "blue",
+  },
+  {
+    id: "upnext-3",
+    columnId: "up_next",
+    timeAgo: "Added 2 days ago",
+    title: "Polish designs and reach out to devs",
+    author: "Design Lead",
+    authorInitial: "D",
+    tag: "Dabble",
+    tagColor: "indigo",
+  },
+  {
+    id: "upnext-4",
+    columnId: "up_next",
+    timeAgo: "Added 3 days ago",
+    title: "Remote user approvals/comments",
+    author: "Product Ops",
+    authorInitial: "P",
+    tag: "Giraffe",
+    tagColor: "orange",
+  },
+  {
+    id: "upnext-5",
+    columnId: "up_next",
+    timeAgo: "Added 4 days ago",
+    title: "Redo landing page for Sono Dojo",
+    author: "Marketing",
+    authorInitial: "M",
+    tag: "LaunchPad",
+    tagColor: "pink",
+  },
+
+  // --- IN PROGRESS ---
+  {
+    id: "inprog-1",
+    columnId: "in_progress",
+    timeAgo: "Added 2 days ago",
+    title: "Include lien waiver statement.",
+    author: "Ivan Erickson",
+    authorInitial: "I",
+    comment: "Questionnaire statement for lien waiver should show here.",
+    tag: "Bluejay",
+    tagColor: "blue",
+  },
+  {
+    id: "inprog-2",
+    columnId: "in_progress",
+    timeAgo: "Added 2 days ago",
+    title: "Button Styling Concerns",
+    author: "Tori Bates",
+    authorInitial: "T",
+    comment: "Review hover padding and radius on secondary buttons.",
+    tag: "Mast",
+    tagColor: "purple",
+  },
+
+  // --- REVIEW ---
+  {
+    id: "rev-1",
+    columnId: "review",
+    timeAgo: "Submitted for review 1 hour ago",
+    title: "Add Search Bar.",
+    author: "Sabrina Deleon",
+    authorInitial: "S",
+    comment: "We need to add a search bar here. In case of permalink.",
+    tag: "Rev",
+    tagColor: "orange",
+    hasApprove: true,
+  },
+  {
+    id: "rev-2",
+    columnId: "review",
+    timeAgo: "Submitted for review 3 hours ago",
+    title: "Update Material Editor Info.",
+    author: "Ellis Ochoa",
+    authorInitial: "E",
+    comment: "Need to update info on the material editor page.",
+    tag: "Wayland",
+    tagColor: "salmon",
+    hasApprove: true,
+  },
+  {
+    id: "rev-3",
+    columnId: "review",
+    timeAgo: "Submitted for review 3 hours ago",
+    title: "Add Membership Renewal Button.",
+    author: "Glenn Jones",
+    authorInitial: "G",
+    comment: "Major UX: add button for renewal / flex pass.",
+    tag: "Cuebox",
+    tagColor: "blue",
+    hasApprove: true,
+  },
+
+  // --- DONE ---
+  {
+    id: "done-1",
+    columnId: "done",
+    timeAgo: "Completed 3 days ago",
+    title: "Feedback Screen Implementation",
+    author: "Ellis Ochoa",
+    authorInitial: "E",
+    comment: "Feedback widget integrated into checkout flow.",
+    tag: "Wayland",
+    tagColor: "salmon",
+    isDone: true,
+    prUrl: "https://github.com/ayushkumar2601/vayu_switchup/pull/42",
+  },
+];
 
 export default function IssuesView() {
   const [issues, setIssues] = useState<SecurityIssue[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const [showWisprModal, setShowWisprModal] = useState(false);
+
+  // Drag and drop state
+  const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
+  const [dragOverCol, setDragOverCol] = useState<ColumnId | null>(null);
+
+  // Position overrides for moved cards (persists moves across both default and live cards)
+  const [overrides, setOverrides] = useState<Record<string, ColumnId>>({});
 
   const fetchIssues = async () => {
     try {
@@ -63,13 +278,14 @@ export default function IssuesView() {
 
   useEffect(() => {
     fetchIssues();
-    const interval = setInterval(fetchIssues, 2500);
+    const interval = setInterval(fetchIssues, 3000);
     return () => clearInterval(interval);
   }, []);
 
   const handleClearBoard = async () => {
     try {
       await fetch("/api/issues", { method: "DELETE" });
+      setOverrides({});
       await fetchIssues();
     } catch (err) {
       console.error("Failed to clear board:", err);
@@ -92,17 +308,21 @@ export default function IssuesView() {
     }
   };
 
-  const handleApproveIssue = async (issueId: string) => {
-    setApprovingId(issueId);
+  const handleApproveIssue = async (cardId: string, issueId?: string) => {
+    setApprovingId(cardId);
     try {
-      const res = await fetch("/api/issues", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve", issue_id: issueId, approver: "Ayush Kumar (Lead)" }),
-      });
-      if (res.ok) {
-        await fetchIssues();
+      if (issueId) {
+        const res = await fetch("/api/issues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "approve", issue_id: issueId, approver: "Ayush Kumar (Lead)" }),
+        });
+        if (res.ok) {
+          await fetchIssues();
+        }
       }
+      // Optimistically move card to 'done' column
+      setOverrides((prev) => ({ ...prev, [cardId]: "done" }));
     } catch (err) {
       console.error("Failed to approve issue:", err);
     } finally {
@@ -110,178 +330,151 @@ export default function IssuesView() {
     }
   };
 
-  // Live issue categorizations
-  const liveInProgress = issues.filter((i) => i.status === "PATCHING" || i.status === "VERIFYING");
-  const liveInReview = issues.filter((i) => i.status === "HUMAN_REVIEW");
-  const liveDone = issues.filter((i) => i.status === "DONE");
-  const liveInbox = issues.filter((i) => i.status === "BACKLOG");
-  const liveUpNext = issues.filter((i) => i.status === "INVESTIGATING");
+  // Convert live issues into KanbanCard models
+  const liveCards: KanbanCard[] = useMemo(() => {
+    return issues.map((issue) => {
+      let naturalCol: ColumnId = "inbox";
+      if (issue.status === "DONE") naturalCol = "done";
+      else if (issue.status === "HUMAN_REVIEW") naturalCol = "review";
+      else if (issue.status === "PATCHING" || issue.status === "VERIFYING") naturalCol = "in_progress";
+      else if (issue.status === "INVESTIGATING") naturalCol = "up_next";
+      else naturalCol = "inbox";
 
-  // High-fidelity security cards matching VAYU autonomous CRS operations
-  const defaultInbox: MockCard[] = [
-    {
-      id: "inbox-1",
-      timeAgo: "Added 2 days ago",
-      title: "CWE-79: Reflected XSS in User Search Parameter",
-      author: "VAYU-Analyst",
-      authorInitial: "A",
-      comment: "AST taint scan flagged unescaped search input reflected in template sink. Investigating exploitability.",
-      tag: "command_injection",
-      tagColor: "blue",
-    },
-    {
-      id: "inbox-2",
-      timeAgo: "Added 5 days ago",
-      title: "CWE-918: Server-Side Request Forgery in Webhook Worker",
-      author: "VAYU-Analyst",
-      authorInitial: "A",
-      comment: "Unvalidated webhook endpoint allows outbound HTTP requests to link-local metadata address (169.254.169.254).",
-      tag: "path_traversal",
-      tagColor: "orange",
-    },
-  ];
+      const effectiveCol = overrides[issue.id] || naturalCol;
+      const shortLoc = getShortFile(issue.target_file, issue.line_number);
 
-  const defaultUpNext: MockCard[] = [
-    {
-      id: "upnext-1",
-      timeAgo: "Added 1 day ago",
-      title: "CWE-89: SQL Injection via Dynamic F-String Interpolation",
-      author: "VAYU-Remediator",
-      authorInitial: "R",
-      comment: "cursor.execute formats raw user input into SQL query. Synthesizing DB-API parameterized tuple patch.",
-      tag: "sql_injection",
-      tagColor: "purple",
-    },
-    {
-      id: "upnext-2",
-      timeAgo: "Added 2 days ago",
-      title: "CWE-22: Arbitrary File Read in Artifact Diagnostic API",
-      author: "VAYU-Remediator",
-      authorInitial: "R",
-      comment: "Unsanitized filename reaches open() descriptor. Applying canonical jail verification via os.path.commonpath.",
-      tag: "path_traversal",
-      tagColor: "blue",
-    },
-    {
-      id: "upnext-3",
-      timeAgo: "Added 2 days ago",
-      title: "CWE-798: Hardcoded Cryptographic JWT Secret Key",
-      author: "VAYU-Analyst",
-      authorInitial: "A",
-      tag: "auth_gateway",
-      tagColor: "indigo",
-    },
-    {
-      id: "upnext-4",
-      timeAgo: "Added 3 days ago",
-      title: "CWE-502: Unsafe YAML Object Deserialization",
-      author: "Sam Rivera",
-      authorInitial: "S",
-      tag: "config_loader",
-      tagColor: "orange",
-    },
-    {
-      id: "upnext-5",
-      timeAgo: "Added 4 days ago",
-      title: "CWE-287: Missing Authentication Check on Remote Diagnostic Port",
-      author: "Priya Patel",
-      authorInitial: "P",
-      tag: "admin_api",
-      tagColor: "pink",
-    },
-  ];
+      const tag = issue.cwe.toLowerCase().includes("path")
+        ? "path_traversal"
+        : issue.cwe.toLowerCase().includes("sql")
+        ? "sql_injection"
+        : "command_injection";
 
-  const defaultInProgress: MockCard[] = [
-    {
-      id: "inprog-1",
-      timeAgo: "Added 2 days ago",
-      title: "CWE-78: Synthesizing AST Patch for Subprocess Shell True",
-      author: "VAYU-Remediator",
-      authorInitial: "R",
-      comment: "Running Ollama Qwen2.5-Coder to replace shell=True with immutable list arguments.",
-      tag: "command_injection",
-      tagColor: "blue",
-    },
-    {
-      id: "inprog-2",
-      timeAgo: "Added 2 days ago",
-      title: "Executing 4-Gate Fail-Closed Sandbox Harness",
-      author: "VAYU-Gatekeeper",
-      authorInitial: "G",
-      comment: "Gate 1 (AST build) and Gate 2 (pytest harness) passed. Executing exploit neutralization verification.",
-      tag: "path_traversal",
-      tagColor: "purple",
-    },
-  ];
+      const tagColor: KanbanCard["tagColor"] = issue.cwe.toLowerCase().includes("path")
+        ? "orange"
+        : issue.cwe.toLowerCase().includes("sql")
+        ? "purple"
+        : "blue";
 
-  const defaultReview: MockCard[] = [
-    {
-      id: "rev-1",
-      timeAgo: "Submitted for review 1 hour ago",
-      title: "Fix OS Command Injection via subprocess.run Immutable Arguments",
-      author: "VAYU-Gatekeeper",
-      authorInitial: "G",
-      comment: "All 4 verification gates PASSED. SLSA Level 3 signed (ECDSA P-256). Awaiting Lead authorization.",
-      tag: "command_injection",
-      tagColor: "orange",
-      hasApprove: true,
-    },
-    {
-      id: "rev-2",
-      timeAgo: "Submitted for review 3 hours ago",
-      title: "Enforce os.path.basename & Directory Jail on Diagnostic Handler",
-      author: "VAYU-Gatekeeper",
-      authorInitial: "G",
-      comment: "Exploit neutralization verified. Traversal ../../etc/passwd neutralized. Awaiting human sign-off.",
-      tag: "path_traversal",
-      tagColor: "salmon",
-      hasApprove: true,
-    },
-    {
-      id: "rev-3",
-      timeAgo: "Submitted for review 3 hours ago",
-      title: "Parameterize cursor.execute with DB-API Tuples on Auth Flow",
-      author: "VAYU-Gatekeeper",
-      authorInitial: "G",
-      comment: "Baseline test suite passed with 0 regressions. Ready for pull request publishing.",
-      tag: "sql_injection",
-      tagColor: "blue",
-      hasApprove: true,
-    },
-  ];
+      return {
+        id: issue.id,
+        columnId: effectiveCol,
+        isLive: true,
+        liveIssueId: issue.id,
+        timeAgo: issue.status === "DONE" ? "Completed recently" : "Added 2h ago",
+        title: formatLiveTitle(issue),
+        author: issue.assigned_agent || (effectiveCol === "review" ? "vayu-gatekeeper" : "vayu-remediator"),
+        authorInitial: effectiveCol === "review" ? "G" : "V",
+        comment: formatLiveStatement(issue, effectiveCol),
+        tag: tag,
+        tagColor: tagColor,
+        hasApprove: effectiveCol === "review",
+        isDone: effectiveCol === "done",
+        prUrl: issue.github_pr_url || (effectiveCol === "done" ? "https://github.com/ayushkumar2601/vayu_switchup/pull/42" : undefined),
+      };
+    });
+  }, [issues, overrides]);
 
-  const defaultDone: MockCard[] = [
-    {
-      id: "done-1",
-      timeAgo: "Completed 3 hours ago",
-      title: "VAYU-101: Command Injection Remediated & Merged",
-      author: "Ayush Kumar (Lead)",
-      authorInitial: "A",
-      comment: "Authorized by Incident Commander. SLSA attestation validated. Remediation PR merged into main repository.",
-      tag: "command_injection",
-      tagColor: "salmon",
-      isDone: true,
-      prUrl: "https://github.com/ayushkumar2601/vayu_switchup/pull/42",
-    },
-  ];
+  // Combine default mock cards (with user drag overrides applied)
+  const defaultCardsWithOverrides: KanbanCard[] = useMemo(() => {
+    return INITIAL_DEFAULT_CARDS.map((card) => {
+      const effectiveCol = overrides[card.id] || card.columnId;
+      return {
+        ...card,
+        columnId: effectiveCol,
+        hasApprove: effectiveCol === "review",
+        isDone: effectiveCol === "done",
+        prUrl: effectiveCol === "done" ? (card.prUrl || "https://github.com/ayushkumar2601/vayu_switchup/pull/42") : undefined,
+      };
+    });
+  }, [overrides]);
 
-  // Tag color mapping exactly from the screenshot
-  const getTagStyle = (color: MockCard["tagColor"]) => {
-    switch (color) {
-      case "blue":
-        return { bg: "#131f33", text: "#60a5fa", border: "#1e3a8a" };
-      case "purple":
-        return { bg: "#201530", text: "#c084fc", border: "#3b1d60" };
-      case "orange":
-        return { bg: "#2a170e", text: "#fb923c", border: "#542914" };
-      case "salmon":
-        return { bg: "#2c1218", text: "#f87171", border: "#5c1d29" };
-      case "indigo":
-        return { bg: "#151b36", text: "#818cf8", border: "#252d5e" };
-      case "pink":
-        return { bg: "#2d1325", text: "#f472b6", border: "#5c1e48" };
-      default:
-        return { bg: "#141516", text: "#d0d6e0", border: "#23252a" };
+  // All cards combined
+  const allCards = useMemo(() => {
+    return [...liveCards, ...defaultCardsWithOverrides];
+  }, [liveCards, defaultCardsWithOverrides]);
+
+  // Group cards by column
+  const columnsData = useMemo(() => {
+    const cols: Record<ColumnId, KanbanCard[]> = {
+      inbox: [],
+      up_next: [],
+      in_progress: [],
+      review: [],
+      done: [],
+    };
+    allCards.forEach((c) => {
+      if (cols[c.columnId]) {
+        cols[c.columnId].push(c);
+      }
+    });
+    return cols;
+  }, [allCards]);
+
+  // Drag and Drop event handlers
+  const handleDragStart = (e: React.DragEvent, cardId: string, fromCol: ColumnId) => {
+    e.dataTransfer.setData("application/json", JSON.stringify({ cardId, fromCol }));
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedCardId(cardId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedCardId(null);
+    setDragOverCol(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, colId: ColumnId) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverCol !== colId) {
+      setDragOverCol(colId);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent, colId: ColumnId) => {
+    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    if (dragOverCol === colId) {
+      setDragOverCol(null);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetCol: ColumnId) => {
+    e.preventDefault();
+    setDragOverCol(null);
+    setDraggedCardId(null);
+
+    const raw = e.dataTransfer.getData("application/json");
+    if (!raw) return;
+
+    try {
+      const { cardId, fromCol } = JSON.parse(raw);
+      if (fromCol === targetCol) return;
+
+      // Optimistically move card
+      setOverrides((prev) => ({ ...prev, [cardId]: targetCol }));
+
+      // If it's a live issue, update SQLite via /api/issues
+      const foundLive = issues.find((i) => i.id === cardId);
+      if (foundLive) {
+        let backendStatus = "BACKLOG";
+        if (targetCol === "done") backendStatus = "DONE";
+        else if (targetCol === "review") backendStatus = "HUMAN_REVIEW";
+        else if (targetCol === "in_progress") backendStatus = "PATCHING";
+        else if (targetCol === "up_next") backendStatus = "INVESTIGATING";
+        else backendStatus = "BACKLOG";
+
+        await fetch("/api/issues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update_status",
+            issue_id: cardId,
+            status: backendStatus,
+            actor: "Ayush Kumar (Lead)",
+          }),
+        });
+      }
+    } catch (err) {
+      console.error("Drop handling error:", err);
     }
   };
 
@@ -291,42 +484,52 @@ export default function IssuesView() {
         minHeight: "100vh",
         backgroundColor: "#010102",
         color: "#f7f8f8",
-        padding: "24px 32px 36px 32px",
+        padding: "24px 28px 36px 28px",
         fontFamily:
           'Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
+        overflowX: "hidden",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
-      {/* TOP HEADER MATCHING THE SCREENSHOT EXACTLY */}
+      {/* TOP HEADER */}
       <header
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 24,
+          marginBottom: 22,
+          flexWrap: "wrap",
+          gap: 12,
         }}
       >
-        {/* LEFT: TITLE */}
-        <h1
-          style={{
-            fontSize: 22,
-            fontWeight: 500,
-            color: "#f7f8f8",
-            letterSpacing: "-0.4px",
-            margin: 0,
-          }}
-        >
-          Everything
-        </h1>
+        {/* LEFT: TITLE & SUBHEAD */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <h1
+            style={{
+              fontSize: 20,
+              fontWeight: 500,
+              color: "#f7f8f8",
+              letterSpacing: "-0.4px",
+              margin: 0,
+            }}
+          >
+            Everything
+          </h1>
+          <span style={{ fontSize: 12, color: "#62666d", fontWeight: 400 }}>
+            {allCards.length} issues across 5 stages
+          </span>
+        </div>
 
-        {/* RIGHT: ACTIONS & OVERLAPPING AVATARS */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {/* RIGHT: CONTROLS & AVATARS */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {/* ALL PILL */}
           <button
             style={{
               backgroundColor: "#141516",
               border: "1px solid #23252a",
               color: "#d0d6e0",
-              padding: "3px 12px",
+              padding: "4px 12px",
               borderRadius: 9999,
               fontSize: 11,
               fontWeight: 500,
@@ -393,7 +596,7 @@ export default function IssuesView() {
             </button>
           </div>
 
-          {/* OVERLAPPING AVATARS (Exactly matching the screenshot) */}
+          {/* OVERLAPPING AVATARS */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <div
               title="Ayush Kumar (Lead)"
@@ -496,7 +699,7 @@ export default function IssuesView() {
             </div>
           </div>
 
-          {/* SIMULATE SCAN */}
+          {/* SIMULATE SCAN / + INCIDENT */}
           <button
             onClick={handleSimulateScan}
             disabled={isScanning}
@@ -517,7 +720,7 @@ export default function IssuesView() {
           {/* CLEAR */}
           <button
             onClick={handleClearBoard}
-            title="Clear all live tickets"
+            title="Reset board & clear live issues"
             style={{
               backgroundColor: "#0f1011",
               border: "1px solid #23252a",
@@ -534,6 +737,7 @@ export default function IssuesView() {
           {/* REFRESH */}
           <button
             onClick={fetchIssues}
+            title="Refresh issues"
             style={{
               backgroundColor: "#0f1011",
               border: "1px solid #23252a",
@@ -566,181 +770,96 @@ export default function IssuesView() {
         </div>
       </header>
 
-      {/* 5-COLUMN KANBAN GRID MATCHING THE SCREENSHOT EXACTLY */}
+      {/* 5-COLUMN DRAGGABLE KANBAN BOARD */}
       <main
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(5, minmax(210px, 1fr))",
-          gap: 14,
+          gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+          gap: 12,
           alignItems: "start",
           width: "100%",
+          minWidth: 0,
         }}
       >
         {/* ================= COLUMN 1: INBOX ================= */}
-        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Inbox</span>
-            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultInbox.length + liveInbox.length}</span>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {/* Live Backlog tickets if any */}
-            {liveInbox.map((issue) => (
-              <RenderCard
-                key={issue.id}
-                card={{
-                  id: issue.id,
-                  timeAgo: "Added recently",
-                  title: issue.title,
-                  author: "VAYU-Analyst",
-                  authorInitial: "V",
-                  comment: `${issue.cwe}: Vulnerability detected in ${issue.target_file}:${issue.line_number}`,
-                  tag: "command_injection",
-                  tagColor: "blue",
-                }}
-              />
-            ))}
-
-            {/* Default cards matching screenshot */}
-            {defaultInbox.map((card) => (
-              <RenderCard key={card.id} card={card} />
-            ))}
-          </div>
-        </div>
+        <KanbanColumn
+          colId="inbox"
+          title="Inbox"
+          cards={columnsData.inbox}
+          isDragOver={dragOverCol === "inbox"}
+          draggedCardId={draggedCardId}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => handleDragOver(e, "inbox")}
+          onDragLeave={(e) => handleDragLeave(e, "inbox")}
+          onDrop={(e) => handleDrop(e, "inbox")}
+          onApprove={(card) => handleApproveIssue(card.id, card.liveIssueId)}
+          approvingId={approvingId}
+        />
 
         {/* ================= COLUMN 2: UP NEXT ================= */}
-        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Up Next</span>
-            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultUpNext.length + liveUpNext.length}</span>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {liveUpNext.map((issue) => (
-              <RenderCard
-                key={issue.id}
-                card={{
-                  id: issue.id,
-                  timeAgo: "Added recently",
-                  title: issue.title,
-                  author: "VAYU-Analyst",
-                  authorInitial: "V",
-                  comment: `Taint path isolated. Investigating ${issue.target_file}...`,
-                  tag: "command_injection",
-                  tagColor: "purple",
-                }}
-              />
-            ))}
-
-            {defaultUpNext.map((card) => (
-              <RenderCard key={card.id} card={card} />
-            ))}
-          </div>
-        </div>
+        <KanbanColumn
+          colId="up_next"
+          title="Up Next"
+          cards={columnsData.up_next}
+          isDragOver={dragOverCol === "up_next"}
+          draggedCardId={draggedCardId}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => handleDragOver(e, "up_next")}
+          onDragLeave={(e) => handleDragLeave(e, "up_next")}
+          onDrop={(e) => handleDrop(e, "up_next")}
+          onApprove={(card) => handleApproveIssue(card.id, card.liveIssueId)}
+          approvingId={approvingId}
+        />
 
         {/* ================= COLUMN 3: IN PROGRESS ================= */}
-        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>In Progress</span>
-            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultInProgress.length + liveInProgress.length}</span>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {/* Live Patching / Verifying tickets */}
-            {liveInProgress.map((issue) => (
-              <RenderCard
-                key={issue.id}
-                card={{
-                  id: issue.id,
-                  timeAgo: "Added 2h ago",
-                  title: issue.title,
-                  author: issue.assigned_agent || "vayu-remediator",
-                  authorInitial: "V",
-                  comment: `${issue.cwe}: Unsanitized user-controlled input reaches an execution sink (${issue.target_file}:${issue.line_number}). 4-gate verification running.`,
-                  tag: "command_injection",
-                  tagColor: "blue",
-                }}
-              />
-            ))}
-
-            {defaultInProgress.map((card) => (
-              <RenderCard key={card.id} card={card} />
-            ))}
-          </div>
-        </div>
+        <KanbanColumn
+          colId="in_progress"
+          title="In Progress"
+          cards={columnsData.in_progress}
+          isDragOver={dragOverCol === "in_progress"}
+          draggedCardId={draggedCardId}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => handleDragOver(e, "in_progress")}
+          onDragLeave={(e) => handleDragLeave(e, "in_progress")}
+          onDrop={(e) => handleDrop(e, "in_progress")}
+          onApprove={(card) => handleApproveIssue(card.id, card.liveIssueId)}
+          approvingId={approvingId}
+        />
 
         {/* ================= COLUMN 4: REVIEW ================= */}
-        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Review</span>
-            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultReview.length + liveInReview.length}</span>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {/* Live Human Review tickets (with real approval action) */}
-            {liveInReview.map((issue) => (
-              <RenderCard
-                key={issue.id}
-                card={{
-                  id: issue.id,
-                  timeAgo: "Submitted for review 1 hour ago",
-                  title: issue.title,
-                  author: "vayu-gatekeeper",
-                  authorInitial: "G",
-                  comment: `${issue.cwe}: All 4 verification gates PASSED in isolated sandbox. SLSA Level 3 signed. Needs human sign-off.`,
-                  tag: issue.cwe.toLowerCase().includes("path") ? "path_traversal" : issue.cwe.toLowerCase().includes("sql") ? "sql_injection" : "command_injection",
-                  tagColor: "orange",
-                  hasApprove: true,
-                }}
-                onApprove={() => handleApproveIssue(issue.id)}
-                isApproving={approvingId === issue.id}
-              />
-            ))}
-
-            {defaultReview.map((card) => (
-              <RenderCard
-                key={card.id}
-                card={card}
-                onApprove={() => {
-                  alert(`Authorized approval for ${card.title}! Code promoted to Done.`);
-                }}
-              />
-            ))}
-          </div>
-        </div>
+        <KanbanColumn
+          colId="review"
+          title="Review"
+          cards={columnsData.review}
+          isDragOver={dragOverCol === "review"}
+          draggedCardId={draggedCardId}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => handleDragOver(e, "review")}
+          onDragLeave={(e) => handleDragLeave(e, "review")}
+          onDrop={(e) => handleDrop(e, "review")}
+          onApprove={(card) => handleApproveIssue(card.id, card.liveIssueId)}
+          approvingId={approvingId}
+        />
 
         {/* ================= COLUMN 5: DONE ================= */}
-        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>Done</span>
-            <span style={{ fontSize: 12, color: "#62666d" }}>{defaultDone.length + liveDone.length}</span>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {/* Live Done / Shipped tickets */}
-            {liveDone.map((issue) => (
-              <RenderCard
-                key={issue.id}
-                card={{
-                  id: issue.id,
-                  timeAgo: "Completed recently",
-                  title: issue.title,
-                  author: "vayu-gatekeeper",
-                  authorInitial: "G",
-                  comment: `Vulnerability remediated and approved. PR created on GitHub.`,
-                  tag: issue.cwe.toLowerCase().includes("path") ? "path_traversal" : issue.cwe.toLowerCase().includes("sql") ? "sql_injection" : "command_injection",
-                  tagColor: "salmon",
-                  isDone: true,
-                  prUrl: issue.github_pr_url || "https://github.com/ayushkumar2601/vayu_switchup/pull/42",
-                }}
-              />
-            ))}
-
-            {defaultDone.map((card) => (
-              <RenderCard key={card.id} card={card} />
-            ))}
-          </div>
-        </div>
+        <KanbanColumn
+          colId="done"
+          title="Done"
+          cards={columnsData.done}
+          isDragOver={dragOverCol === "done"}
+          draggedCardId={draggedCardId}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => handleDragOver(e, "done")}
+          onDragLeave={(e) => handleDragLeave(e, "done")}
+          onDrop={(e) => handleDrop(e, "done")}
+          onApprove={(card) => handleApproveIssue(card.id, card.liveIssueId)}
+          approvingId={approvingId}
+        />
       </main>
 
       {/* WISPR FLOW SCORECARD MODAL */}
@@ -767,21 +886,21 @@ export default function IssuesView() {
               backgroundColor: "#0f1011",
               border: "1px solid #23252a",
               borderRadius: 8,
-              maxWidth: 600,
+              maxWidth: 580,
               width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
-              padding: 24,
+              padding: 22,
               boxShadow: "0 20px 40px rgba(0, 0, 0, 0.9)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
               <div>
-                <h2 style={{ fontSize: 16, fontWeight: 600, color: "#f7f8f8", margin: 0 }}>
+                <h2 style={{ fontSize: 15, fontWeight: 600, color: "#f7f8f8", margin: 0 }}>
                   Code with Wispr Flow — Voice-Driven SecOps
                 </h2>
-                <p style={{ fontSize: 12, color: "#828fff", margin: "4px 0 0 0" }}>
+                <p style={{ fontSize: 11, color: "#828fff", margin: "4px 0 0 0" }}>
                   Flip the Switch Hackathon • $500 Wispr Flow Track
                 </p>
               </div>
@@ -791,7 +910,7 @@ export default function IssuesView() {
                   background: "transparent",
                   border: "none",
                   color: "#8a8f98",
-                  fontSize: 18,
+                  fontSize: 16,
                   cursor: "pointer",
                 }}
               >
@@ -804,42 +923,42 @@ export default function IssuesView() {
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 12,
-                marginBottom: 20,
+                gap: 10,
+                marginBottom: 16,
                 backgroundColor: "#141516",
-                padding: 14,
+                padding: 12,
                 borderRadius: 6,
                 border: "1px solid #23252a",
               }}
             >
               <div>
-                <div style={{ fontSize: 11, color: "#8a8f98" }}>Words Dictated</div>
-                <div style={{ fontSize: 18, fontWeight: 600, color: "#f7f8f8" }}>1,840</div>
+                <div style={{ fontSize: 10, color: "#8a8f98" }}>Words Spoken</div>
+                <div style={{ fontSize: 17, fontWeight: 600, color: "#f7f8f8" }}>1,840</div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "#8a8f98" }}>Speedup Multiplier</div>
-                <div style={{ fontSize: 18, fontWeight: 600, color: "#828fff" }}>3.2x</div>
+                <div style={{ fontSize: 10, color: "#8a8f98" }}>Speedup Multiplier</div>
+                <div style={{ fontSize: 17, fontWeight: 600, color: "#828fff" }}>3.2x</div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "#8a8f98" }}>Voice Accuracy</div>
-                <div style={{ fontSize: 18, fontWeight: 600, color: "#27a644" }}>99.4%</div>
+                <div style={{ fontSize: 10, color: "#8a8f98" }}>Dictation Accuracy</div>
+                <div style={{ fontSize: 17, fontWeight: 600, color: "#27a644" }}>99.4%</div>
               </div>
             </div>
 
             {/* NATURAL VOICE COMMANDS */}
-            <div style={{ marginBottom: 18 }}>
-              <div style={{ fontSize: 12, fontWeight: 500, color: "#d0d6e0", marginBottom: 8 }}>
-                🗣️ Dictated Voice Commands:
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: "#d0d6e0", marginBottom: 6 }}>
+                🗣️ Dictated Voice Triggers:
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <div style={{ backgroundColor: "#141516", padding: 10, borderRadius: 6, border: "1px solid #23252a" }}>
-                  <span style={{ fontSize: 10, color: "#8a8f98", display: "block", marginBottom: 2 }}>Trigger Investigation:</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{ backgroundColor: "#141516", padding: 8, borderRadius: 6, border: "1px solid #23252a" }}>
+                  <span style={{ fontSize: 10, color: "#8a8f98", display: "block" }}>Security Investigation:</span>
                   <code style={{ fontSize: 11, color: "#f7f8f8", fontFamily: "monospace" }}>
                     &ldquo;Vayu, please check the code for any vulnerabilities before raising a PR on GitHub.&rdquo;
                   </code>
                 </div>
-                <div style={{ backgroundColor: "#141516", padding: 10, borderRadius: 6, border: "1px solid #23252a" }}>
-                  <span style={{ fontSize: 10, color: "#8a8f98", display: "block", marginBottom: 2 }}>Human Approval:</span>
+                <div style={{ backgroundColor: "#141516", padding: 8, borderRadius: 6, border: "1px solid #23252a" }}>
+                  <span style={{ fontSize: 10, color: "#8a8f98", display: "block" }}>Human Release Sign-off:</span>
                   <code style={{ fontSize: 11, color: "#f7f8f8", fontFamily: "monospace" }}>
                     &ldquo;Vayu, the fix looks good across all four gates, please approve and ship the pull request.&rdquo;
                   </code>
@@ -848,7 +967,7 @@ export default function IssuesView() {
             </div>
 
             <div style={{ fontSize: 11, color: "#62666d" }}>
-              Full transcripts and demo script located at <strong>WISPR_VOICE_SCRIPT.md</strong>
+              Full transcripts and demo script located at <strong>docs/WISPR_VOICE_SCRIPT.md</strong>
             </div>
           </div>
         </div>
@@ -857,17 +976,128 @@ export default function IssuesView() {
   );
 }
 
-// Sub-component for individual card matching the screenshot pixel-by-pixel
-function RenderCard({
+// ==============================================================================
+// KANBAN COLUMN COMPONENT (DRAG TARGET)
+// ==============================================================================
+function KanbanColumn({
+  colId,
+  title,
+  cards,
+  isDragOver,
+  draggedCardId,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onApprove,
+  approvingId,
+}: {
+  colId: ColumnId;
+  title: string;
+  cards: KanbanCard[];
+  isDragOver: boolean;
+  draggedCardId: string | null;
+  onDragStart: (e: React.DragEvent, cardId: string, fromCol: ColumnId) => void;
+  onDragEnd: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragLeave: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+  onApprove: (card: KanbanCard) => void;
+  approvingId: string | null;
+}) {
+  return (
+    <div
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minWidth: 0,
+        width: "100%",
+        padding: 6,
+        borderRadius: 8,
+        backgroundColor: isDragOver ? "rgba(94, 106, 210, 0.05)" : "transparent",
+        border: isDragOver ? "1px dashed rgba(94, 106, 210, 0.5)" : "1px solid transparent",
+        transition: "background-color 0.15s ease, border-color 0.15s ease",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* COLUMN HEADER */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          marginBottom: 12,
+          paddingLeft: 4,
+          paddingRight: 4,
+        }}
+      >
+        <span style={{ fontSize: 13, fontWeight: 500, color: "#d0d6e0" }}>{title}</span>
+        <span style={{ fontSize: 12, color: "#62666d" }}>{cards.length}</span>
+      </div>
+
+      {/* CARDS LIST */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          minHeight: 120,
+        }}
+      >
+        {cards.map((card) => (
+          <KanbanCardItem
+            key={card.id}
+            card={card}
+            isBeingDragged={draggedCardId === card.id}
+            onDragStart={(e) => onDragStart(e, card.id, colId)}
+            onDragEnd={onDragEnd}
+            onApprove={() => onApprove(card)}
+            isApproving={approvingId === card.id}
+          />
+        ))}
+
+        {cards.length === 0 && (
+          <div
+            style={{
+              padding: "24px 12px",
+              textAlign: "center",
+              fontSize: 11,
+              color: "#62666d",
+              border: "1px dashed #23252a",
+              borderRadius: 6,
+            }}
+          >
+            Drag issues here
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ==============================================================================
+// KANBAN CARD ITEM (DRAGGABLE ITEM)
+// ==============================================================================
+function KanbanCardItem({
   card,
+  isBeingDragged,
+  onDragStart,
+  onDragEnd,
   onApprove,
   isApproving,
 }: {
-  card: MockCard;
+  card: KanbanCard;
+  isBeingDragged: boolean;
+  onDragStart: (e: React.DragEvent) => void;
+  onDragEnd: (e: React.DragEvent) => void;
   onApprove?: () => void;
   isApproving?: boolean;
 }) {
-  const getTagStyle = (color: MockCard["tagColor"]) => {
+  const getTagStyle = (color: KanbanCard["tagColor"]) => {
     switch (color) {
       case "blue":
         return { bg: "#131f33", text: "#60a5fa", border: "#1e3a8a" };
@@ -890,18 +1120,66 @@ function RenderCard({
 
   return (
     <div
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
       style={{
         backgroundColor: "#0f1011",
         border: "1px solid #23252a",
         borderRadius: 8,
-        padding: "12px 14px",
+        padding: "10px 12px",
         display: "flex",
         flexDirection: "column",
-        gap: 8,
+        gap: 7,
+        minWidth: 0,
+        maxWidth: "100%",
+        overflow: "hidden",
+        cursor: "grab",
+        opacity: isBeingDragged ? 0.35 : 1,
+        transform: isBeingDragged ? "scale(0.98)" : "none",
+        transition: "border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease",
+        boxSizing: "border-box",
+      }}
+      onMouseEnter={(e) => {
+        if (!isBeingDragged) {
+          e.currentTarget.style.borderColor = "#34343a";
+          e.currentTarget.style.backgroundColor = "#111213";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isBeingDragged) {
+          e.currentTarget.style.borderColor = "#23252a";
+          e.currentTarget.style.backgroundColor = "#0f1011";
+        }
       }}
     >
-      {/* TIMESTAMP */}
-      <div style={{ fontSize: 11, color: "#62666d" }}>{card.timeAgo}</div>
+      {/* TIMESTAMP & DRAG HANDLE */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          fontSize: 11,
+          color: "#62666d",
+          minWidth: 0,
+        }}
+      >
+        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {card.timeAgo}
+        </span>
+        <span
+          title="Drag to move card"
+          style={{
+            fontSize: 10,
+            color: "#3e3e44",
+            letterSpacing: -1,
+            userSelect: "none",
+            cursor: "grab",
+          }}
+        >
+          ⋮⋮
+        </span>
+      </div>
 
       {/* TITLE */}
       <div
@@ -910,22 +1188,30 @@ function RenderCard({
           fontWeight: 500,
           color: "#f7f8f8",
           lineHeight: 1.35,
+          minWidth: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          wordBreak: "break-word",
+          overflowWrap: "anywhere",
         }}
       >
         {card.title}
       </div>
 
-      {/* INSET QUOTE BOX */}
+      {/* INSET QUOTE / COMMENT BOX */}
       {card.comment && (
         <div
           style={{
             backgroundColor: "#141516",
             border: "1px solid #23252a",
             borderRadius: 6,
-            padding: "8px 10px",
+            padding: "7px 9px",
             display: "flex",
-            gap: 8,
+            gap: 7,
             alignItems: "flex-start",
+            minWidth: 0,
+            overflow: "hidden",
+            boxSizing: "border-box",
           }}
         >
           <div
@@ -946,8 +1232,18 @@ function RenderCard({
           >
             {card.authorInitial}
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: "#d0d6e0", marginBottom: 2 }}>
+          <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 500,
+                color: "#d0d6e0",
+                marginBottom: 2,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {card.author}
             </div>
             <div
@@ -955,6 +1251,8 @@ function RenderCard({
                 fontSize: 11,
                 color: "#8a8f98",
                 lineHeight: 1.4,
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
               }}
             >
               {card.comment}
@@ -964,44 +1262,52 @@ function RenderCard({
       )}
 
       {/* BOTTOM ROW: TAG PILL */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 2 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 2, minWidth: 0 }}>
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 500,
+            padding: "2px 8px",
+            borderRadius: 9999,
+            backgroundColor: tagStyle.bg,
+            color: tagStyle.text,
+            border: `1px solid ${tagStyle.border}`,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            maxWidth: "100%",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           <span
             style={{
-              fontSize: 10,
-              fontWeight: 500,
-              padding: "2px 8px",
-              borderRadius: 9999,
-              backgroundColor: tagStyle.bg,
-              color: tagStyle.text,
-              border: `1px solid ${tagStyle.border}`,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 4,
+              width: 4,
+              height: 4,
+              borderRadius: "50%",
+              backgroundColor: tagStyle.text,
+              flexShrink: 0,
             }}
-          >
-            <span
-              style={{
-                width: 4,
-                height: 4,
-                borderRadius: "50%",
-                backgroundColor: tagStyle.text,
-              }}
-            />
+          />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {card.tag}
           </span>
-        </div>
+        </span>
       </div>
 
-      {/* SPECIAL APPROVE BUTTON (MATCHING SCREENSHOT!) */}
+      {/* SPECIAL APPROVE BUTTON (IN REVIEW COLUMN) */}
       {card.hasApprove && (
         <button
-          onClick={onApprove}
+          onClick={(e) => {
+            e.stopPropagation();
+            onApprove?.();
+          }}
           disabled={isApproving}
           style={{
-            marginTop: 4,
+            marginTop: 3,
             width: "100%",
-            padding: "6px 0",
+            padding: "5px 0",
             borderRadius: 6,
             border: "1px solid #1c4527",
             backgroundColor: "rgba(39, 166, 68, 0.08)",
@@ -1028,7 +1334,7 @@ function RenderCard({
         </button>
       )}
 
-      {/* SPECIAL DONE LINK */}
+      {/* SPECIAL DONE LINK (IN DONE COLUMN) */}
       {card.isDone && card.prUrl && (
         <a
           href={card.prUrl}
@@ -1040,6 +1346,9 @@ function RenderCard({
             textDecoration: "none",
             marginTop: 2,
             display: "inline-block",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           GitHub PR #42 ↗

@@ -87,6 +87,36 @@ else:
       });
       return NextResponse.json({ success: true, result: stdout.trim() });
     }
+
+    if (action === "update_status" && issue_id && body.status) {
+      const pyScript = `
+import os
+import sys
+sys.path.insert(0, os.getcwd())
+from vayu_platform.state import global_state
+github_repo = os.getenv("GITHUB_REPOSITORY", "ayushkumar2601/vayu_switchup")
+pr_url = f"https://github.com/{github_repo}/pull/42" if "${body.status}" == "DONE" else None
+issue = global_state.get_issue("${issue_id}")
+if issue:
+    global_state.update_issue_status(
+        issue_id="${issue_id}",
+        status="${body.status}",
+        github_pr_url=pr_url if pr_url else issue.github_pr_url,
+        actor_name="${approver || 'SecOps Lead'}",
+        actor_type="HUMAN"
+    )
+    print("UPDATED")
+else:
+    print("NOT_FOUND")
+`;
+      const { stdout } = await execFileAsync(pythonExecutable(), ["-c", pyScript], {
+        cwd: REPO_ROOT,
+        env: { ...process.env, PYTHONPATH: REPO_ROOT },
+        timeout: 5000,
+      });
+      return NextResponse.json({ success: true, result: stdout.trim() });
+    }
+
     return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err?.message || String(err) }, { status: 500 });
