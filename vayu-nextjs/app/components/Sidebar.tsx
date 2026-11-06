@@ -133,49 +133,123 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
             )}
           </Link>
 
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#62666d",
-              cursor: "pointer",
-              padding: 4,
-              fontSize: 11,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 4,
-            }}
-          >
-            {collapsed ? "▶" : "◀"}
-          </button>
+          {!collapsed && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button
+                onClick={() => {}}
+                title="Search (⌘K)"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#8a8f98",
+                  cursor: "pointer",
+                  padding: 4,
+                  fontSize: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 4,
+                  transition: "color 0.12s ease",
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => {}}
+                title="New issue (C)"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#8a8f98",
+                  cursor: "pointer",
+                  padding: 4,
+                  fontSize: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 4,
+                  transition: "color 0.12s ease",
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                  <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => setCollapsed(!collapsed)}
+                title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#62666d",
+                  cursor: "pointer",
+                  padding: 4,
+                  fontSize: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 4,
+                }}
+              >
+                ◀
+              </button>
+            </div>
+          )}
+
+          {collapsed && (
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              title="Expand sidebar"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#62666d",
+                cursor: "pointer",
+                padding: 4,
+                fontSize: 10,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 4,
+              }}
+            >
+              ▶
+            </button>
+          )}
         </div>
 
         {/* WORKSPACES NAVIGATION */}
         <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Link
-            href="/my-issues"
+            href="/dashboard"
             style={{
               display: "flex",
               alignItems: "center",
               gap: 8,
               fontSize: 12.5,
-              fontWeight: isActive("/my-issues") ? 600 : 400,
-              color: isActive("/my-issues") ? "#f7f8f8" : "#8a8f98",
-              backgroundColor: isActive("/my-issues") ? "#141516" : "transparent",
-              border: isActive("/my-issues") ? "1px solid #23252a" : "1px solid transparent",
+              fontWeight: isActive("/dashboard") ? 600 : 400,
+              color: isActive("/dashboard") ? "#f7f8f8" : "#8a8f98",
+              backgroundColor: isActive("/dashboard") ? "#141516" : "transparent",
+              border: isActive("/dashboard") ? "1px solid #23252a" : "1px solid transparent",
               borderRadius: 6,
               padding: collapsed ? "6px 0" : "6px 8px",
               textDecoration: "none",
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.12s ease",
             }}
-            title="My issues — Linear Assigned Triage List"
+            title="Pulse — System Telemetry & 3D Reasoning Desk"
           >
-            <span style={{ fontSize: 13 }}>🎯</span>
-            {!collapsed && <span>My issues</span>}
+            <span style={{ fontSize: 13, display: "flex", alignItems: "center" }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M7.75 2a.75.75 0 0 1 .75.75V7h3.75a.75.75 0 0 1 .53 1.28l-5 5A.75.75 0 0 1 6.5 12.5V8.25H2.75a.75.75 0 0 1-.53-1.28l5-5A.75.75 0 0 1 7.75 2z" />
+              </svg>
+            </span>
+            {!collapsed && <span>Pulse</span>}
           </Link>
 
           <Link
@@ -195,10 +269,41 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.12s ease",
             }}
-            title="Everything — Linear Kanban Incident Board"
+            title="Inbox / Everything — Linear Incident Board"
           >
-            <span style={{ fontSize: 13 }}>📋</span>
-            {!collapsed && <span>Everything</span>}
+            <span style={{ fontSize: 13, display: "flex", alignItems: "center" }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M2.5 1.75a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h3.17a.75.75 0 0 1 .53.22L7.47 12.25h1.06l1.27-1.28a.75.75 0 0 1 .53-.22h3.17a.25.25 0 0 0 .25-.25V2a.25.25 0 0 0-.25-.25H2.5zm-.25-1.5h11.5C14.56 0.25 15 0.69 15 1.25v9.5c0 .56-.44 1.0-1.0 1.0h-3.03l-1.44 1.44a1.75 1.75 0 0 1-1.24.51H7.71a1.75 1.75 0 0 1-1.24-.51L5.03 11.75H2.0c-.56 0-1.0-.44-1.0-1.0V1.25C1 0.69 1.44 0.25 2 0.25z" />
+              </svg>
+            </span>
+            {!collapsed && <span>Inbox</span>}
+          </Link>
+
+          <Link
+            href="/my-issues"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              fontSize: 12.5,
+              fontWeight: isActive("/my-issues") ? 600 : 400,
+              color: isActive("/my-issues") ? "#f7f8f8" : "#8a8f98",
+              backgroundColor: isActive("/my-issues") ? "#141516" : "transparent",
+              border: isActive("/my-issues") ? "1px solid #23252a" : "1px solid transparent",
+              borderRadius: 6,
+              padding: collapsed ? "6px 0" : "6px 8px",
+              textDecoration: "none",
+              justifyContent: collapsed ? "center" : "flex-start",
+              transition: "all 0.12s ease",
+            }}
+            title="My issues — Linear Assigned Triage List"
+          >
+            <span style={{ fontSize: 13, display: "flex", alignItems: "center" }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 1.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" />
+              </svg>
+            </span>
+            {!collapsed && <span>My issues</span>}
           </Link>
 
           <Link
@@ -210,43 +315,181 @@ export default function Sidebar({ onOpenWispr }: SidebarProps) {
               fontSize: 12.5,
               fontWeight: isActive("/reviews") ? 600 : 400,
               color: isActive("/reviews") ? "#f7f8f8" : "#8a8f98",
-              backgroundColor: isActive("/reviews") ? "#141516" : "transparent",
-              border: isActive("/reviews") ? "1px solid #23252a" : "1px solid transparent",
+              backgroundColor: isActive("/reviews") ? "#18191c" : "transparent",
+              border: isActive("/reviews") ? "1px solid #28292f" : "1px solid transparent",
               borderRadius: 6,
               padding: collapsed ? "6px 0" : "6px 8px",
               textDecoration: "none",
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.12s ease",
             }}
-            title="Review Console — PR Triage & 4-Gate Sandbox"
+            title="Reviews — Pull Request Code Reviews & Diff Triage"
           >
-            <span style={{ fontSize: 13 }}>🔍</span>
-            {!collapsed && <span>Review Console</span>}
-          </Link>
-
-          <Link
-            href="/dashboard"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              fontSize: 12.5,
-              fontWeight: isActive("/dashboard") ? 600 : 400,
-              color: isActive("/dashboard") ? "#f7f8f8" : "#8a8f98",
-              backgroundColor: isActive("/dashboard") ? "#141516" : "transparent",
-              border: isActive("/dashboard") ? "1px solid #23252a" : "1px solid transparent",
-              borderRadius: 6,
-              padding: collapsed ? "6px 0" : "6px 8px",
-              textDecoration: "none",
-              justifyContent: collapsed ? "center" : "flex-start",
-              transition: "all 0.12s ease",
-            }}
-            title="My Desk — System Reasoning & 3D Terrain"
-          >
-            <span style={{ fontSize: 13 }}>🖥️</span>
-            {!collapsed && <span>My Desk</span>}
+            <span style={{ fontSize: 13, display: "flex", alignItems: "center", color: isActive("/reviews") ? "#27a644" : "inherit" }}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122v2.628a3.751 3.751 0 0 1-2.404 3.513 2.25 2.25 0 1 1-1.442-.876A2.25 2.25 0 0 0 11 8V5.372A2.25 2.25 0 0 1 9.5 3.25zM4.25 10.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM2 11.25a2.25 2.25 0 1 1 3 2.122v-6.744a2.25 2.25 0 1 1 1.5 0v6.744A2.25 2.25 0 0 1 2 11.25z" />
+              </svg>
+            </span>
+            {!collapsed && <span>Reviews</span>}
           </Link>
         </div>
+
+        {/* SECTION: WORKSPACE */}
+        {!collapsed && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "#62666d",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "4px 8px 2px",
+                letterSpacing: "0.2px",
+              }}
+            >
+              <span>Workspace</span>
+              <span style={{ fontSize: 9 }}>▾</span>
+            </div>
+
+            <Link
+              href="/issues"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#d0d6e0",
+                textDecoration: "none",
+                padding: "4px 8px",
+                borderRadius: 5,
+                transition: "background 0.12s ease",
+              }}
+            >
+              <span style={{ color: "#8a8f98", fontSize: 11 }}>◎</span>
+              <span>Initiatives</span>
+            </Link>
+
+            <Link
+              href="/issues"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#d0d6e0",
+                textDecoration: "none",
+                padding: "4px 8px",
+                borderRadius: 5,
+                transition: "background 0.12s ease",
+              }}
+            >
+              <span style={{ color: "#8a8f98", fontSize: 11 }}>⊘</span>
+              <span>Projects</span>
+            </Link>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#62666d",
+                padding: "4px 8px",
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ fontSize: 11 }}>···</span>
+              <span>More</span>
+            </div>
+          </div>
+        )}
+
+        {/* SECTION: FAVORITES */}
+        {!collapsed && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "#62666d",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "4px 8px 2px",
+                letterSpacing: "0.2px",
+              }}
+            >
+              <span>Favorites</span>
+              <span style={{ fontSize: 9 }}>▾</span>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#d0d6e0",
+                padding: "4px 8px",
+                borderRadius: 5,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ color: "#eab308", fontSize: 11 }}>◎</span>
+              <span>Faster app launch</span>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#d0d6e0",
+                padding: "4px 8px",
+                borderRadius: 5,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ color: "#38bdf8", fontSize: 11 }}>🤖</span>
+              <span>Agent tasks</span>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#d0d6e0",
+                padding: "4px 8px",
+                borderRadius: 5,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ color: "#a855f7", fontSize: 11 }}>📊</span>
+              <span>Agent Insights</span>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 12,
+                color: "#d0d6e0",
+                padding: "4px 8px",
+                borderRadius: 5,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ color: "#f97316", fontSize: 11 }}>🔀</span>
+              <span>UI Refresh</span>
+            </div>
+          </div>
+        )}
 
         {/* SECTION: TRACK (VULNERABILITY TARGETS) */}
         {!collapsed && (
