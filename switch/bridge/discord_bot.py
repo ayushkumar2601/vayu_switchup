@@ -9,13 +9,16 @@ import asyncio
 import logging
 import os
 import re
+import socket
 import sys
 from typing import Any, Optional
 
 try:
+    import aiohttp
     import discord
 except ImportError:
     discord = None
+    aiohttp = None
 
 from switch.agents.analyst_handler import handle_analyst_task
 from switch.agents.gatekeeper_handler import handle_gatekeeper_approval, handle_gatekeeper_rejection
@@ -47,8 +50,8 @@ class VayuDiscordBot:
         intents.guilds = True
         intents.messages = True
 
-        self.client = discord.Client(intents=intents)
-        self._bind_client_events()
+        self.intents = intents
+        self.client = None
 
     @staticmethod
     def parse_natural_intent(raw_text: str) -> Optional[str]:
@@ -277,12 +280,21 @@ class VayuDiscordBot:
         for chunk in chunks:
             await channel.send(chunk)
 
-    def run(self) -> None:
+    async def run_async(self) -> None:
         if not self.token:
             raise ValueError(
                 "DISCORD_BOT_TOKEN is not set. Please set it in your environment or pass it to VayuDiscordBot."
             )
-        self.client.run(self.token)
+
+        connector = aiohttp.TCPConnector(family=socket.AF_INET) if aiohttp else None
+        self.client = discord.Client(intents=self.intents, connector=connector)
+        self._bind_client_events()
+
+        logger.info("Connecting to Discord Gateway (IPv4)...")
+        await self.client.start(self.token)
+
+    def run(self) -> None:
+        asyncio.run(self.run_async())
 
 
 if __name__ == "__main__":
