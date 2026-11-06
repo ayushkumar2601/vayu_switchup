@@ -1,14 +1,14 @@
-# ⚡ VAYU OS × Switch
-### Autonomous Security Operations Platform & Cyber Reasoning System (CRS)
-#### Multi-Agent Incident Response Squad, 4-Gate Fail-Closed Sandbox Verification, SLSA Level 3 Provenance & Linear UI Suite
+# ⚡ VAYU OS × Switch AI
+### Autonomous DevSecOps Multi-Agent Squad & Cyber Reasoning System (CRS)
+#### Built with SandboxAQ Switch Agent Protocol & Wispr Flow Voice Dictation for the Latent Hackathon: Flip the Switch 2026
 
 <p align="center">
   <img src="https://img.shields.io/badge/VAYU%20OS-Autonomous%20SecOps-blueviolet?style=for-the-badge&logo=shield" alt="VAYU OS" />
   <img src="https://img.shields.io/badge/Switch-Agent%20Protocol%20v1.0-blueviolet?style=for-the-badge&logo=probot" alt="Switch Agent Protocol" />
   <img src="https://img.shields.io/badge/Verification-4--Gate%20Fail--Closed-success?style=for-the-badge&logo=checkmarx" alt="4-Gate Fail Closed" />
   <img src="https://img.shields.io/badge/SLSA-Level%203%20Provenance-38bdf8?style=for-the-badge&logo=sigstore" alt="SLSA Level 3" />
+  <img src="https://img.shields.io/badge/Wispr%20Flow-Voice%20Dictation-FF4F00?style=for-the-badge" alt="Wispr Flow Voice" />
   <img src="https://img.shields.io/badge/DigitalOcean-Cloud%20KVM%20Sandbox-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white" alt="DigitalOcean Cloud Sandbox" />
-  <img src="https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%20(MCP)-orange?style=for-the-badge&logo=anthropic" alt="MCP Protocol" />
 </p>
 
 <p align="center">
@@ -16,56 +16,140 @@
   <a href="#-quickstart--reproduction-guide"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python Version" /></a>
   <a href="#-quickstart--reproduction-guide"><img src="https://img.shields.io/badge/Tests-212%20Passing-brightgreen?style=flat-square&logo=pytest&logoColor=white" alt="212 Passing Tests" /></a>
   <a href="#-linear-design-ui-suite--web-console"><img src="https://img.shields.io/badge/Frontend-Next.js%2016%20%7C%20Turbopack-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" /></a>
-  <a href="#-wispr-flow-voice-dictation-integration"><img src="https://img.shields.io/badge/Wispr%20Flow-Voice%20Dictation-FF4F00?style=flat-square" alt="Wispr Flow Voice" /></a>
   <a href="#-formal-mathematical-security-invariants"><img src="https://img.shields.io/badge/Invariants-Byte--Identical%20Original%20Repo-critical?style=flat-square&logo=git&logoColor=white" alt="Invariants" /></a>
   <a href="#-license"><img src="https://img.shields.io/badge/License-Apache%202.0-yellow?style=flat-square" alt="License" /></a>
 </p>
 
 ---
 
-## 🏆 Hackathon Submissions & Target Tracks (Flip the Switch 2026)
+## 🏆 Latent Hackathon Submission (Flip the Switch 2026)
 
 * **Primary Track:** **Track 01 — Best Business Workflow ($2,000)**  
-  *Enterprise Security Incident Response Squad:* An engineering team collaborates with `@vayu-analyst`, `@vayu-remediator`, and `@vayu-gatekeeper` in `#security-incidents` to investigate zero-days, synthesize verified patches, run 4-gate sandbox verification, and authorize GitHub PR releases.
+  *Enterprise Autonomous Security Incident Response Squad:* An engineering team collaborates in real time with `@vayu-analyst`, `@vayu-remediator`, and `@vayu-gatekeeper` in `#security-incidents` via Switch Agent Protocol. Detect zero-days, synthesize verified indentation-locked patches, run 4-gate sandbox verification, and authorize GitHub pull request releases using conversational chat or Wispr Flow voice.
 * **Secondary Track:** **Track 02 — Best Personal / Creative Workflow ($2,000)**  
-  *Personal Security Debt Backlog:* A solo developer connects personal repositories in `#personal-security` (`@vayu scan my repos and fix tech debt`) to maintain an automated Linear-style security backlog.
-* **Side Track:** **Best Blog (AirPods 5)**  
-  Complete technical architecture writeup: [docs/BLOG_POST.md](docs/BLOG_POST.md)
+  *Personal Security Debt & Zero-Day Backlog:* Solo developers connect personal codebases in `#personal-security` with voice dictation (*"Vayu, audit my repo for security debt and prepare PRs"*), automatically populating an autonomous Linear-style triage board.
 * **Side Track:** **Code with Wispr ($500)**  
-  Voice-dictated agent prompts, room commands, and demo voiceover: [docs/WISPR_VOICE_SCRIPT.md](docs/WISPR_VOICE_SCRIPT.md)
+  *Voice-Driven Security Operations:* Instant voice-to-action intent normalization turning natural spoken language into verified security dispatches: [docs/WISPR_VOICE_SCRIPT.md](docs/WISPR_VOICE_SCRIPT.md).
+* **Side Track:** **Best Technical Blog (AirPods 5)**  
+  *From 68-Day MTTR to 2 Minutes:* Comprehensive architecture deep-dive: [docs/BLOG_POST.md](docs/BLOG_POST.md).
 * **Social Track:** **#HowISwitch (Mechanical Keyboards)**  
-  Demo video and architectural breakdown on social channels.
+  *Multi-Agent SecOps Demo:* Full screen-recorded live demo and architecture breakdown on X and LinkedIn.
 
 ---
 
-## 🚀 30-Second Quickstart & Reproduction Guide
+## 🚀 One-Command Demo Execution
 
-You can reproduce the complete end-to-end multi-agent incident remediation workflow in one command:
+You can run the complete end-to-end multi-agent demonstration with a single command:
 
 ```bash
-# 1. Run the interactive end-to-end incident demo
+# ⚡ 1. RUN THE COMPLETE MULTI-AGENT SWITCH DEMO (Interactive & Automated)
 bash run_switch_demo.sh --demo
-
-# 2. Run the full test suite (all 212 unit & integration tests)
-bash run_switch_demo.sh --test
-
-# 3. Launch the Linear-Style Web Operations Console
-cd vayu-nextjs && npm run dev
-# Open http://localhost:3000/issues (Kanban Board)
-# Open http://localhost:3000/my-issues (Triage List)
-# Open http://localhost:3000/reviews (Diff & PR Review)
-# Open http://localhost:3000/dashboard (3D Reasoning Terrain)
 ```
+
+### Additional Demo & Operational Modes
+
+```bash
+# 🎥 2. Run the Full Screen-Recording CLI Demo (Simulated human typing across all acts)
+python scripts/record_demo.py
+
+# 💬 3. Start the Live Discord Bot Gateway (#security-incidents with Wispr Flow voice parsing)
+bash run_switch_demo.sh --discord
+
+# 🌐 4. Launch the Linear Design Web Operations Suite (Next.js 16 + Turbopack)
+cd vayu-nextjs && npm run dev
+# Visit: http://localhost:3000/issues    (Linear Kanban Incident Board)
+# Visit: http://localhost:3000/reviews   (Pixel-Perfect Linear Code Review Console)
+# Visit: http://localhost:3000/dashboard (3D Codebase Terrain & System Architecture)
+
+# 🧪 5. Run the Full Automated Test Suite (212 passing unit, integration & sandbox tests)
+bash run_switch_demo.sh --test
+```
+
+---
+
+## 📸 Visual Showcase & Architecture Gallery
+
+<!-- ==============================================================================
+     SCREENSHOT GALLERY PLACEHOLDERS (Drop your hackathon pictures here)
+     ============================================================================== -->
+
+### 1. Linear Kanban Incident Board (`/issues`)
+<div align="center">
+  <!-- 📸 PLACEHOLDER: SCREENSHOT 1 (Linear Kanban Incident Board) -->
+  <img src="blog_pics/kanban_board.png" alt="Linear Kanban Incident Board" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+Linear+Kanban+Operations+Board+(/issues)';" />
+  <p><i>Figure 1: Real-time 5-column Linear operations board tracking security incidents across Analyst, Remediator, and Gatekeeper squads.</i></p>
+</div>
+
+### 2. Linear Code Review Console & AST Diff Viewer (`/reviews`)
+<div align="center">
+  <!-- 📸 PLACEHOLDER: SCREENSHOT 2 (Linear Reviews Console Diff Viewer) -->
+  <img src="blog_pics/reviews_diff.png" alt="Linear Reviews Console Diff Viewer" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+Linear+Reviews+Console+Diff+Viewer+(/reviews)';" />
+  <p><i>Figure 2: Pixel-perfect Linear Reviews UI showing line-numbered code diff with word-level green/red syntax highlighting, reviewed status toggles, and 4-gate verification traces.</i></p>
+</div>
+
+### 3. Switch Multi-Agent Collaboration in Discord with Wispr Flow Voice
+<div align="center">
+  <!-- 📸 PLACEHOLDER: SCREENSHOT 3 (Discord / Switch Multi-Agent Room & Wispr Voice Flow) -->
+  <img src="blog_pics/discord_wispr.png" alt="Discord / Switch Multi-Agent Room & Wispr Voice Flow" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+Switch+Multi-Agent+Discord+Channel+%26+Wispr+Voice+Dictation';" />
+  <p><i>Figure 3: Natural spoken voice input dictated through Wispr Flow automatically normalized by VAYU's Intent Normalization Engine into multi-agent investigation and authorization workflows.</i></p>
+</div>
+
+### 4. 3D Codebase Reasoning Terrain & Visualizer (`/dashboard`)
+<div align="center">
+  <!-- 📸 PLACEHOLDER: SCREENSHOT 4 (3D Codebase Reasoning Terrain) -->
+  <img src="blog_pics/3d_terrain.png" alt="3D Codebase Reasoning Terrain" width="900" onerror="this.onerror=null;this.src='https://placehold.co/900x500/010102/f7f8f8?text=📸+Screenshot+Placeholder:+3D+WebGL+Codebase+Threat+Terrain+(/dashboard)';" />
+  <p><i>Figure 4: WebGL point-cloud elevation terrain visualizing codebase complexity, file nesting depth, and real-time vulnerability thermal cooling as patches pass verification.</i></p>
+</div>
+
+---
+
+## 🌍 Why VAYU OS Matters: Real-World Attacks & How VAYU Prevents Them
+
+In modern software engineering, vulnerability detection is a solved operational discipline. Modern SAST and SCA tools generate thousands of alerts weekly. Yet, the enterprise **Mean Time to Remediate (MTTR)** still hovers at **68 days**. 
+
+Recent catastrophic software attacks and global outages demonstrate the deadly cost of slow, unverified, or un-sandboxed code modifications:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              RECENT HIGH-PROFILE ATTACKS VS VAYU OS INVARIANTS                         │
+├──────────────────────────┬──────────────────────────────────────────┬──────────────────────────────────┤
+│ Real-World Catastrophe   │ Root Cause & Attack Vector               │ How VAYU OS Prevents It          │
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 💥 CrowdStrike Falcon    │ An unverified channel update containing  │ 4-Gate Fail-Closed Sandboxing:   │
+│    Sensor Outage         │ broken logic was pushed without sandbox  │ VAYU tests every patch in an     │
+│    (July 2024)           │ regression execution, crashing 8.5M      │ isolated VM/container; any crash│
+│                          │ Windows machines worldwide.              │ triggers instant fail-closed drop│
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 🕵️ XZ Utils Backdoor     │ Stealthy backdoor injected through       │ SLSA Level 3 Provenance & AST:   │
+│    (CVE-2024-3094,       │ obfuscated m4 build scripts during       │ Every line edit is bound to an   │
+│    March 2024)           │ upstream release packaging.              │ AST taint graph and signed with  │
+│                          │                                          │ ECDSA P-256 in-toto attestations.│
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 🔥 Log4Shell             │ Unsanitized user string interpolated into│ Indentation Lock & AST Taint:    │
+│    (CVE-2021-44228)      │ JNDI lookup sink, triggering remote code │ VAYU traces source to sink,      │
+│                          │ execution via LDAP callback.             │ replaces the exact call, and     │
+│                          │                                          │ proves exploit neutralized in PoC│
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 🔓 AT&T / Snowflake      │ Hardcoded API keys, unparameterized SQL  │ Static Rescan & Indentation Lock:│
+│    Data Breaches         │ queries, and unsanitized parameters      │ Detects credentials and replaces │
+│    (2024)                │ leading to mass database exfiltration.   │ f-strings with DB-API params.    │
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 🏛️ SolarWinds            │ Malicious code injected into build server│ Zero-Trust LLM Boundary & Human  │
+│    SUNBURST              │ without developer provenance or sign-off.│ Release Gate: No AI self-approval│
+│                          │                                          │ releases require /approve.       │
+└──────────────────────────┴──────────────────────────────────────────┴──────────────────────────────────┘
+```
+
+> [!IMPORTANT]
+> **VAYU's Core Mission:** Transform vulnerability remediation from a terrifying 68-day manual triage backlog into a **2-minute, 4-gate fail-closed, mathematically verified multi-agent operation**.
 
 ---
 
 ## 💡 What is VAYU OS?
 
-In modern enterprise software engineering, finding a critical vulnerability is only 5% of the battle. The true nightmare is **Mean Time to Remediate (MTTR)**, which currently averages **68 days**. Security monitoring tools generate thousands of alerts, but remediation remains slow, siloed, and error-prone.
+Drawing inspiration from **DARPA's Artificial Intelligence Cyber Challenge (AIxCC)** and powered by **SandboxAQ Switch**, **VAYU OS** is a production-grade Cyber Reasoning System (CRS) that deploys an autonomous DevSecOps incident response team inside your collaborative workspaces (Discord, Slack, Linear).
 
-Drawing inspiration from **DARPA's Artificial Intelligence Cyber Challenge (AIxCC)** and powered by **SandboxAQ Switch**, **VAYU OS** deploys an autonomous DevSecOps incident response team right inside your team chat (Discord, Slack).
-
-$$\textbf{FIND} \xrightarrow{\text{SAST + AST Taint Flow}} \textbf{REASON} \xrightarrow{\text{Prompt Firewall + Graph Context}} \textbf{PATCH} \xrightarrow{\text{Indentation Lock}} \textbf{VERIFY} \xrightarrow{\text{4-Gate Fail-Closed Sandbox}} \textbf{SIGN} \xrightarrow{\text{SLSA Provenance}} \textbf{AUTHORIZE} \xrightarrow{\text{Human Gatekeeper}}$$
+$$\textbf{FIND} \xrightarrow{\text{AST Taint Path}} \textbf{REASON} \xrightarrow{\text{Prompt Firewall}} \textbf{PATCH} \xrightarrow{\text{Indentation Lock}} \textbf{VERIFY} \xrightarrow{\text{4-Gate Ephemeral Sandbox}} \textbf{SIGN} \xrightarrow{\text{SLSA Level 3 ECDSA}} \textbf{AUTHORIZE} \xrightarrow{\text{Human Gatekeeper}}$$
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -85,9 +169,9 @@ $$\textbf{FIND} \xrightarrow{\text{SAST + AST Taint Flow}} \textbf{REASON} \xrig
 
 ---
 
-## 🧠 Switch Multi-Agent SecOps Squad Architecture
+## 🧠 How Switch AI Powers the Autonomous SecOps Squad
 
-VAYU OS implements a collaborative multi-agent squad operating inside the `#security-incidents` room via the **Switch Agent Protocol** (`sandbox-quantum/switch`):
+VAYU OS leverages the **Switch Agent Protocol v1.0** (`sandbox-quantum/switch`) to enable real-time multi-agent communication and state synchronization inside team rooms (`#security-incidents`):
 
 ```
 [ Discord / Slack / Team Chat ]
@@ -117,36 +201,36 @@ VAYU OS implements a collaborative multi-agent squad operating inside the `#secu
 
 ### The Three Autonomous Agents
 
-| Agent | Role & Capabilities | Guardrails & Trust Boundary |
+| Agent Persona | Role & Responsibilities | Security Boundaries & Guardrails |
 |---|---|---|
-| **🔍 `@vayu-analyst`** | Ingests repository code, maps AST taint paths from ingress sources to execution sinks, identifies CWE classifications, bounds context into $\pm 5$ lines, and writes findings to the shared incident ledger. | **Untrusted Evidence Isolation**: Repository contents are wrapped in `BEGIN_UNTRUSTED_REPOSITORY_EVIDENCE` tags to eliminate prompt injection attacks. Cannot touch git or modify files. |
-| **🛠️ `@vayu-remediator`** | Invokes local Ollama (`qwen2.5-coder:7b-instruct` / `llama3`), enforces **Indentation Locking**, generates unified diffs, clones repo into disposable sandboxes, and runs all 4 verification gates. | **Zero Authority to Push**: The remediator cannot approve its own patches. If any gate fails, the patch is discarded fail-closed. Generates ECDSA P-256 signed SLSA Level 3 attestations. |
-| **🛡️ `@vayu-gatekeeper`** | Monitors the incident room, verifies that all 4 verification gates passed, ensures strict human-in-the-loop authorization (`/approve <id>`), cuts git branches, and pushes verified GitHub pull requests. | **Non-Negotiable Human Sign-off**: Gatekeeper strictly blocks automatic merges. Patches are deployed **only** when an authenticated Incident Commander issues approval. |
+| **🔍 `@vayu-analyst`** | Ingests repository code, maps AST taint paths from ingress sources to execution sinks, identifies CWE classifications, bounds context into $\pm 5$ lines, and registers findings in the shared SQLite ledger. | **Untrusted Evidence Quarantine:** Target file contents are quarantined inside strict `BEGIN_UNTRUSTED_REPOSITORY_EVIDENCE` blocks. Strictly read-only; cannot modify files or write to git. |
+| **🛠️ `@vayu-remediator`** | Interacts with local Ollama (`qwen2.5-coder:7b-instruct` / `llama3`), enforces **Indentation Locking**, generates atomic unified diffs, clones repo into disposable sandboxes, and executes all 4 verification gates. | **Zero Authority to Push:** Remediator cannot approve its own patches. If any gate fails, the patch is discarded fail-closed. Cryptographically signs verified patches with ECDSA P-256 keys. |
+| **🛡️ `@vayu-gatekeeper`** | Monitors the incident room, verifies that all 4 verification gates passed, enforces human authorization (`/approve <id>`), cuts git branches, and pushes verified GitHub pull requests. | **Non-Negotiable Human Authorization:** Gatekeeper strictly blocks automatic merges. Code reaches GitHub **only** when an authenticated Incident Commander issues approval. |
 
 ---
 
-## 🎙️ Wispr Flow Voice Dictation Integration
+## 🎙️ How Wispr Flow Powers Voice-Driven Security Operations
 
-VAYU OS features native natural language intent parsing designed for **Wispr Flow voice dictation**. Engineers can dictate natural spoken sentences into Discord or Slack, which are automatically normalized into structured security operations:
+VAYU OS features a native **Intent Normalization Engine** designed specifically for **Wispr Flow voice dictation**. Engineers no longer need to type rigid CLI syntax or memorize command flags—they speak naturally, and VAYU transforms spoken intent into deterministic multi-agent security operations:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                        WISPR FLOW VOICE DICTATION PIPELINE                             │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 🗣️ Voice Input:                                                                         │
+│ 🗣️ Natural Voice Input (Wispr Flow):                                                   │
 │   "Vayu, please check the code for any vulnerabilities before raising a PR on GitHub." │
 │                                                                                        │
 │ ⚡ Intent Normalization Engine (switch/bridge/discord_bot.py):                         │
-│   • Matches natural speech patterns: [vayu, check, vulnerabilities, scan, inspect]     │
-│   • Target auto-resolution: samples/vulnerable/command_injection                        │
+│   • Semantic pattern matching: [vayu, check, vulnerabilities, scan, inspect, pr]       │
+│   • Automatic target resolution: samples/vulnerable/command_injection                  │
 │   • Dispatches internal command: /vayu scan samples/vulnerable/command_injection       │
 │                                                                                        │
-│ 🚀 Autonomous Multi-Agent Execution:                                                   │
+│ 🚀 Autonomous Multi-Agent Hand-off:                                                    │
 │   1. @vayu-analyst posts AST investigation report (VAYU-138, CWE-78)                   │
 │   2. @vayu-remediator synthesizes minimal diff and passes all 4 sandbox gates         │
 │   3. Remediator posts SLSA attestation and asks for human sign-off                     │
 │                                                                                        │
-│ 🗣️ Voice Sign-off:                                                                      │
+│ 🗣️ Voice Sign-off (Wispr Flow):                                                       │
 │   "The fix looks good across all four gates, go ahead and approve the PR."            │
 │   ↳ Normalized to: /approve VAYU-138                                                  │
 │                                                                                        │
@@ -155,7 +239,7 @@ VAYU OS features native natural language intent parsing designed for **Wispr Flo
 ```
 
 > [!TIP]
-> See the complete voice script and demo dialogue in **[docs/WISPR_VOICE_SCRIPT.md](docs/WISPR_VOICE_SCRIPT.md)**.
+> **Wispr Flow Demo Audio Script:** See the complete word-for-word voiceover script and dictation dialogue in [docs/WISPR_VOICE_SCRIPT.md](docs/WISPR_VOICE_SCRIPT.md).
 
 ---
 
@@ -185,44 +269,37 @@ flowchart LR
 
 ---
 
-## 🎨 Linear Design UI Suite & Web Console
+## 🎨 Next.js 16 Linear Design UI Suite
 
-VAYU OS features a custom frontend built with **Next.js 16 (Turbopack)** following the official **Linear Design System**:
-
-* **Canvas:** `#010102` (deepest dark surface)
-* **Surface Hierarchy:** `#0f1011` $\rightarrow$ `#141516` $\rightarrow$ `#18191a`
-* **Linear Accent:** `#5e6ad2` (lavender-blue focus rings and active states)
+VAYU OS features an enterprise frontend built with **Next.js 16 (Turbopack)** following the official **Linear Design System**:
+* **Canvas:** `#010102` (pure dark surface)
+* **Surface Ladder:** `#0f1011` $\rightarrow$ `#141516` $\rightarrow$ `#18191a`
+* **Linear Accent:** `#5e6ad2` (lavender-blue focus rings and intentional CTAs)
 * **Hairline Borders:** `#23252a` and `#34343a`
 
 ### 1. Linear Kanban Operations Board (`/issues`)
-* 5 columns: `Inbox`, `Up Next`, `In Progress`, `Review`, `Done`
-* Real-time live polling against the SQLite incident ledger (`/api/incidents`)
-* One-click `👍 Approve` button for human commanders
-* Agent assignment avatars (`@vayu-analyst`, `@vayu-remediator`, `@vayu-gatekeeper`)
-* Severity badges (`HIGH`, `MEDIUM`, `LOW`) and CWE tag pills
+* 5 drag-and-drop columns: `Inbox`, `Up Next`, `In Progress`, `Review`, `Done`.
+* Real-time polling and live updates against SQLite incident ledger (`/api/issues`).
+* Agent assignment avatars (`@vayu-analyst`, `@vayu-remediator`, `@vayu-gatekeeper`).
+* One-click human sign-off button (`👍 Approve`) with automatic GitHub PR generation.
 
-### 2. Linear Grouped Triage List (`/my-issues`)
-* Pixel-perfect Linear grouped triage view matching production Linear specifications
-* Grouped sections: `In Review (3)`, `In Progress (4)`, `Todo (4)`
-* 3-bar signal priority indicators, branch pills (`⑂ #54910`), and category badges (`iOS`, `Reliability`, `Bug`, `Maps`)
-* Real-time agent status pills (`Working... @agent`) with live pulsing indicators
+### 2. Linear Reviews Console (`/reviews`)
+* Pixel-perfect Linear Reviews UI matching official production specifications.
+* Middle triage column with `For me` / `Created` pills and collapsible status groups.
+* Breadcrumb bar with live addition/deletion counters (`+10 -11`).
+* Line-numbered AST code diff viewer with word-level syntax highlights and `Reviewed` checkboxes.
 
-### 3. Code Review Console (`/reviews`)
-* Side-by-side AST unified diff viewer with red/green syntax highlighting
-* Complete CLI execution outputs and dynamic reasoning trace logs
-* Dual-mode sandbox toggle (`☁ DigitalOcean` KVM Droplet vs `💻 Local /tmp`)
-* Direct GitHub PR push button triggering [`POST /api/git/push`](vayu-nextjs/app/api/git/push/route.ts)
+### 3. Linear Grouped Triage List (`/my-issues`)
+* Grouped triage view with priority signal bars, branch indicators (`⑂ #54910`), and status badges.
+* Real-time live pulsing indicators (`Working... @agent`).
 
-### 4. 3D Threat Terrain Mission Control (`/dashboard`)
-* WebGL point-cloud codebase elevation map visualizing file nesting complexity and line intensity
-* Real-time thermal cooling: orange vulnerability hotspots cool to cyan/blue once patches pass verification
-* System view toggle simulating untrusted client data flows through route handlers into database sinks
+### 4. 3D Codebase Elevation Terrain (`/dashboard`)
+* WebGL point-cloud visualization mapping codebase nesting complexity and line intensity.
+* Real-time thermal cooling: vulnerability hotspots cool from orange to cyan/blue as patches pass verification.
 
 ---
 
-## 🔒 Non-Negotiable Security Invariants
-
-VAYU OS is built on mathematical zero-trust principles:
+## 🔒 Non-Negotiable Mathematical Security Invariants
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -331,31 +408,11 @@ vayucs/
 
 ---
 
-## 📚 Complete Documentation Suite
-
-All in-depth architectural specifications, threat analyses, and user guides are organized in the [`docs/`](docs/) directory:
-
-| Document | Topic & Focus |
-|---|---|
-| **[Master Technical Documentation](TECHNICAL_DOCUMENTATION.md)** | Unified monolithic technical specification covering the entire platform. |
-| **[Architecture & Design Specification](docs/ARCHITECTURE.md)** | Deep architectural analysis, 7-layer topology, and DARPA AIxCC design principles. |
-| **[Formal Security Invariants](docs/DESIGN.md)** | Mathematical safety proofs, fail-closed guarantees, and zero-trust LLM boundaries. |
-| **[Switch Multi-Agent Specification](docs/SWITCH_README.md)** | Detailed Switch agent protocol, message schemas, and squad coordination rules. |
-| **[Wispr Flow Voice Dictation](docs/WISPR_VOICE_SCRIPT.md)** | Voice-driven SecOps transcripts, intent normalization, and audio demo script. |
-| **[Technical Blog Post](docs/BLOG_POST.md)** | "From 68-Day MTTR to 2 Minutes: Building an Autonomous DevSecOps Team in Discord". |
-| **[Subagent Engineering Directives](docs/skills.md)** | Engineering handbook, subagent operational directives, and code quality standards. |
-| **[Operational How-To Guide](docs/HOW_TO_USE.md)** | Step-by-step setup, Ollama model configuration, and local scanning guides. |
-| **[Verification & Cloud Sandboxing](docs/cloud-and-local-sandboxing.md)** | DigitalOcean KVM Droplets with RAM-only Ed25519 tunnels vs ephemeral `/tmp`. |
-| **[Model Context Protocol Server](docs/mcp-server.md)** | 9 core MCP tools for Claude Desktop, Cursor, and AI developer environments. |
-| **[SLSA Provenance & SARIF Export](docs/slsa-and-sarif.md)** | Cryptographic in-toto attestations, ECDSA digital signing, and OASIS SARIF. |
-
----
-
 ## 👤 Author & Hackathon Team Details
 
 * **Author / Team Lead**: **[Ayush Kumar](https://github.com/ayushkumar2601)**
 * **GitHub Repository**: **[ayushkumar2601/vayu_switchup](https://github.com/ayushkumar2601/vayu_switchup)**
-* **Hackathon**: **Flip the Switch Hackathon (SandboxAQ Switch & Devpost 2026)**
+* **Hackathon**: **Latent Hackathon: Flip the Switch 2026 (SandboxAQ Switch & Wispr Flow)**
 * **License**: **Apache 2.0**
 
 <p align="center">
