@@ -185,13 +185,18 @@ bash run_switch_demo.sh --test
 
 In modern software engineering, vulnerability detection is a solved operational discipline. Modern SAST and SCA tools generate thousands of alerts weekly. Yet, the enterprise **Mean Time to Remediate (MTTR)** still hovers at **68 days**. 
 
-Recent catastrophic software attacks and global outages demonstrate the deadly cost of slow, unverified, or un-sandboxed code modifications:
+Recent catastrophic software attacks, billion-dollar supply chain compromises, and the unprecedented security failures of **Black October 2026** demonstrate the deadly cost of slow, unverified, or un-sandboxed code modifications:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                              RECENT HIGH-PROFILE ATTACKS VS VAYU OS INVARIANTS                         │
 ├──────────────────────────┬──────────────────────────────────────────┬──────────────────────────────────┤
 │ Real-World Catastrophe   │ Root Cause & Attack Vector               │ How VAYU OS Prevents It          │
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 💰 Binance $6.3B Heist   │ State-sponsored TraderTraitor compromised│ Ephemeral 4-Gate KVM Sandboxing: │
+│    (October 2026)        │ developer environments via malicious code│ Untrusted dependencies and test  │
+│                          │ assignments, gaining unauthorized access │ runners execute in network-locked│
+│                          │ to internal wallet signing systems.      │ sandboxes; human /approve gate.  │
 ├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
 │ 💥 CrowdStrike Falcon    │ An unverified channel update containing  │ 4-Gate Fail-Closed Sandboxing:   │
 │    Sensor Outage         │ broken logic was pushed without sandbox  │ VAYU tests every patch in an     │
@@ -203,20 +208,48 @@ Recent catastrophic software attacks and global outages demonstrate the deadly c
 │    March 2024)           │ upstream release packaging.              │ AST taint graph and signed with  │
 │                          │                                          │ ECDSA P-256 in-toto attestations.│
 ├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 🤖 LiteLLM Supply Chain  │ Attacker compromised an open-source AI   │ Prompt Firewall & Isolated Envs: │
+│    Compromise (>v1.107.0,│ dependency to inject credential-stealing │ AI frameworks are sandboxed; host│
+│    October 2026)         │ code targeting model provider API keys.  │ secrets and env vars never leak. │
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ 🐘 PHP2Shell (Critical   │ Unauthenticated remote code execution on │ Deterministic AST Taint Traversal│
+│    CVE-2026-109618/19,   │ exposed web servers allowing full server │ VAYU identifies command sinks,   │
+│    October 2026)         │ takeover and website defacement.         │ replaces with parameterized calls│
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
+│ ☁️ Railway Secret Leak   │ Unauthorized party accessed environment  │ Zero-Trust Credential Isolation: │
+│    (October 2026)        │ variables, GitHub tokens, & storage keys.│ Sensitive tokens never appear in │
+│                          │                                          │ prompt contexts or transcripts.  │
+├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
 │ 🔥 Log4Shell             │ Unsanitized user string interpolated into│ Indentation Lock & AST Taint:    │
 │    (CVE-2021-44228)      │ JNDI lookup sink, triggering remote code │ VAYU traces source to sink,      │
 │                          │ execution via LDAP callback.             │ replaces the exact call, and     │
 │                          │                                          │ proves exploit neutralized in PoC│
 ├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
-│ 🔓 AT&T / Snowflake      │ Hardcoded API keys, unparameterized SQL  │ Static Rescan & Indentation Lock:│
-│    Data Breaches         │ queries, and unsanitized parameters      │ Detects credentials and replaces │
-│    (2024)                │ leading to mass database exfiltration.   │ f-strings with DB-API params.    │
-├──────────────────────────┼──────────────────────────────────────────┼──────────────────────────────────┤
-│ 🏛️ SolarWinds            │ Malicious code injected into build server│ Zero-Trust LLM Boundary & Human  │
-│    SUNBURST              │ without developer provenance or sign-off.│ Release Gate: No AI self-approval│
-│                          │                                          │ releases require /approve.       │
+│ 🔒 eMudhra CA Weak Keys  │ 8 intermediate TLS CAs generated weak    │ Cryptographic Provenance:        │
+│    (October 2026)        │ private keys due to faulty keygen tools. │ Hardware ECDSA P-256 signatures  │
+│                          │                                          │ verify build artifact integrity. │
 └──────────────────────────┴──────────────────────────────────────────┴──────────────────────────────────┘
 ```
+
+### 🚨 Deep Dive: "Black October 2026" & The $6.3 Billion Binance Breach
+
+<div align="center">
+  <img src="images/black_october_2026.png" alt="Black October 2026 Multi-Layer Cybersecurity Attacks" width="900" />
+  <p><i>Figure 14: The "Black October 2026" threat wave (Oct 20–23, 2026) exposing simultaneous vulnerabilities across web servers, digital trust, AI frameworks, cloud infra, and runtimes.</i></p>
+</div>
+
+The extraordinary concentration of high-severity vulnerabilities discovered in late October 2026 demonstrates that vulnerabilities do not occur in isolation—they cascade across layers:
+
+1. **The $6.3 Billion Binance Developer Environment Heist (Late October 2026)**:
+   - **The Attack Vector**: State-sponsored actors (DPRK TraderTraitor) bypassed perimeter defenses not through a brute-force web exploit, but through **developer supply-chain targeting**. Engineers were targeted via fake recruitment coding assignments and malicious developer tooling. Once executed locally, the malware pivoted laterally into internal wallet-signing microservices, initiating the largest crypto exfiltration in history.
+   - **How VAYU OS Solves It**: VAYU enforces **Invariant I4 (Hostile Repository & Ephemeral Isolation)** and **Invariant I6 (Strict Human Release Gate)**. When candidate code or security patches are inspected, all builds, test runners, and dependency scripts run strictly inside isolated, network-jailed KVM droplets. Even if a repository contains weaponized build scripts, the sandbox cannot access host credentials, cloud tokens, or signing keys. Furthermore, no critical release or git branch can be created without authenticated multi-party `/approve` authorization.
+
+2. **The "Black October 2026" Multi-Layer Threat Wave**:
+   - **Layer 1: Web Servers — PHP2Shell (`CVE-2026-109618`, `CVE-2026-109619`)**: Critical unauthenticated RCE allowed attackers to execute arbitrary shell commands on unauthenticated servers. VAYU's static analysis engine immediately detects unvalidated user input flowing into system command sinks and proposes minimal, indentation-locked parameterizations.
+   - **Layer 2: AI & LLM Tooling — LiteLLM Supply-Chain Compromise (`>v1.107.0`)**: Attackers compromised an upstream release of LiteLLM to steal model provider API keys and environment variables. VAYU's **Prompt Firewall** and zero-trust credential masking ensure third-party agent packages run isolated without access to the host's `.env` secrets.
+   - **Layer 3: Cloud Infrastructure — Railway Customer Secret Exposure**: An unauthorized intrusion exposed customer environment variables (GitHub tokens, storage keys). VAYU mitigates blast radius by enforcing least-privilege tokens that never enter chat transcripts, model contexts, or repository git trees.
+   - **Layer 4: Runtimes & Digital Trust — Node.js RCE & eMudhra Weak CA Keys**: Multiple high-severity Node.js vulnerabilities and weak TLS key generation illustrated how foundational runtimes fail. VAYU's **4-Gate Sandbox** tests patches against isolated runtime regressions before code merges.
+   - **Layer 5: AI-Assisted Advanced Persistent Threats — Storm-0940 (ARTEX Campaign)**: Microsoft revealed state-backed threat actors deploying automated AI tools (ARTEX) to compromise cloud infrastructure. VAYU OS fights AI with AI: deploying autonomous `@vayu-analyst`, `@vayu-remediator`, and `@vayu-gatekeeper` agents to defend systems 24/7.
 
 > [!IMPORTANT]
 > **VAYU's Core Mission:** Transform vulnerability remediation from a terrifying 68-day manual triage backlog into a **2-minute, 4-gate fail-closed, mathematically verified multi-agent operation**.
@@ -490,7 +523,6 @@ vayucs/
 
 * **Author / Team Lead**: **[Ayush Kumar](https://github.com/ayushkumar2601)**
 * **GitHub Repository**: **[ayushkumar2601/vayu_switchup](https://github.com/ayushkumar2601/vayu_switchup)**
-* **Hackathon**: **Latent Hackathon: Flip the Switch 2026 (SandboxAQ Switch & Wispr Flow)**
 * **License**: **Apache 2.0**
 
 <p align="center">
