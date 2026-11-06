@@ -108,19 +108,32 @@ export default function Home() {
             >
               Enter Arena
             </Link>
-            <Link
-              href="/reviews"
+            <a
+              href="https://youtu.be/6ezBwMZC6as"
+              target="_blank"
+              rel="noopener noreferrer"
               className="cta anim"
               style={
                 {
                   "--d": "0.48s",
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.2)",
+                  background: "#ffffff",
+                  color: "#0a0b0e",
+                  fontWeight: 600,
+                  letterSpacing: "-0.2px",
+                  border: "1px solid #ffffff",
+                  boxShadow: "0 0 24px rgba(255, 255, 255, 0.35)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "7px",
+                  textDecoration: "none",
                 } as React.CSSProperties
               }
             >
-              Code Reviews
-            </Link>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Video Demo
+            </a>
           </div>
         </main>
 
