@@ -1,13 +1,10 @@
 <div align="center">
 
-  <img src="images/vayu-banner.svg" alt="VAYU OS Banner" width="100%" />
+  # ⚡ VAYU OS × Switch AI
+  ### Autonomous Multi-Agent Cyber Reasoning System (CRS) & Voice-Driven DevSecOps Squad
+  *Detect. Investigate. Remediate. Verify. Authorize.*
 
   <br />
-
-  <p align="center">
-    <b>An Autonomous Multi-Agent Cyber Reasoning System (CRS) &amp; Voice-Driven DevSecOps Squad</b><br />
-    <i>Detect. Investigate. Remediate. Verify. Authorize.</i>
-  </p>
 
   <p align="center">
     <a href="https://vayu-switchup.vercel.app/"><img src="https://img.shields.io/badge/Live%20Console-vayu--switchup.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Console on Vercel" /></a>
@@ -681,8 +678,7 @@ vayu_switchup/
 ├── requirements.txt               # Python production dependencies
 ├── setup.py                       # Package installation configuration
 │
-├── images/                        # Visual assets, banners & product screenshots
-│   ├── vayu-banner.svg            # Custom high-resolution vector header banner
+├── images/                        # Visual assets & product screenshots
 │   ├── landing.png                # Cinematic Command Center Gateway screenshot
 │   ├── pulse.png                  # 3D WebGL Threat Terrain screenshot
 │   ├── inbox.png                  # Linear Kanban Operations Board screenshot
