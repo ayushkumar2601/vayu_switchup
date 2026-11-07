@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="100%" height="auto">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050608" />
+      <stop offset="50%" stop-color="#0a0c14" />
+      <stop offset="100%" stop-color="#06070a" />
+    </linearGradient>
+
+    <!-- Glowing Accents -->
+    <radialGradient id="glow-blue" cx="20%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glow-violet" cx="80%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glow-cyan" cx="50%" cy="90%" r="40%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Shield Gradient -->
+    <linearGradient id="shield-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+
+    <!-- Border Gradient -->
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#232738" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#232738" />
+    </linearGradient>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+    </pattern>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1200" height="360" rx="16" fill="url(#bg-grad)" />
+  <rect width="1200" height="360" rx="16" fill="url(#grid)" />
+  <rect width="1200" height="360" rx="16" fill="url(#glow-blue)" />
+  <rect width="1200" height="360" rx="16" fill="url(#glow-violet)" />
+  <rect width="1200" height="360" rx="16" fill="url(#glow-cyan)" />
+
+  <!-- Outer Border Frame -->
+  <rect x="1" y="1" width="1198" height="358" rx="15" fill="none" stroke="url(#border-grad)" stroke-width="1.5" />
+
+  <!-- Top Status Bar Indicator -->
+  <g transform="translate(60, 48)">
+    <rect x="0" y="0" width="220" height="26" rx="13" fill="#141824" stroke="#252d42" stroke-width="1" />
+    <circle cx="14" cy="13" r="4.5" fill="#10b981" />
+    <text x="28" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#94a3b8" letter-spacing="0.5">AUTONOMOUS CRS ACTIVE</text>
+  </g>
+
+  <!-- Switch Badge -->
+  <g transform="translate(295, 48)">
+    <rect x="0" y="0" width="225" height="26" rx="13" fill="#1e1838" stroke="#3b2d6a" stroke-width="1" />
+    <circle cx="14" cy="13" r="4.5" fill="#a855f7" />
+    <text x="28" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#c084fc" letter-spacing="0.5">POWERED BY SWITCH AI</text>
+  </g>
+
+  <!-- Wispr Flow Badge -->
+  <g transform="translate(535, 48)">
+    <rect x="0" y="0" width="220" height="26" rx="13" fill="#261914" stroke="#4a2618" stroke-width="1" />
+    <circle cx="14" cy="13" r="4.5" fill="#f97316" />
+    <text x="28" y="17" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#fb923c" letter-spacing="0.5">WISPR FLOW VOICE READY</text>
+  </g>
+
+  <!-- Icon + Logo Centerpiece -->
+  <g transform="translate(60, 105)">
+    <!-- Shield Graphic -->
+    <g transform="translate(0, 10)">
+      <polygon points="40,0 80,18 80,56 40,82 0,56 0,18" fill="url(#shield-grad)" opacity="0.9" />
+      <polygon points="40,6 74,21 74,53 40,75 6,53 6,21" fill="#07090f" />
+      <!-- Inner Pulse Core -->
+      <path d="M 24 40 L 34 40 L 38 28 L 43 52 L 48 35 L 52 40 L 58 40" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+
+    <!-- Main Typography -->
+    <text x="104" y="52" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif" font-size="54" font-weight="900" fill="#ffffff" letter-spacing="-1">VAYU OS</text>
+    <text x="350" y="52" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif" font-size="54" font-weight="400" fill="#475569">|</text>
+    <text x="375" y="52" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif" font-size="54" font-weight="800" fill="#60a5fa" letter-spacing="-0.8">Switch AI</text>
+    
+    <text x="105" y="86" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="500" fill="#94a3b8" letter-spacing="0.2">
+      Autonomous Multi-Agent Cyber Reasoning System &amp; Voice-Driven DevSecOps Squad
+    </text>
+  </g>
+
+  <!-- Capability Badges Pill Row -->
+  <g transform="translate(60, 260)">
+    <!-- Pill 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="250" height="42" rx="8" fill="#0d111c" stroke="#1e293b" stroke-width="1" />
+      <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+        🛡️ 4-Gate Fail-Closed Sandbox
+      </text>
+    </g>
+
+    <!-- Pill 2 -->
+    <g transform="translate(266, 0)">
+      <rect width="265" height="42" rx="8" fill="#0d111c" stroke="#1e293b" stroke-width="1" />
+      <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+        📜 SLSA Level 3 ECDSA Provenance
+      </text>
+    </g>
+
+    <!-- Pill 3 -->
+    <g transform="translate(547, 0)">
+      <rect width="260" height="42" rx="8" fill="#0d111c" stroke="#1e293b" stroke-width="1" />
+      <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+        🎙️ Wispr Flow Voice Dictation
+      </text>
+    </g>
+
+    <!-- Pill 4 -->
+    <g transform="translate(823, 0)">
+      <rect width="255" height="42" rx="8" fill="#0d111c" stroke="#1e293b" stroke-width="1" />
+      <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+        ⚡ 68-Day MTTR ➔ 2 Minutes
+      </text>
+    </g>
+  </g>
+</svg>
